@@ -5,7 +5,7 @@
  * into the Fury Audit stream to identify and slash dishonest auditors.
  */
 
-import { randomUUID, randomBytes } from 'crypto';
+import { randomUUID, randomBytes, randomInt } from 'crypto';
 
 export interface HoneypotArtifact {
   id: string;
@@ -47,9 +47,12 @@ export class HoneypotEngine {
     const id = randomUUID();
     const timestamp = new Date().toISOString();
 
-    const name = FIRST_NAMES[randomBytes(1)[0] % FIRST_NAMES.length];
+    // crypto.randomInt is a CSPRNG with a uniform (unbiased) distribution, so it
+    // avoids both the predictability of Math.random and the modulo bias of
+    // randomBytes(1)[0] % n when selecting honeypot content.
+    const name = FIRST_NAMES[randomInt(FIRST_NAMES.length)];
     const pool = expectedResult === 'BREACH' ? BREACH_MESSAGE_TEMPLATES : CLEAN_MESSAGE_TEMPLATES;
-    const template = pool[randomBytes(1)[0] % pool.length];
+    const template = pool[randomInt(pool.length)];
 
     return {
       id,

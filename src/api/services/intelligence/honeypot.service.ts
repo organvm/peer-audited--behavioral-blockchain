@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Pool } from 'pg';
-import { randomUUID, randomBytes } from 'crypto';
+import { randomUUID, randomInt } from 'crypto';
 import { FuryRouterService } from '../fury-router/fury-router.service';
 import { TruthLogService } from '../ledger/truth-log.service';
 import { SHADOW_BAN_THRESHOLD, FURY_CONSENSUS_SIZE } from '../../../shared/libs/behavioral-logic';
@@ -114,7 +114,7 @@ export class HoneypotService {
       // crypto-random, non-enumerable media path so honeypots aren't trivially
       // identifiable by a constant string or a guessable timestamped filename.
       const description =
-        HONEYPOT_DESCRIPTIONS[randomBytes(1)[0] % HONEYPOT_DESCRIPTIONS.length];
+        HONEYPOT_DESCRIPTIONS[randomInt(HONEYPOT_DESCRIPTIONS.length)];
       const proofResult = await this.pool.query(
         `INSERT INTO proofs (
            contract_id, user_id, status, content_type, description,
