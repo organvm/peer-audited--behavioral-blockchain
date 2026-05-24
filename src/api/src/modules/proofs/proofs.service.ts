@@ -114,8 +114,22 @@ export class ProofsService {
   }
 
   async getProofDetail(proofId: string, requester: ProofReadRequester) {
+    // Select explicit columns (no SELECT p.*) so we control exactly what leaves
+    // the service and can gate the raw vs. masked media URL on authorization.
     const proof = await this.pool.query(
-      `SELECT p.*,
+      `SELECT p.id,
+              p.contract_id,
+              p.user_id,
+              p.status,
+              p.media_uri,
+              p.masked_media_uri,
+              p.redaction_status,
+              p.is_honeypot,
+              p.biometric_verified,
+              p.biometric_type,
+              p.anomaly_flags,
+              p.device_metadata,
+              p.submitted_at,
               c.user_id AS contract_owner_id,
               requester.role AS requester_role,
               requester.enterprise_id AS requester_enterprise_id,
@@ -146,19 +160,34 @@ export class ProofsService {
       row.contract_owner_enterprise_id &&
       row.requester_enterprise_id === row.contract_owner_enterprise_id;
 
+    const isOwner =
+      row.user_id === requester.userId || row.contract_owner_id === requester.userId;
+    const isTenantAdmin = sameEnterprise && tenantAdminRoles.has(requesterRole);
+    const isAssignedFury = row.requester_is_assigned_fury === true;
+
     const canRead =
-      row.user_id === requester.userId ||
-      row.contract_owner_id === requester.userId ||
-      requesterRole === 'ADMIN' ||
-      row.requester_is_assigned_fury === true ||
-      (sameEnterprise && tenantAdminRoles.has(requesterRole));
+      isOwner || requesterRole === 'ADMIN' || isAssignedFury || isTenantAdmin;
 
     if (!canRead) {
       throw new ForbiddenException('Cannot access this proof');
     }
 
+    // Only the subject (owner) and platform ADMINs are authorized to view raw media.
+    // Fury auditors and tenant admins must receive the masked/redacted URL so that
+    // a MASKED proof never exposes unredacted media to them.
+    const authorizedForRaw = isOwner || requesterRole === 'ADMIN';
+    const isMasked = String(row.redaction_status || '').toUpperCase() === 'MASKED';
+
     let viewUrl: string | null = null;
-    if (row.media_uri) {
+    let viewUrlIsRedacted = false;
+    if (!authorizedForRaw && isMasked) {
+      // Serve the redacted asset; if no masked asset exists yet, serve nothing
+      // rather than falling back to the raw media.
+      if (row.masked_media_uri) {
+        viewUrl = await this.r2.generateViewUrl(row.masked_media_uri);
+        viewUrlIsRedacted = true;
+      }
+    } else if (row.media_uri) {
       viewUrl = await this.r2.generateViewUrl(row.media_uri);
     }
 
@@ -176,7 +205,9 @@ export class ProofsService {
       biometricType: row.biometric_type,
       anomalyFlags: row.anomaly_flags,
       deviceMetadata: row.device_metadata,
+      redactionStatus: row.redaction_status,
       viewUrl,
+      viewUrlIsRedacted,
     };
   }
 }

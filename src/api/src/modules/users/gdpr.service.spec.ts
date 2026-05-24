@@ -168,10 +168,15 @@ describe('GdprService', () => {
 
       await service.processPendingDeletions();
 
-      const eventCall = (mockPool.query as jest.Mock).mock.calls[4];
-      expect(eventCall[0]).toContain('INSERT INTO event_log');
-      expect(eventCall[0]).toContain('GDPR_ERASURE_COMPLETED');
-      const payload = JSON.parse(eventCall[1][0]);
+      // The anonymizer now issues additional scrub queries (proofs,
+      // health_oracle_samples) before logging, so locate the event_log call
+      // rather than relying on a fixed index.
+      const eventCall = (mockPool.query as jest.Mock).mock.calls.find(
+        (call) => typeof call[0] === 'string' && call[0].includes('INSERT INTO event_log'),
+      );
+      expect(eventCall).toBeDefined();
+      expect(eventCall![0]).toContain('GDPR_ERASURE_COMPLETED');
+      const payload = JSON.parse(eventCall![1][0]);
       expect(payload.userId).toBe(userId);
       expect(payload.anonymizedAt).toBeDefined();
     });

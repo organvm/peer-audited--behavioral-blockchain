@@ -2,7 +2,7 @@ import { Injectable, ConflictException, UnauthorizedException, BadRequestExcepti
 import { Pool, PoolClient } from 'pg';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
-import { randomBytes, createHash } from 'crypto';
+import { randomBytes, createHash, createHmac } from 'crypto';
 
 const BCRYPT_ROUNDS = 10;
 const ACCESS_TOKEN_EXPIRY = '15m';
@@ -13,15 +13,31 @@ const LOCKOUT_DURATION_MINUTES = 15;
 
 export function getJwtSecret(): string {
   const secret = process.env.JWT_SECRET; // allow-secret
-  if (!secret && process.env.NODE_ENV === 'production') {
-    throw new Error('JWT_SECRET must be set in production');
+  if (!secret) {
+    throw new Error('JWT_SECRET must be set');
   }
-  return secret || 'styx-dev-secret-do-not-use-in-production'; // allow-secret
+  return secret;
+}
+
+// Constant-time placeholder hash compared against when no user exists, so that
+// login latency does not reveal whether an email is registered (user enumeration).
+const DUMMY_BCRYPT_HASH = '$2a$10$CwTycUXWue0Thq9StjUM0uJ8DvHwz6T2x2vR5y6jHkn3vF3dWk3Iq'; // allow-secret
+
+/**
+ * Derives a CSRF token bound to a given session access token. Because the token
+ * is an HMAC keyed by the JWT secret over the session token, only the server can
+ * produce it and it is unique per session — defeating the unbound double-submit
+ * weakness where any attacker-set cookie value would satisfy the check.
+ */
+export function deriveCsrfToken(sessionToken: string): string {
+  return createHmac('sha256', getJwtSecret()).update(sessionToken).digest('hex');
 }
 
 export interface AuthPayload {
   sub: string;
   email: string;
+  role?: string;
+  token_type?: string;
   iat?: number;
   exp?: number;
 }
@@ -114,11 +130,14 @@ export class AuthService {
 
   async login(email: string, password: string): Promise<{ userId: string; token: string; integrity: number }> { // allow-secret
     const result = await this.pool.query(
-      'SELECT id, email, password_hash, status, integrity_score, failed_login_attempts, locked_until FROM users WHERE email = $1',
+      'SELECT id, email, password_hash, status, integrity_score, role, failed_login_attempts, locked_until FROM users WHERE email = $1',
       [email],
     );
 
     if (result.rows.length === 0) {
+      // Always run a bcrypt compare against a dummy hash so the response time
+      // does not reveal whether the email is registered (user enumeration).
+      await bcrypt.compare(password, DUMMY_BCRYPT_HASH);
       throw new UnauthorizedException('Invalid email or password');
     }
 
@@ -129,6 +148,10 @@ export class AuthService {
       throw new UnauthorizedException('Account temporarily locked. Try again later.');
     }
 
+    // Always perform a bcrypt compare (against a dummy hash if none is set) to
+    // keep timing uniform across the missing-hash and wrong-password branches.
+    const valid = await bcrypt.compare(password, user.password_hash || DUMMY_BCRYPT_HASH);
+
     if (!user.password_hash) {
       throw new UnauthorizedException('Invalid email or password');
     }
@@ -137,20 +160,20 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) {
-      const attempts = (user.failed_login_attempts || 0) + 1;
-      if (attempts >= MAX_FAILED_LOGIN_ATTEMPTS) {
-        await this.pool.query(
-          `UPDATE users SET failed_login_attempts = $1, locked_until = NOW() + INTERVAL '${LOCKOUT_DURATION_MINUTES} minutes' WHERE id = $2`,
-          [attempts, user.id],
-        );
-      } else {
-        await this.pool.query(
-          'UPDATE users SET failed_login_attempts = $1 WHERE id = $2',
-          [attempts, user.id],
-        );
-      }
+      // Atomically increment the failed-login counter and apply lockout in a
+      // single UPDATE so concurrent failed attempts cannot lose increments.
+      await this.pool.query(
+        `UPDATE users
+         SET failed_login_attempts = failed_login_attempts + 1,
+             locked_until = CASE
+               WHEN failed_login_attempts + 1 >= $2
+               THEN NOW() + INTERVAL '${LOCKOUT_DURATION_MINUTES} minutes'
+               ELSE locked_until
+             END
+         WHERE id = $1`,
+        [user.id, MAX_FAILED_LOGIN_ATTEMPTS],
+      );
       throw new UnauthorizedException('Invalid email or password');
     }
 
@@ -162,12 +185,12 @@ export class AuthService {
       );
     }
 
-    const token = this.signToken(user.id, user.email); // allow-secret
+    const token = this.signToken(user.id, user.email, user.role); // allow-secret
     return { userId: user.id, token, integrity: user.integrity_score };
   }
 
-  private signToken(userId: string, email: string): string {
-    return jwt.sign({ sub: userId, email }, getJwtSecret(), { expiresIn: TOKEN_EXPIRY });
+  private signToken(userId: string, email: string, role?: string): string {
+    return jwt.sign({ sub: userId, email, role: role || 'USER' }, getJwtSecret(), { expiresIn: TOKEN_EXPIRY });
   }
 
   async exchangeEnterpriseToken(enterpriseToken: string): Promise<{ userId: string; token: string }> { // allow-secret
@@ -179,9 +202,18 @@ export class AuthService {
       throw new UnauthorizedException('Invalid enterprise token');
     }
 
+    // A normal session token (signToken) only carries { sub, email } and never
+    // sets token_type, so requiring this explicit claim prevents any same-secret
+    // session token from being replayed as an enterprise SSO assertion. When a
+    // dedicated IdP is introduced this check should be upgraded to verify the
+    // issuer/audience of the external assertion.
+    if (payload.token_type !== 'enterprise_sso') {
+      throw new UnauthorizedException('Invalid enterprise token');
+    }
+
     // Look up the user by enterprise association
     const result = await this.pool.query(
-      'SELECT id, email, enterprise_id, status FROM users WHERE id = $1 AND enterprise_id IS NOT NULL',
+      'SELECT id, email, enterprise_id, status, role FROM users WHERE id = $1 AND enterprise_id IS NOT NULL',
       [payload.sub],
     );
 
@@ -194,7 +226,7 @@ export class AuthService {
       throw new UnauthorizedException('Enterprise user account is not active');
     }
 
-    const token = this.signToken(user.id, user.email); // allow-secret
+    const token = this.signToken(user.id, user.email, user.role); // allow-secret
     return { userId: user.id, token };
   }
 
@@ -221,7 +253,7 @@ export class AuthService {
     const tokenHash = createHash('sha256').update(refreshToken).digest('hex');
 
     const result = await this.pool.query(
-      `SELECT rt.id, rt.user_id, rt.expires_at, rt.revoked, u.email, u.status
+      `SELECT rt.id, rt.user_id, rt.expires_at, rt.revoked, u.email, u.status, u.role
        FROM refresh_tokens rt
        JOIN users u ON rt.user_id = u.id
        WHERE rt.token_hash = $1`,
@@ -253,7 +285,7 @@ export class AuthService {
     );
 
     // Issue new tokens
-    const accessToken = this.signToken(row.user_id, row.email); // allow-secret
+    const accessToken = this.signToken(row.user_id, row.email, row.role); // allow-secret
     const newRefreshToken = await this.generateRefreshToken(row.user_id); // allow-secret
 
     return { userId: row.user_id, token: accessToken, refreshToken: newRefreshToken };

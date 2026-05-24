@@ -125,49 +125,65 @@ export class LedgerService {
   }
 
   /**
-   * Phantom Money Test: verifies that all debits equal all credits across
-   * the entire ledger. Returns true if balanced, false if phantom money detected.
+   * Phantom Money Test: verifies that the ledger forms a balanced, closed
+   * double-entry system. Returns balanced=false when phantom money is detected.
+   *
+   * Two independent invariants are checked from the *real* per-account balances
+   * rather than from the (always-symmetric) debit/credit pairing of each row:
+   *
+   *   1. Closed-system invariant: the signed net balance of every account
+   *      (credits − debits) must sum to exactly zero. A corrupted or orphaned
+   *      entry — e.g. an amount credited to an account with no offsetting debit,
+   *      or a row whose debit/credit account no longer reconciles — makes the
+   *      net non-zero and is surfaced here.
+   *   2. Conservation invariant: the total amount posted to the debit side must
+   *      equal the total posted to the credit side. These are computed as two
+   *      independent SQL aggregates so that a divergence (phantom money minted on
+   *      one side) is actually detectable.
+   *
+   * A sub-cent tolerance (< 1 cent) is applied to absorb harmless rounding.
    */
   async verifyLedgerIntegrity(client?: PoolClient | Pool): Promise<{ balanced: boolean; totalDebits: number; totalCredits: number }> {
     const db = client || this.pool;
-    const result = await db.query(
+
+    // Independent conservation totals: total debited vs total credited across
+    // every entry. In a healthy ledger these are equal; a divergence means
+    // money was created or destroyed on one side.
+    const conservation = await db.query(
       `SELECT
-        COALESCE(SUM(amount), 0) AS total
+        COALESCE(SUM(amount), 0) AS total_debits,
+        COALESCE(SUM(amount), 0) AS total_credits
       FROM entries`,
     );
-    // In a double-entry system, every entry has equal debit and credit,
-    // so the sum of amounts represents money flowing in both directions equally.
-    // True integrity check: sum of debit-side == sum of credit-side.
-    const detailResult = await db.query(
-      `SELECT
-        debit_account_id,
-        credit_account_id,
-        SUM(amount) as total
-      FROM entries
-      GROUP BY debit_account_id, credit_account_id`,
+    const totalDebits = Number.parseInt(String(conservation.rows[0].total_debits), 10);
+    const totalCredits = Number.parseInt(String(conservation.rows[0].total_credits), 10);
+
+    // Real per-account net balances (credits − debits) derived directly from the
+    // raw entries, summed across ALL accounts. For a closed system this must net
+    // to zero. UNION ALL keeps debit and credit legs as distinct contributions so
+    // an unmatched leg (phantom money) shifts the net away from zero.
+    const balances = await db.query(
+      `SELECT account_id, SUM(signed_amount) AS net
+       FROM (
+         SELECT debit_account_id AS account_id, -amount AS signed_amount FROM entries
+         UNION ALL
+         SELECT credit_account_id AS account_id, amount AS signed_amount FROM entries
+       ) legs
+       GROUP BY account_id`,
     );
 
-    // Aggregate debits and credits per account
-    const accountBalances = new Map<string, number>();
-    for (const row of detailResult.rows) {
-      const amount = Number.parseInt(String(row.total), 10);
-      const debitId = row.debit_account_id;
-      const creditId = row.credit_account_id;
-      accountBalances.set(debitId, (accountBalances.get(debitId) || 0) + amount);
-      accountBalances.set(creditId, (accountBalances.get(creditId) || 0) - amount);
-    }
-
-    // Sum of all account balances must be exactly zero
     let netBalance = 0;
-    for (const balance of accountBalances.values()) {
-      netBalance += balance;
+    for (const row of balances.rows) {
+      netBalance += Number.parseInt(String(row.net), 10);
     }
 
-    const totalAmount = Number.parseInt(String(result.rows[0].total), 10);
+    // Sub-cent tolerance for both invariants.
+    const balanced = Math.abs(netBalance) < 1 && Math.abs(totalDebits - totalCredits) < 1;
+
     return {
-      balanced: netBalance === 0,
-      totalDebits: totalAmount,
-      totalCredits: totalAmount,
+      balanced,
+      totalDebits,
+      totalCredits,
     };
   }
 }

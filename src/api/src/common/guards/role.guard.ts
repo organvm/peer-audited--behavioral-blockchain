@@ -1,18 +1,14 @@
 import { CanActivate, ExecutionContext, Injectable, ForbiddenException, SetMetadata } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Pool } from 'pg';
 
 export const ROLES_KEY = 'roles';
 export const Roles = (...roles: string[]) => SetMetadata(ROLES_KEY, roles);
 
 @Injectable()
 export class RoleGuard implements CanActivate {
-  constructor(
-    private readonly reflector: Reflector,
-    private readonly pool: Pool,
-  ) {}
+  constructor(private readonly reflector: Reflector) {}
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  canActivate(context: ExecutionContext): boolean {
     const requiredRoles = this.reflector.getAllAndOverride<string[]>(ROLES_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -25,20 +21,15 @@ export class RoleGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
 
+    // Fail closed: an unauthenticated request (AuthGuard not satisfied) must never
+    // pass a role check.
     if (!user?.id) {
       throw new ForbiddenException('Authentication required');
     }
 
-    const result = await this.pool.query(
-      'SELECT role FROM users WHERE id = $1',
-      [user.id],
-    );
-
-    if (result.rows.length === 0) {
-      throw new ForbiddenException('User not found');
-    }
-
-    const userRole = result.rows[0].role || 'USER';
+    // AuthGuard populates request.user.role from the verified JWT, so the role is
+    // read directly from the authenticated principal (no extra DB round-trip).
+    const userRole = user.role || 'USER';
 
     if (!requiredRoles.includes(userRole)) {
       throw new ForbiddenException(`Role ${userRole} is not authorized. Required: ${requiredRoles.join(', ')}`);

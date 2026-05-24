@@ -1,21 +1,19 @@
-import { RoleGuard, ROLES_KEY } from './role.guard';
+import { RoleGuard } from './role.guard';
 import { Reflector } from '@nestjs/core';
 import { ForbiddenException } from '@nestjs/common';
 
 describe('RoleGuard', () => {
   let guard: RoleGuard;
   let mockReflector: Reflector;
-  let mockPool: { query: jest.Mock };
 
   beforeEach(() => {
     mockReflector = {
       getAllAndOverride: jest.fn(),
     } as unknown as Reflector;
-    mockPool = { query: jest.fn() };
-    guard = new RoleGuard(mockReflector, mockPool as any);
+    guard = new RoleGuard(mockReflector);
   });
 
-  function createContext(user: { id: string } | null, handler = jest.fn(), cls = jest.fn()) {
+  function createContext(user: { id: string; role?: string } | null, handler = jest.fn(), cls = jest.fn()) {
     return {
       getHandler: () => handler,
       getClass: () => cls,
@@ -25,67 +23,56 @@ describe('RoleGuard', () => {
     } as any;
   }
 
-  it('should allow access when no roles are required', async () => {
+  it('should allow access when no roles are required', () => {
     (mockReflector.getAllAndOverride as jest.Mock).mockReturnValue(undefined);
 
-    const result = await guard.canActivate(createContext({ id: 'u1' }));
+    const result = guard.canActivate(createContext({ id: 'u1' }));
 
     expect(result).toBe(true);
   });
 
-  it('should allow access when empty roles array', async () => {
+  it('should allow access when empty roles array', () => {
     (mockReflector.getAllAndOverride as jest.Mock).mockReturnValue([]);
 
-    const result = await guard.canActivate(createContext({ id: 'u1' }));
+    const result = guard.canActivate(createContext({ id: 'u1' }));
 
     expect(result).toBe(true);
   });
 
-  it('should throw ForbiddenException when user has no id', async () => {
+  it('should throw ForbiddenException when user has no id (fail closed)', () => {
     (mockReflector.getAllAndOverride as jest.Mock).mockReturnValue(['ADMIN']);
 
-    await expect(guard.canActivate(createContext(null))).rejects.toThrow(ForbiddenException);
+    expect(() => guard.canActivate(createContext(null))).toThrow(ForbiddenException);
   });
 
-  it('should throw ForbiddenException when user not found in DB', async () => {
+  it('should throw ForbiddenException when user role does not match', () => {
     (mockReflector.getAllAndOverride as jest.Mock).mockReturnValue(['ADMIN']);
-    mockPool.query.mockResolvedValueOnce({ rows: [] });
 
-    await expect(guard.canActivate(createContext({ id: 'u-missing' }))).rejects.toThrow(ForbiddenException);
-  });
-
-  it('should throw ForbiddenException when user role does not match', async () => {
-    (mockReflector.getAllAndOverride as jest.Mock).mockReturnValue(['ADMIN']);
-    mockPool.query.mockResolvedValueOnce({ rows: [{ role: 'USER' }] });
-
-    await expect(guard.canActivate(createContext({ id: 'u-regular' }))).rejects.toThrow(
+    expect(() => guard.canActivate(createContext({ id: 'u-regular', role: 'USER' }))).toThrow(
       /Role USER is not authorized/,
     );
   });
 
-  it('should allow access when user role matches', async () => {
+  it('should allow access when user role matches', () => {
     (mockReflector.getAllAndOverride as jest.Mock).mockReturnValue(['ADMIN']);
-    mockPool.query.mockResolvedValueOnce({ rows: [{ role: 'ADMIN' }] });
 
-    const result = await guard.canActivate(createContext({ id: 'u-admin' }));
+    const result = guard.canActivate(createContext({ id: 'u-admin', role: 'ADMIN' }));
 
     expect(result).toBe(true);
   });
 
-  it('should allow access when user role matches one of multiple required roles', async () => {
+  it('should allow access when user role matches one of multiple required roles', () => {
     (mockReflector.getAllAndOverride as jest.Mock).mockReturnValue(['ADMIN', 'FURY']);
-    mockPool.query.mockResolvedValueOnce({ rows: [{ role: 'FURY' }] });
 
-    const result = await guard.canActivate(createContext({ id: 'u-fury' }));
+    const result = guard.canActivate(createContext({ id: 'u-fury', role: 'FURY' }));
 
     expect(result).toBe(true);
   });
 
-  it('should default to USER role when role field is null', async () => {
+  it('should default to USER role when role field is absent', () => {
     (mockReflector.getAllAndOverride as jest.Mock).mockReturnValue(['ADMIN']);
-    mockPool.query.mockResolvedValueOnce({ rows: [{ role: null }] });
 
-    await expect(guard.canActivate(createContext({ id: 'u-null-role' }))).rejects.toThrow(
+    expect(() => guard.canActivate(createContext({ id: 'u-null-role' }))).toThrow(
       /Role USER is not authorized/,
     );
   });

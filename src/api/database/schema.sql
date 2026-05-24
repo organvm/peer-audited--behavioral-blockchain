@@ -7,6 +7,7 @@ CREATE TABLE accounts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL UNIQUE,
     type account_type NOT NULL,
+    status TEXT NOT NULL DEFAULT 'ACTIVE', -- ACTIVE, QUARANTINED
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

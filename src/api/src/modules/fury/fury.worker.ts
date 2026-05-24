@@ -104,24 +104,42 @@ export class FuryWorker implements OnModuleInit {
       [proofId],
     );
 
-    const allVoted = assignments.rows.every((r) => r.verdict !== null);
+    const allVoted = assignments.rows.length > 0 && assignments.rows.every((r) => r.verdict !== null);
     if (!allVoted) return; // not all reviewers have voted yet
 
-    // Check if proof is honeypot
+    // Atomically "claim" resolution so near-simultaneous final verdicts cannot
+    // double-resolve (paying bounties / resolving the contract twice). Only the
+    // call that flips the proof out of its review state proceeds; others bail.
+    const claim = await this.pool.query(
+      `UPDATE proofs SET status = 'RESOLVING'
+       WHERE id = $1 AND status IN ('UNDER_REVIEW', 'IN_REVIEW')
+       RETURNING id`,
+      [proofId],
+    );
+    if (claim.rows.length === 0) {
+      // Another concurrent verdict already claimed this proof for resolution.
+      return;
+    }
+
+    // Check if proof is honeypot and recover its expected (known-correct) verdict.
     const proofResult = await this.pool.query(
-      `SELECT is_honeypot, contract_id FROM proofs WHERE id = $1`,
+      `SELECT is_honeypot, contract_id, honeypot_expected_verdict FROM proofs WHERE id = $1`,
       [proofId],
     );
     if (proofResult.rows.length === 0) return;
 
     const { is_honeypot, contract_id } = proofResult.rows[0];
+    // Honeypot proofs persist their known-correct verdict. Default to 'FAIL' (the
+    // legacy known-fail assumption) when unset, so a CLEAN honeypot ('PASS') is honored.
+    const expectedVerdict: 'PASS' | 'FAIL' =
+      proofResult.rows[0].honeypot_expected_verdict === 'PASS' ? 'PASS' : 'FAIL';
 
     const votes: FuryVote[] = assignments.rows.map((r) => ({
       furyUserId: r.fury_user_id,
       verdict: r.verdict,
     }));
 
-    const result = await this.consensusEngine.evaluate(proofId, votes, is_honeypot);
+    const result = await this.consensusEngine.evaluate(proofId, votes, is_honeypot, expectedVerdict);
 
     // Update proof status based on consensus
     const proofStatus =
@@ -176,7 +194,7 @@ export class FuryWorker implements OnModuleInit {
       for (const vote of votes) {
         const furyStats = await this.pool.query(
           `SELECT
-             COUNT(*) FILTER (WHERE fa.verdict IS NOT NULL) as total_audits,
+             COUNT(*) FILTER (WHERE fa.verdict IS NOT NULL AND p.status IN ('VERIFIED', 'REJECTED')) as total_audits,
              COUNT(*) FILTER (WHERE (fa.verdict = 'PASS' AND p.status = 'VERIFIED') OR (fa.verdict = 'FAIL' AND p.status = 'REJECTED')) as successful_audits,
              COUNT(*) FILTER (WHERE fa.verdict = 'FAIL' AND p.status = 'VERIFIED') as false_accusations
            FROM fury_assignments fa

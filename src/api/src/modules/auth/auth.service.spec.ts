@@ -178,9 +178,12 @@ describe('AuthService', () => {
       await expect(service.login('lock@styx.protocol', 'wrong-password'))
         .rejects.toThrow(UnauthorizedException);
 
-      // Verify the UPDATE query sets locked_until
+      // Verify the UPDATE query atomically increments and sets locked_until.
+      // The single UPDATE is parameterized as [user.id, MAX_FAILED_LOGIN_ATTEMPTS].
       const updateCall = (mockPool.query as jest.Mock).mock.calls[1];
-      expect(updateCall[1][0]).toBe(5); // attempts = 5
+      expect(updateCall[1][0]).toBe('lock-user'); // user id
+      expect(updateCall[1][1]).toBe(5); // MAX_FAILED_LOGIN_ATTEMPTS threshold
+      expect(updateCall[0]).toContain('failed_login_attempts = failed_login_attempts + 1');
       expect(updateCall[0]).toContain('locked_until');
     });
 

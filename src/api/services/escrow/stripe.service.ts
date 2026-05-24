@@ -55,6 +55,12 @@ export class StripeFboService {
         currency: 'usd',
       } as any;
     }
+    // Idempotency key must be unique PER ATTEMPT. A contract-scoped key
+    // (e.g. styx_hold_${contractId}) would, after a hold is cancelled, replay the
+    // ORIGINAL cancelled PaymentIntent instead of creating a fresh hold. The nonce
+    // ensures a re-hold after cancellation creates a new intent while still
+    // deduplicating accidental double-submits of the same attempt.
+    const idempotencyKey = `styx_hold_${contractId}_${randomUUID()}`;
     const intent = await this.stripe.paymentIntents.create(
       {
         amount: amountCents,
@@ -63,17 +69,38 @@ export class StripeFboService {
         capture_method: 'manual',
         metadata: { contractId },
       },
-      { idempotencyKey: `styx_hold_${contractId}` },
+      { idempotencyKey },
     );
     return intent;
   }
 
-  async captureStake(paymentIntentId: string): Promise<Stripe.PaymentIntent> {
+  /**
+   * Captures a previously authorized (manual capture_method) hold.
+   *
+   * @param captureAmountCents Optional partial capture amount in integer cents. When omitted,
+   *   Stripe captures the full authorized amount. Supplying it enables partial settlement.
+   *
+   * Note: Stripe rejects capture unless the intent is in `requires_capture`. We guard here so a
+   * mis-driven settlement (e.g. an already-captured or cancelled intent) fails fast with a clear
+   * error instead of surfacing an opaque Stripe error.
+   */
+  async captureStake(paymentIntentId: string, captureAmountCents?: number): Promise<Stripe.PaymentIntent> {
     if (this.isDevMode) {
       this.logger.debug(`[DEV] Mock capture ${paymentIntentId}`);
       return { id: paymentIntentId, status: 'succeeded' } as any;
     }
-    return this.stripe.paymentIntents.capture(paymentIntentId, undefined, {
+
+    const current = await this.stripe.paymentIntents.retrieve(paymentIntentId);
+    if (current.status !== 'requires_capture') {
+      throw new Error(
+        `Cannot capture PaymentIntent ${paymentIntentId}: expected status 'requires_capture' but found '${current.status}'`,
+      );
+    }
+
+    const params: Stripe.PaymentIntentCaptureParams =
+      captureAmountCents !== undefined ? { amount_to_capture: captureAmountCents } : {};
+
+    return this.stripe.paymentIntents.capture(paymentIntentId, params, {
       idempotencyKey: `styx_capture_${paymentIntentId}`,
     });
   }

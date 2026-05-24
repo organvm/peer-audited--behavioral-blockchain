@@ -222,15 +222,21 @@ describe('LedgerService', () => {
   // ── verifyLedgerIntegrity ──────────────────────────────────────
 
   describe('verifyLedgerIntegrity', () => {
+    // The rewritten implementation runs two queries:
+    //   1. conservation aggregate → { total_debits, total_credits }
+    //   2. per-account net query (UNION ALL of debit/credit legs, GROUP BY
+    //      account_id) → rows of { account_id, net }
+    // balanced is true when |sum(net)| < 1 AND |totalDebits - totalCredits| < 1.
+
     it('should return balanced=true when all accounts net to zero', async () => {
       (mockPool.query as jest.Mock)
-        .mockResolvedValueOnce({ rows: [{ total: '10000' }] }) // SUM of all amounts
+        .mockResolvedValueOnce({ rows: [{ total_debits: '10000', total_credits: '10000' }] }) // conservation
         .mockResolvedValueOnce({
           rows: [
-            { debit_account_id: 'user', credit_account_id: 'escrow', total: '5000' },
-            { debit_account_id: 'escrow', credit_account_id: 'user', total: '5000' },
+            { account_id: 'user', net: '0' },
+            { account_id: 'escrow', net: '0' },
           ],
-        }); // GROUP BY detail — net zero
+        }); // per-account net — sums to zero
 
       const result = await service.verifyLedgerIntegrity();
 
@@ -241,7 +247,7 @@ describe('LedgerService', () => {
 
     it('should return balanced=true for empty ledger', async () => {
       (mockPool.query as jest.Mock)
-        .mockResolvedValueOnce({ rows: [{ total: '0' }] })
+        .mockResolvedValueOnce({ rows: [{ total_debits: '0', total_credits: '0' }] })
         .mockResolvedValueOnce({ rows: [] });
 
       const result = await service.verifyLedgerIntegrity();
@@ -250,59 +256,43 @@ describe('LedgerService', () => {
     });
 
     it('should return balanced=false when accounts do not net to zero', async () => {
+      // A phantom-money entry leaves an unmatched leg: the per-account nets no
+      // longer sum to zero, so the closed-system invariant is violated.
       (mockPool.query as jest.Mock)
-        .mockResolvedValueOnce({ rows: [{ total: '8000' }] })
+        .mockResolvedValueOnce({ rows: [{ total_debits: '5000', total_credits: '5000' }] })
         .mockResolvedValueOnce({
           rows: [
-            { debit_account_id: 'user', credit_account_id: 'escrow', total: '5000' },
-            { debit_account_id: 'escrow', credit_account_id: 'revenue', total: '3000' },
-            // user: +5000, escrow: -5000+3000=-2000, revenue: -3000 → net = 0 actually
-            // Let me make it unbalanced: user has +5000 but nobody has matching -5000
+            { account_id: 'user', net: '3000' },
+            { account_id: 'escrow', net: '-1000' },
+            // sum = +2000 ≠ 0 → unbalanced
           ],
         });
 
-      // The above actually balances. Let's verify the logic: user=+5000, escrow=-5000+3000=-2000, revenue=-3000 → 5000-2000-3000=0
-      // To create imbalance we need asymmetric entries
-      jest.clearAllMocks();
-      (mockPool.query as jest.Mock)
-        .mockResolvedValueOnce({ rows: [{ total: '5000' }] })
-        .mockResolvedValueOnce({
-          rows: [
-            { debit_account_id: 'user', credit_account_id: 'escrow', total: '3000' },
-            { debit_account_id: 'phantom', credit_account_id: 'user', total: '2000' },
-            // user: +3000-2000=+1000, escrow: -3000, phantom: +2000 → net=0 still
-            // In double-entry, each row IS balanced. To make it unbalanced we'd need corrupted data.
-            // The only way netBalance != 0 is if the query returns rows where total debits != total credits
-            // But by design each entry has equal debit and credit... Let me just test the algorithm path.
-          ],
-        });
-
-      // Actually looking at the code more carefully:
-      // accountBalances[debitId] += amount (positive)
-      // accountBalances[creditId] -= amount (negative)
-      // So for each row: debit gets +amount, credit gets -amount
-      // netBalance sums all balances. For balanced ledger: sum = 0
-      // To make unbalanced: we'd need a row where debit==credit (self-transfer somehow)
-      // That can't happen in practice, but let's test the boundary
-      jest.clearAllMocks();
-      (mockPool.query as jest.Mock)
-        .mockResolvedValueOnce({ rows: [{ total: '5000' }] })
-        .mockResolvedValueOnce({
-          rows: [
-            // Simulate corrupted group where one side has more total
-            { debit_account_id: 'user', credit_account_id: 'escrow', total: '5000' },
-            { debit_account_id: 'escrow', credit_account_id: 'revenue', total: '3000' },
-          ],
-        });
-      // user: +5000, escrow: -5000+3000=-2000, revenue: -3000 → net=0 → balanced
       const result = await service.verifyLedgerIntegrity();
-      expect(result.balanced).toBe(true);
+      expect(result.balanced).toBe(false);
+    });
+
+    it('should return balanced=false when conservation totals diverge', async () => {
+      // Debits and credits sum differently → money minted/destroyed on one side.
+      (mockPool.query as jest.Mock)
+        .mockResolvedValueOnce({ rows: [{ total_debits: '5000', total_credits: '4000' }] })
+        .mockResolvedValueOnce({
+          rows: [
+            { account_id: 'user', net: '0' },
+            { account_id: 'escrow', net: '0' },
+          ],
+        });
+
+      const result = await service.verifyLedgerIntegrity();
+      expect(result.balanced).toBe(false);
+      expect(result.totalDebits).toBe(5000);
+      expect(result.totalCredits).toBe(4000);
     });
 
     it('should use provided client instead of pool', async () => {
       const externalClient = { query: jest.fn() };
       externalClient.query
-        .mockResolvedValueOnce({ rows: [{ total: '0' }] })
+        .mockResolvedValueOnce({ rows: [{ total_debits: '0', total_credits: '0' }] })
         .mockResolvedValueOnce({ rows: [] });
 
       const result = await service.verifyLedgerIntegrity(externalClient as any);
@@ -313,15 +303,15 @@ describe('LedgerService', () => {
     });
 
     it('should tolerate sub-cent rounding (< 1 cent tolerance)', async () => {
-      // Simulate net balance of 0.5 cents — should still be balanced (tolerance < 1)
+      // Net balance of 0 and conservation totals equal — well within tolerance.
       (mockPool.query as jest.Mock)
-        .mockResolvedValueOnce({ rows: [{ total: '100' }] })
+        .mockResolvedValueOnce({ rows: [{ total_debits: '100', total_credits: '100' }] })
         .mockResolvedValueOnce({
           rows: [
-            { debit_account_id: 'a', credit_account_id: 'b', total: '100' },
+            { account_id: 'a', net: '0' },
+            { account_id: 'b', net: '0' },
           ],
         });
-      // a: +100, b: -100 → net=0
 
       const result = await service.verifyLedgerIntegrity();
       expect(result.balanced).toBe(true);

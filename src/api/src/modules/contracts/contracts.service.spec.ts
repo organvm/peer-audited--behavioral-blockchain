@@ -1407,10 +1407,10 @@ describe('ContractsService', () => {
     });
 
     it('should reject when max grace days exceeded (BadRequestException)', async () => {
-      // Contract lookup
-      mockPool.query.mockResolvedValueOnce({ rows: [activeContract] });
-      // Grace days count: already at max (2)
-      mockPool.query.mockResolvedValueOnce({ rows: [{ count: 2 }] });
+      // Grace days used are now read directly from the contracts.grace_days_used
+      // column on the contract row (no separate truth_log count query). At the
+      // max of 2, the cap check rejects before any UPDATE runs.
+      mockPool.query.mockResolvedValueOnce({ rows: [{ ...activeContract, grace_days_used: 2 }] });
 
       await expect(service.useGraceDay('contract-1', 'user-1')).rejects.toThrow(BadRequestException);
     });
@@ -1431,8 +1431,9 @@ describe('ContractsService', () => {
           contract_status: 'ACTIVE',
         }],
       });
-      // 2. update bounty status
-      mockPool.query.mockResolvedValueOnce({ rows: [] });
+      // 2. atomic claim (UPDATE ... WHERE status='ACTIVE' RETURNING id) — a
+      //    returned row means this claimant won the race.
+      mockPool.query.mockResolvedValueOnce({ rows: [{ id: 'bounty-1' }] });
       // 3. insert proof
       mockPool.query.mockResolvedValueOnce({ rows: [{ id: 'proof-bounty-1' }] });
 
@@ -1523,7 +1524,10 @@ describe('ContractsService', () => {
         .rejects.toThrow(BadRequestException);
     });
 
-    it('should use contractId as fallback proofId when no proofs exist', async () => {
+    it('should throw BadRequestException when no proof exists to dispute', async () => {
+      // The contractId-as-fallback-proofId behavior has been removed: an appeal
+      // must target a real proof, otherwise the appeal fee would be charged
+      // against a non-existent proof (violating the disputes.proof_id FK).
       mockPool.query.mockResolvedValueOnce({
         rows: [{ id: 'contract-1', user_id: 'user-1' }],
       });
@@ -1532,9 +1536,8 @@ describe('ContractsService', () => {
       });
       mockPool.query.mockResolvedValueOnce({ rows: [] }); // no proofs
 
-      await service.fileDispute('user-1', 'contract-1');
-
-      expect(mockDispute.initiateAppeal).toHaveBeenCalledWith('user-1', 'contract-1', 'cus_1');
+      await expect(service.fileDispute('user-1', 'contract-1')).rejects.toThrow(BadRequestException);
+      expect(mockDispute.initiateAppeal).not.toHaveBeenCalled();
     });
   });
 
