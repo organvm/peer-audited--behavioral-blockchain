@@ -589,8 +589,8 @@ describe('ContractsService', () => {
     it('should cancel Stripe hold on COMPLETED outcome', async () => {
       // Contract lookup
       mockPool.query.mockResolvedValueOnce({ rows: [contractRow] });
-      // UPDATE contracts
-      mockPool.query.mockResolvedValueOnce({ rows: [] });
+      // UPDATE contracts (claim, RETURNING id)
+      mockPool.query.mockResolvedValueOnce({ rows: [{ id: 'contract-1' }] });
       // User lookup
       mockPool.query.mockResolvedValueOnce({ rows: [activeUser] });
       // UPDATE users
@@ -606,7 +606,7 @@ describe('ContractsService', () => {
 
     it('should capture stake on FAILED outcome', async () => {
       mockPool.query.mockResolvedValueOnce({ rows: [contractRow] });
-      mockPool.query.mockResolvedValueOnce({ rows: [] });
+      mockPool.query.mockResolvedValueOnce({ rows: [{ id: 'contract-1' }] }); // claim UPDATE (RETURNING id)
       mockPool.query.mockResolvedValueOnce({ rows: [activeUser] });
       mockPool.query.mockResolvedValueOnce({ rows: [] });
       mockPool.query.mockResolvedValueOnce({ rows: [{ id: 'escrow-acct' }] });
@@ -620,7 +620,7 @@ describe('ContractsService', () => {
 
     it('should default failed settlement disposition to REFUND when jurisdiction is unknown', async () => {
       mockPool.query.mockResolvedValueOnce({ rows: [contractRow] });
-      mockPool.query.mockResolvedValueOnce({ rows: [] });
+      mockPool.query.mockResolvedValueOnce({ rows: [{ id: 'contract-1' }] }); // claim UPDATE (RETURNING id)
       mockPool.query.mockResolvedValueOnce({ rows: [{ ...activeUser, last_known_state: null }] });
       mockPool.query.mockResolvedValueOnce({ rows: [] });
       mockPool.query.mockResolvedValueOnce({ rows: [{ id: 'escrow-acct' }] });
@@ -693,7 +693,7 @@ describe('ContractsService', () => {
 
     it('should update contract status in the database', async () => {
       mockPool.query.mockResolvedValueOnce({ rows: [contractRow] });
-      mockPool.query.mockResolvedValueOnce({ rows: [] }); // UPDATE contracts
+      mockPool.query.mockResolvedValueOnce({ rows: [{ id: 'contract-1' }] }); // claim UPDATE (RETURNING id) // UPDATE contracts
       mockPool.query.mockResolvedValueOnce({ rows: [activeUser] });
       mockPool.query.mockResolvedValueOnce({ rows: [] }); // UPDATE users
       mockPool.query.mockResolvedValueOnce({ rows: [{ id: 'escrow-acct' }] });
@@ -708,7 +708,7 @@ describe('ContractsService', () => {
 
     it('should increase integrity score by +5 on COMPLETED (completion bonus)', async () => {
       mockPool.query.mockResolvedValueOnce({ rows: [contractRow] });
-      mockPool.query.mockResolvedValueOnce({ rows: [] });
+      mockPool.query.mockResolvedValueOnce({ rows: [{ id: 'contract-1' }] }); // claim UPDATE (RETURNING id)
       mockPool.query.mockResolvedValueOnce({ rows: [{ ...activeUser, integrity_score: 50 }] });
       mockPool.query.mockResolvedValueOnce({ rows: [] }); // UPDATE users
       mockPool.query.mockResolvedValueOnce({ rows: [{ id: 'escrow-acct' }] });
@@ -724,7 +724,7 @@ describe('ContractsService', () => {
 
     it('should decrease integrity score by -20 on FAILED (strike penalty)', async () => {
       mockPool.query.mockResolvedValueOnce({ rows: [contractRow] });
-      mockPool.query.mockResolvedValueOnce({ rows: [] });
+      mockPool.query.mockResolvedValueOnce({ rows: [{ id: 'contract-1' }] }); // claim UPDATE (RETURNING id)
       mockPool.query.mockResolvedValueOnce({ rows: [{ ...activeUser, integrity_score: 50 }] });
       mockPool.query.mockResolvedValueOnce({ rows: [] }); // UPDATE users
       mockPool.query.mockResolvedValueOnce({ rows: [{ id: 'escrow-acct' }] });
@@ -740,7 +740,7 @@ describe('ContractsService', () => {
 
     it('should floor integrity score at 0', async () => {
       mockPool.query.mockResolvedValueOnce({ rows: [contractRow] });
-      mockPool.query.mockResolvedValueOnce({ rows: [] });
+      mockPool.query.mockResolvedValueOnce({ rows: [{ id: 'contract-1' }] }); // claim UPDATE (RETURNING id)
       mockPool.query.mockResolvedValueOnce({ rows: [{ ...activeUser, integrity_score: 10 }] });
       mockPool.query.mockResolvedValueOnce({ rows: [] });
       mockPool.query.mockResolvedValueOnce({ rows: [{ id: 'escrow-acct' }] });
@@ -760,7 +760,7 @@ describe('ContractsService', () => {
       (mockAegis.getVolatilityMultiplier as jest.Mock).mockReturnValue(1.5);
 
       mockPool.query.mockResolvedValueOnce({ rows: [contractRow] }); // contract lookup
-      mockPool.query.mockResolvedValueOnce({ rows: [] }); // status update
+      mockPool.query.mockResolvedValueOnce({ rows: [{ id: 'contract-1' }] }); // status update (claim, RETURNING id)
       mockPool.query.mockResolvedValueOnce({ rows: [{ ...activeUser, integrity_score: 50 }] }); // user lookup
       mockPool.query.mockResolvedValueOnce({ rows: [] }); // score update
       mockPool.query.mockResolvedValueOnce({ rows: [{ id: 'escrow-acct' }] }); // escrow lookup
@@ -777,7 +777,7 @@ describe('ContractsService', () => {
     });
     it('should log CONTRACT_RESOLVED to TruthLog', async () => {
       mockPool.query.mockResolvedValueOnce({ rows: [contractRow] });
-      mockPool.query.mockResolvedValueOnce({ rows: [] });
+      mockPool.query.mockResolvedValueOnce({ rows: [{ id: 'contract-1' }] }); // claim UPDATE (RETURNING id)
       mockPool.query.mockResolvedValueOnce({ rows: [activeUser] });
       mockPool.query.mockResolvedValueOnce({ rows: [] });
       mockPool.query.mockResolvedValueOnce({ rows: [{ id: 'escrow-acct' }] });
@@ -794,7 +794,7 @@ describe('ContractsService', () => {
 
     it('should not directly write ledger entries when settlement processing has been delegated', async () => {
       mockPool.query.mockResolvedValueOnce({ rows: [contractRow] });
-      mockPool.query.mockResolvedValueOnce({ rows: [] });
+      mockPool.query.mockResolvedValueOnce({ rows: [{ id: 'contract-1' }] }); // claim UPDATE (RETURNING id)
       mockPool.query.mockResolvedValueOnce({ rows: [activeUser] });
       mockPool.query.mockResolvedValueOnce({ rows: [] });
       mockPool.query.mockResolvedValueOnce({ rows: [{ id: 'escrow-acct' }] });

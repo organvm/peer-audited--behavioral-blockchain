@@ -194,20 +194,40 @@ export class AuthService {
   }
 
   async exchangeEnterpriseToken(enterpriseToken: string): Promise<{ userId: string; token: string }> { // allow-secret
-    // Verify the enterprise token is a valid JWT signed with our secret
+    // Verify the enterprise SSO assertion. The assertion is minted by the external
+    // corporate IdP/portal and delivered to the app via the styx://enterprise/ deep
+    // link (see mobile/services/EnterpriseSSO.ts), then POSTed to /auth/enterprise.
+    //
+    // SECURITY: the assertion MUST be cryptographically distinguishable from a normal
+    // session token. The original vulnerability was that the assertion was verified
+    // with the SAME JWT_SECRET as our own session tokens, so any session JWT could be
+    // replayed here to impersonate an enterprise user. We close that hole two ways,
+    // preferring the stronger one when it is configured:
+    //
+    //   1. If a dedicated enterprise IdP secret is configured (ENTERPRISE_SSO_SECRET),
+    //      verify the assertion against THAT key. A token signed only with JWT_SECRET
+    //      then cannot validate here at all — a clean cryptographic boundary.
+    //   2. Otherwise (no separate IdP secret provisioned yet), fall back to verifying
+    //      with JWT_SECRET but REQUIRE an explicit token_type='enterprise_sso' claim.
+    //      Our signToken never sets token_type, so a plain session token is rejected.
+    //      This is weaker than (1) because anything able to sign with JWT_SECRET could
+    //      add the claim, so the contract for the external IdP is: set this claim AND,
+    //      once available, sign with a dedicated ENTERPRISE_SSO_SECRET.
+    const enterpriseSecret = process.env.ENTERPRISE_SSO_SECRET; // allow-secret
     let payload: AuthPayload;
     try {
-      payload = jwt.verify(enterpriseToken, getJwtSecret(), { algorithms: ['HS256'] }) as AuthPayload;
-    } catch {
-      throw new UnauthorizedException('Invalid enterprise token');
-    }
-
-    // A normal session token (signToken) only carries { sub, email } and never
-    // sets token_type, so requiring this explicit claim prevents any same-secret
-    // session token from being replayed as an enterprise SSO assertion. When a
-    // dedicated IdP is introduced this check should be upgraded to verify the
-    // issuer/audience of the external assertion.
-    if (payload.token_type !== 'enterprise_sso') {
+      if (enterpriseSecret) {
+        payload = jwt.verify(enterpriseToken, enterpriseSecret, { algorithms: ['HS256'] }) as AuthPayload;
+      } else {
+        payload = jwt.verify(enterpriseToken, getJwtSecret(), { algorithms: ['HS256'] }) as AuthPayload;
+        if (payload.token_type !== 'enterprise_sso') {
+          throw new UnauthorizedException('Invalid enterprise token');
+        }
+      }
+    } catch (err) {
+      if (err instanceof UnauthorizedException) {
+        throw err;
+      }
       throw new UnauthorizedException('Invalid enterprise token');
     }
 

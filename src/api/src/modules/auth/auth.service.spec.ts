@@ -230,6 +230,93 @@ describe('AuthService', () => {
     });
   });
 
+  describe('enterprise SSO token exchange', () => {
+    const JWT_SECRET = process.env.JWT_SECRET || 'supersecret'; // allow-secret
+    const ENTERPRISE_SECRET = 'enterprise-idp-secret'; // allow-secret
+
+    afterEach(() => {
+      delete process.env.ENTERPRISE_SSO_SECRET;
+    });
+
+    function signAssertion(secret: string, claims: Record<string, unknown>): string {
+      return jwt.sign(claims, secret, { expiresIn: '5m' });
+    }
+
+    it('rejects a plain session token replayed as an SSO assertion (no token_type)', async () => {
+      // signToken-style token: { sub, email, role } signed with JWT_SECRET, no token_type.
+      const sessionToken = signAssertion(JWT_SECRET, { sub: 'ent-user', email: 'e@corp.com', role: 'USER' }); // allow-secret
+
+      await expect(service.exchangeEnterpriseToken(sessionToken)).rejects.toThrow('Invalid enterprise token');
+      // Must be rejected before any user lookup happens.
+      expect(mockPool.query).not.toHaveBeenCalled();
+    });
+
+    it('accepts a JWT_SECRET-signed assertion that carries token_type=enterprise_sso (no separate IdP secret)', async () => {
+      const assertion = signAssertion(JWT_SECRET, {
+        sub: 'ent-user',
+        email: 'e@corp.com',
+        token_type: 'enterprise_sso',
+      });
+
+      (mockPool.query as jest.Mock).mockResolvedValueOnce({
+        rows: [{ id: 'ent-user', email: 'e@corp.com', enterprise_id: 'corp-1', status: 'ACTIVE', role: 'USER' }],
+      });
+
+      const result = await service.exchangeEnterpriseToken(assertion);
+
+      expect(result.userId).toBe('ent-user');
+      expect(result.token).toBeDefined();
+      const decoded = jwt.decode(result.token) as { sub: string };
+      expect(decoded.sub).toBe('ent-user');
+    });
+
+    it('rejects a token whose signature does not match (tampered/forged)', async () => {
+      const assertion = signAssertion('wrong-secret', { sub: 'ent-user', token_type: 'enterprise_sso' }); // allow-secret
+
+      await expect(service.exchangeEnterpriseToken(assertion)).rejects.toThrow('Invalid enterprise token');
+      expect(mockPool.query).not.toHaveBeenCalled();
+    });
+
+    it('verifies against ENTERPRISE_SSO_SECRET when configured and rejects JWT_SECRET-signed tokens', async () => {
+      process.env.ENTERPRISE_SSO_SECRET = ENTERPRISE_SECRET;
+
+      // A token signed only with JWT_SECRET — even with the token_type claim — must
+      // NOT validate once a dedicated IdP secret is in force.
+      const sessionStyle = signAssertion(JWT_SECRET, { sub: 'ent-user', token_type: 'enterprise_sso' });
+      await expect(service.exchangeEnterpriseToken(sessionStyle)).rejects.toThrow('Invalid enterprise token');
+      expect(mockPool.query).not.toHaveBeenCalled();
+    });
+
+    it('accepts a token signed with ENTERPRISE_SSO_SECRET when configured', async () => {
+      process.env.ENTERPRISE_SSO_SECRET = ENTERPRISE_SECRET;
+      const assertion = signAssertion(ENTERPRISE_SECRET, { sub: 'ent-user', email: 'e@corp.com' });
+
+      (mockPool.query as jest.Mock).mockResolvedValueOnce({
+        rows: [{ id: 'ent-user', email: 'e@corp.com', enterprise_id: 'corp-1', status: 'ACTIVE', role: 'USER' }],
+      });
+
+      const result = await service.exchangeEnterpriseToken(assertion);
+      expect(result.userId).toBe('ent-user');
+      expect(result.token).toBeDefined();
+    });
+
+    it('rejects when no enterprise-associated user is found', async () => {
+      const assertion = signAssertion(JWT_SECRET, { sub: 'ghost', token_type: 'enterprise_sso' });
+      (mockPool.query as jest.Mock).mockResolvedValueOnce({ rows: [] });
+
+      await expect(service.exchangeEnterpriseToken(assertion)).rejects.toThrow('No enterprise user found for this token');
+    });
+
+    it('rejects when the enterprise user account is not active', async () => {
+      const assertion = signAssertion(JWT_SECRET, { sub: 'ent-user', token_type: 'enterprise_sso' });
+      (mockPool.query as jest.Mock).mockResolvedValueOnce({
+        rows: [{ id: 'ent-user', email: 'e@corp.com', enterprise_id: 'corp-1', status: 'SUSPENDED', role: 'USER' }],
+      });
+
+      await expect(service.exchangeEnterpriseToken(assertion)).rejects.toThrow('Enterprise user account is not active');
+    });
+  });
+
   describe('refresh tokens', () => {
     it('should generate a refresh token and store its hash', async () => {
       (mockPool.query as jest.Mock).mockResolvedValueOnce(undefined); // INSERT

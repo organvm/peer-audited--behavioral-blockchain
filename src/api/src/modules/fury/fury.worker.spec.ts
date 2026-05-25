@@ -313,6 +313,105 @@ describe('FuryWorker', () => {
       );
     });
 
+    it('should pass the persisted honeypot_expected_verdict (PASS) to ConsensusEngine for a CLEAN honeypot', async () => {
+      mockPool.query.mockResolvedValueOnce({
+        rows: [{ fury_user_id: 'fury-1', verdict: 'PASS' }],
+      });
+      // claim resolution
+      mockPool.query.mockResolvedValueOnce({ rows: [{ id: 'proof-hp-clean' }] });
+      // proofs SELECT now returns honeypot_expected_verdict from the new column
+      mockPool.query.mockResolvedValueOnce({
+        rows: [{ is_honeypot: true, contract_id: 'c-1', honeypot_expected_verdict: 'PASS' }],
+      });
+      (mockConsensus.evaluate as jest.Mock).mockResolvedValueOnce({
+        outcome: 'VERIFIED',
+        votes: [],
+        flaggedFuries: [],
+      });
+      // UPDATE proofs
+      mockPool.query.mockResolvedValueOnce({ rows: [] });
+      // No accuracy tracking or demotion check (honeypot)
+      // Notification: contract user lookup
+      mockPool.query.mockResolvedValueOnce({ rows: [{ user_id: 'u-hp-clean' }] });
+
+      await worker.checkConsensus('proof-hp-clean');
+
+      expect(mockConsensus.evaluate).toHaveBeenCalledWith(
+        'proof-hp-clean',
+        expect.any(Array),
+        true,
+        'PASS', // recovered from the persisted column
+      );
+    });
+
+    it('should ignore honeypot_expected_verdict for a real (non-honeypot) proof and default to FAIL', async () => {
+      mockPool.query.mockResolvedValueOnce({
+        rows: [
+          { fury_user_id: 'fury-1', verdict: 'PASS' },
+          { fury_user_id: 'fury-2', verdict: 'PASS' },
+        ],
+      });
+      // claim resolution
+      mockPool.query.mockResolvedValueOnce({ rows: [{ id: 'proof-real' }] });
+      // A real proof: column is NULL even though is_honeypot is false.
+      mockPool.query.mockResolvedValueOnce({
+        rows: [{ is_honeypot: false, contract_id: 'c-real', honeypot_expected_verdict: null }],
+      });
+      (mockConsensus.evaluate as jest.Mock).mockResolvedValueOnce({
+        outcome: 'VERIFIED',
+        votes: [],
+        flaggedFuries: [],
+      });
+      // UPDATE proofs
+      mockPool.query.mockResolvedValueOnce({ rows: [] });
+      // Accuracy tracking (2 furies)
+      mockPool.query.mockResolvedValueOnce({ rows: [] });
+      mockPool.query.mockResolvedValueOnce({ rows: [] });
+      // Demotion check stats (2 furies)
+      mockPool.query.mockResolvedValueOnce(demotionStatsMock);
+      mockPool.query.mockResolvedValueOnce(demotionStatsMock);
+      // Notification: contract user lookup
+      mockPool.query.mockResolvedValueOnce({ rows: [{ user_id: 'u-real' }] });
+
+      await worker.checkConsensus('proof-real');
+
+      expect(mockConsensus.evaluate).toHaveBeenCalledWith(
+        'proof-real',
+        expect.any(Array),
+        false,
+        'FAIL',
+      );
+    });
+
+    // ── Resolution failure recovery (no stranded 'RESOLVING') ──────
+
+    it('should revert proof status to UNDER_REVIEW and rethrow if resolution throws after claim', async () => {
+      mockPool.query.mockResolvedValueOnce({
+        rows: [
+          { fury_user_id: 'fury-1', verdict: 'PASS' },
+          { fury_user_id: 'fury-2', verdict: 'PASS' },
+        ],
+      });
+      // claim resolution succeeds (proof flipped to RESOLVING)
+      mockPool.query.mockResolvedValueOnce({ rows: [{ id: 'proof-boom' }] });
+      // proofs SELECT
+      mockPool.query.mockResolvedValueOnce({
+        rows: [{ is_honeypot: false, contract_id: 'c-boom', honeypot_expected_verdict: null }],
+      });
+      // ConsensusEngine throws mid-resolution
+      (mockConsensus.evaluate as jest.Mock).mockRejectedValueOnce(new Error('engine exploded'));
+      // revert UPDATE
+      mockPool.query.mockResolvedValueOnce({ rows: [] });
+
+      await expect(worker.checkConsensus('proof-boom')).rejects.toThrow('engine exploded');
+
+      // The last query must revert RESOLVING -> UNDER_REVIEW for this proof.
+      const revertCall = mockPool.query.mock.calls[mockPool.query.mock.calls.length - 1];
+      expect(revertCall[0]).toMatch(/UPDATE proofs SET status = 'UNDER_REVIEW'/);
+      expect(revertCall[0]).toMatch(/status = 'RESOLVING'/);
+      expect(revertCall[1]).toEqual(['proof-boom']);
+    });
+
     // ── Contract resolution via consensus ─────────────────────────
 
     it('should call resolveContract(COMPLETED) when consensus is VERIFIED and contract_id exists', async () => {

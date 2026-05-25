@@ -151,8 +151,10 @@ export class SettlementWorker implements OnModuleInit {
 
   /**
    * Atomically finalizes the ledger and marks the run SUCCESS in a single DB transaction.
-   * Ledger idempotency is keyed on the STABLE (contract_id, entry-type) pair rather than the
-   * per-attempt run id, so a retry that reuses a different run can never double-post entries.
+   * Ledger idempotency is keyed on the STABLE (contract_id, entry-type, amount) tuple rather
+   * than the per-attempt run id, so a retry that reuses a different run can never double-post
+   * entries, while a legitimately different settlement amount (e.g. a double-down re-dispatch)
+   * is NOT mistaken for a duplicate of the prior posting.
    */
   private async finalizeSettlement(
     contractId: string,
@@ -218,7 +220,7 @@ export class SettlementWorker implements OnModuleInit {
 
     if (shouldReturnToUser) {
       const txType = 'REAL_MONEY_SETTLEMENT_RELEASE';
-      if (await this.entryExists(client, contractId, txType)) return;
+      if (await this.entryExists(client, contractId, txType, amountCents)) return;
       await this.ledger.recordTransaction(
         row.escrow_account_id,
         row.account_id,
@@ -230,7 +232,7 @@ export class SettlementWorker implements OnModuleInit {
     } else {
       // Capture to Revenue
       const captureType = 'REAL_MONEY_SETTLEMENT_CAPTURE';
-      if (!(await this.entryExists(client, contractId, captureType))) {
+      if (!(await this.entryExists(client, contractId, captureType, amountCents))) {
         await this.ledger.recordTransaction(
           row.escrow_account_id,
           row.revenue_account_id,
@@ -244,7 +246,7 @@ export class SettlementWorker implements OnModuleInit {
       // Move portion to Bounty Pool
       if (quote?.bountyPoolCents > 0) {
         const topupType = 'BOUNTY_POOL_TOPUP';
-        if (!(await this.entryExists(client, contractId, topupType))) {
+        if (!(await this.entryExists(client, contractId, topupType, quote.bountyPoolCents))) {
           await this.ledger.recordTransaction(
             row.revenue_account_id,
             row.bounty_pool_account_id,
@@ -259,14 +261,17 @@ export class SettlementWorker implements OnModuleInit {
   }
 
   /**
-   * Stable per-(contract, entry-type) idempotency guard. Keyed on contract_id + type rather
-   * than the per-attempt settlement_run_id so a BullMQ retry that uses a different run cannot
-   * re-post an entry that a prior attempt already wrote.
+   * Stable per-(contract, entry-type, amount) idempotency guard. Keyed on contract_id + type +
+   * amount rather than the per-attempt settlement_run_id, so:
+   *   - a BullMQ retry that uses a different run cannot re-post an entry a prior attempt already
+   *     wrote (same contract + type + amount → deduped), and
+   *   - a legitimately different settlement for the same (contract, type) — e.g. a re-dispatch
+   *     after a double-down that changes the amount — is NOT wrongly skipped as a duplicate.
    */
-  private async entryExists(client: PoolClient, contractId: string, type: string): Promise<boolean> {
+  private async entryExists(client: PoolClient, contractId: string, type: string, amountCents: number): Promise<boolean> {
     const existing = await client.query(
-      "SELECT id FROM entries WHERE contract_id = $1 AND metadata->>'type' = $2",
-      [contractId, type]
+      "SELECT id FROM entries WHERE contract_id = $1 AND metadata->>'type' = $2 AND amount = $3",
+      [contractId, type, amountCents]
     );
     return existing.rows.length > 0;
   }

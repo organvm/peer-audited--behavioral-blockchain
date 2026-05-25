@@ -35,14 +35,16 @@ describe('SettlementWorker', () => {
 
   // Helper to drive the client.query mock by SQL keyword, since the worker now runs two
   // separate short transactions (claim + finalize) on a pooled client.
+  //
+  // entryExists() now keys on (contract_id, metadata->>'type', amount): params are
+  // [contractId, type, amountCents]. `existingEntries` lets a test declare which
+  // (type, amount) postings already exist so we can assert amount-aware idempotency.
   const setupClientQueries = (opts: {
     existingRun?: { id: string; status: string } | null;
-    captureExists?: boolean;
-    topupExists?: boolean;
-    releaseExists?: boolean;
+    existingEntries?: Array<{ type: string; amount: number }>;
   }) => {
     const insertedRunId = 'run-claimed';
-    mockClient.query.mockImplementation(async (sql: string) => {
+    mockClient.query.mockImplementation(async (sql: string, params?: any[]) => {
       const text = String(sql);
       if (text.startsWith('BEGIN') || text.startsWith('COMMIT') || text.startsWith('ROLLBACK')) {
         return { rows: [] };
@@ -63,9 +65,14 @@ describe('SettlementWorker', () => {
       if (text.includes('a_escrow') && text.includes('FROM contracts c')) {
         return makeContractRow();
       }
-      // entryExists checks, keyed by type embedded in params is not visible here; use call order
-      if (text.includes('FROM entries WHERE contract_id')) {
-        return { rows: [] };
+      // entryExists: dedupe ONLY on an exact (type, amount) match so a different amount
+      // for the same type is correctly treated as a new posting.
+      if (text.includes('FROM entries WHERE contract_id') && text.includes("metadata->>'type'")) {
+        const [, type, amount] = params || [];
+        const match = (opts.existingEntries || []).some(
+          (e) => e.type === type && e.amount === amount,
+        );
+        return { rows: match ? [{ id: 'existing-entry' }] : [] };
       }
       if (text.includes('UPDATE settlement_runs') && text.includes("'SUCCESS'")) {
         return { rows: [] };
@@ -185,6 +192,92 @@ describe('SettlementWorker', () => {
 
     expect(mockStripeProvider.captureFunds).not.toHaveBeenCalled();
     expect(mockStripeProvider.releaseFunds).not.toHaveBeenCalled();
+    expect(mockLedger.recordTransaction).not.toHaveBeenCalled();
+  });
+
+  // FINDING 3: ledger idempotency must key on amount too, not just (contract, type).
+
+  it('should skip re-posting a capture entry that already exists for the SAME amount (true retry dedupe)', async () => {
+    // The capture posting for 10000¢ already exists → must NOT be re-posted, but the
+    // bounty top-up (2000¢, a different type/amount) is still new and must be written.
+    setupClientQueries({
+      existingRun: null,
+      existingEntries: [{ type: 'REAL_MONEY_SETTLEMENT_CAPTURE', amount: 10000 }],
+    });
+    mockStripeProvider.captureFunds.mockResolvedValue(successResult);
+
+    const job = makeJob({
+      contractId: 'c-dup',
+      outcome: 'FAIL',
+      paymentIntentId: 'pi_dup',
+      amountCents: 10000,
+    });
+
+    await callProcess(worker, job);
+
+    expect(mockLedger.recordTransaction).not.toHaveBeenCalledWith(
+      'acct-escrow',
+      'acct-revenue',
+      10000,
+      'c-dup',
+      expect.objectContaining({ type: 'REAL_MONEY_SETTLEMENT_CAPTURE' }),
+      mockClient,
+    );
+    // The bounty top-up is a distinct (type, amount) and must still be posted.
+    expect(mockLedger.recordTransaction).toHaveBeenCalledWith(
+      'acct-revenue',
+      'acct-bounty',
+      2000,
+      'c-dup',
+      expect.objectContaining({ type: 'BOUNTY_POOL_TOPUP' }),
+      mockClient,
+    );
+  });
+
+  it('should NOT skip a capture posting of a DIFFERENT amount for the same (contract, type)', async () => {
+    // A prior posting of 5000¢ exists, but this re-dispatch (e.g. after a double-down)
+    // settles 12000¢. The new amount must be posted, not wrongly deduped.
+    setupClientQueries({
+      existingRun: null,
+      existingEntries: [{ type: 'REAL_MONEY_SETTLEMENT_CAPTURE', amount: 5000 }],
+    });
+    mockStripeProvider.captureFunds.mockResolvedValue(successResult);
+
+    const job = makeJob({
+      contractId: 'c-dd',
+      outcome: 'FAIL',
+      paymentIntentId: 'pi_dd',
+      amountCents: 12000,
+    });
+
+    await callProcess(worker, job);
+
+    expect(mockLedger.recordTransaction).toHaveBeenCalledWith(
+      'acct-escrow',
+      'acct-revenue',
+      12000,
+      'c-dd',
+      expect.objectContaining({ type: 'REAL_MONEY_SETTLEMENT_CAPTURE' }),
+      mockClient,
+    );
+  });
+
+  it('should skip a release posting that already exists for the same amount', async () => {
+    setupClientQueries({
+      existingRun: null,
+      existingEntries: [{ type: 'REAL_MONEY_SETTLEMENT_RELEASE', amount: 5000 }],
+    });
+    mockStripeProvider.releaseFunds.mockResolvedValue(successResult);
+
+    const job = makeJob({
+      contractId: 'c-rel',
+      outcome: 'PASS',
+      paymentIntentId: 'pi_rel',
+      amountCents: 5000,
+    });
+
+    await callProcess(worker, job);
+
     expect(mockLedger.recordTransaction).not.toHaveBeenCalled();
   });
 });

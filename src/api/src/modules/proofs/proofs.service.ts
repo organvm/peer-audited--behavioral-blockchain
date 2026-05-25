@@ -121,6 +121,8 @@ export class ProofsService {
               p.contract_id,
               p.user_id,
               p.status,
+              p.content_type,
+              p.description,
               p.media_uri,
               p.masked_media_uri,
               p.redaction_status,
@@ -130,6 +132,7 @@ export class ProofsService {
               p.anomaly_flags,
               p.device_metadata,
               p.submitted_at,
+              p.uploaded_at,
               c.user_id AS contract_owner_id,
               requester.role AS requester_role,
               requester.enterprise_id AS requester_enterprise_id,
@@ -173,22 +176,24 @@ export class ProofsService {
     }
 
     // Only the subject (owner) and platform ADMINs are authorized to view raw media.
-    // Fury auditors and tenant admins must receive the masked/redacted URL so that
-    // a MASKED proof never exposes unredacted media to them.
+    // Every other authorized reader (assigned Fury auditors, tenant admins) must
+    // NEVER receive the raw media_uri. This decision is keyed on authorization plus
+    // the presence of a masked asset -- NOT on the exact redaction_status string,
+    // which is inconsistent across the codebase ('MASKED' vs 'COMPLETED' vs
+    // 'NOT_APPLICABLE'/null). For a non-owner reader we serve the redacted asset
+    // when one exists and otherwise serve nothing, so a not-yet-redacted (or
+    // never-redacted) proof can never leak unredacted media to a peer reviewer.
     const authorizedForRaw = isOwner || requesterRole === 'ADMIN';
-    const isMasked = String(row.redaction_status || '').toUpperCase() === 'MASKED';
 
     let viewUrl: string | null = null;
     let viewUrlIsRedacted = false;
-    if (!authorizedForRaw && isMasked) {
-      // Serve the redacted asset; if no masked asset exists yet, serve nothing
-      // rather than falling back to the raw media.
-      if (row.masked_media_uri) {
-        viewUrl = await this.r2.generateViewUrl(row.masked_media_uri);
-        viewUrlIsRedacted = true;
+    if (authorizedForRaw) {
+      if (row.media_uri) {
+        viewUrl = await this.r2.generateViewUrl(row.media_uri);
       }
-    } else if (row.media_uri) {
-      viewUrl = await this.r2.generateViewUrl(row.media_uri);
+    } else if (row.masked_media_uri) {
+      viewUrl = await this.r2.generateViewUrl(row.masked_media_uri);
+      viewUrlIsRedacted = true;
     }
 
     return {

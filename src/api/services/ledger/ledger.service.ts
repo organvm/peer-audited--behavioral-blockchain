@@ -125,30 +125,36 @@ export class LedgerService {
   }
 
   /**
-   * Phantom Money Test: verifies that the ledger forms a balanced, closed
-   * double-entry system. Returns balanced=false when phantom money is detected.
+   * Phantom Money Test: verifies the structural integrity of the double-entry
+   * ledger. Returns balanced=false when a corrupted or phantom entry is detected.
    *
-   * Two independent invariants are checked from the *real* per-account balances
-   * rather than from the (always-symmetric) debit/credit pairing of each row:
+   * In this schema each row in `entries` carries a SINGLE `amount` together with a
+   * `debit_account_id` and a `credit_account_id`, so every row is inherently
+   * balanced (the same amount debits one account and credits another). A naive
+   * "global sum of debits === global sum of credits" check is therefore
+   * tautologically true and detects nothing. Instead we assert the invariants
+   * that CAN actually be violated by corruption, a buggy migration, or a manual
+   * write that bypasses recordTransaction():
    *
-   *   1. Closed-system invariant: the signed net balance of every account
-   *      (credits − debits) must sum to exactly zero. A corrupted or orphaned
-   *      entry — e.g. an amount credited to an account with no offsetting debit,
-   *      or a row whose debit/credit account no longer reconciles — makes the
-   *      net non-zero and is surfaced here.
-   *   2. Conservation invariant: the total amount posted to the debit side must
-   *      equal the total posted to the credit side. These are computed as two
-   *      independent SQL aggregates so that a divergence (phantom money minted on
-   *      one side) is actually detectable.
+   *   1. Positive-amount invariant: no entry may have amount <= 0. A zero or
+   *      negative amount means money was minted/destroyed on a posting.
+   *   2. Distinct-leg invariant: no entry may debit and credit the SAME account
+   *      (debit_account_id = credit_account_id) — such a row is a no-op that
+   *      masks a real, lost posting.
+   *   3. Referential invariant: every debit_account_id and credit_account_id must
+   *      reference an existing row in `accounts`. An orphaned reference means an
+   *      entry points at money that lives in no real account (phantom money).
    *
-   * A sub-cent tolerance (< 1 cent) is applied to absorb harmless rounding.
+   * Any violation flips balanced=false. The returned totalDebits / totalCredits
+   * remain the aggregate SUMs over `entries` (one for the debit side, one for the
+   * credit side) and are kept purely for reporting / audit-trail context.
    */
   async verifyLedgerIntegrity(client?: PoolClient | Pool): Promise<{ balanced: boolean; totalDebits: number; totalCredits: number }> {
     const db = client || this.pool;
 
-    // Independent conservation totals: total debited vs total credited across
-    // every entry. In a healthy ledger these are equal; a divergence means
-    // money was created or destroyed on one side.
+    // Reporting totals only. By construction these are equal (each row contributes
+    // its amount to both the debit and credit side), so they are NOT used to decide
+    // `balanced`; they exist for the audit trail / error messages.
     const conservation = await db.query(
       `SELECT
         COALESCE(SUM(amount), 0) AS total_debits,
@@ -158,27 +164,24 @@ export class LedgerService {
     const totalDebits = Number.parseInt(String(conservation.rows[0].total_debits), 10);
     const totalCredits = Number.parseInt(String(conservation.rows[0].total_credits), 10);
 
-    // Real per-account net balances (credits − debits) derived directly from the
-    // raw entries, summed across ALL accounts. For a closed system this must net
-    // to zero. UNION ALL keeps debit and credit legs as distinct contributions so
-    // an unmatched leg (phantom money) shifts the net away from zero.
-    const balances = await db.query(
-      `SELECT account_id, SUM(signed_amount) AS net
-       FROM (
-         SELECT debit_account_id AS account_id, -amount AS signed_amount FROM entries
-         UNION ALL
-         SELECT credit_account_id AS account_id, amount AS signed_amount FROM entries
-       ) legs
-       GROUP BY account_id`,
+    // Real, falsifiable structural invariants. A single query counts every kind of
+    // violation; a healthy ledger returns all zeros.
+    const integrity = await db.query(
+      `SELECT
+        COUNT(*) FILTER (WHERE e.amount <= 0) AS non_positive_count,
+        COUNT(*) FILTER (WHERE e.debit_account_id = e.credit_account_id) AS self_entry_count,
+        COUNT(*) FILTER (WHERE da.id IS NULL OR ca.id IS NULL) AS orphaned_count
+      FROM entries e
+      LEFT JOIN accounts da ON da.id = e.debit_account_id
+      LEFT JOIN accounts ca ON ca.id = e.credit_account_id`,
     );
 
-    let netBalance = 0;
-    for (const row of balances.rows) {
-      netBalance += Number.parseInt(String(row.net), 10);
-    }
+    const row = integrity.rows[0] || {};
+    const nonPositiveCount = Number.parseInt(String(row.non_positive_count ?? 0), 10);
+    const selfEntryCount = Number.parseInt(String(row.self_entry_count ?? 0), 10);
+    const orphanedCount = Number.parseInt(String(row.orphaned_count ?? 0), 10);
 
-    // Sub-cent tolerance for both invariants.
-    const balanced = Math.abs(netBalance) < 1 && Math.abs(totalDebits - totalCredits) < 1;
+    const balanced = nonPositiveCount === 0 && selfEntryCount === 0 && orphanedCount === 0;
 
     return {
       balanced,

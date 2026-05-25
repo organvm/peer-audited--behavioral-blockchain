@@ -80,9 +80,12 @@ export class StripeFboService {
    * @param captureAmountCents Optional partial capture amount in integer cents. When omitted,
    *   Stripe captures the full authorized amount. Supplying it enables partial settlement.
    *
-   * Note: Stripe rejects capture unless the intent is in `requires_capture`. We guard here so a
-   * mis-driven settlement (e.g. an already-captured or cancelled intent) fails fast with a clear
-   * error instead of surfacing an opaque Stripe error.
+   * Idempotency: settlement retries must be safe. If a prior attempt captured the intent but
+   * crashed before the run was marked SUCCESS (e.g. finalizeSettlement threw), the retry will
+   * retrieve the intent already in `succeeded`. That is the desired end state, so we return it
+   * as success WITHOUT re-capturing — otherwise the ledger entry would never be written and the
+   * job would retry forever. We only throw for genuinely invalid states (e.g. `canceled`), where
+   * capture can never succeed and a fast, clear error beats an opaque Stripe failure.
    */
   async captureStake(paymentIntentId: string, captureAmountCents?: number): Promise<Stripe.PaymentIntent> {
     if (this.isDevMode) {
@@ -91,6 +94,14 @@ export class StripeFboService {
     }
 
     const current = await this.stripe.paymentIntents.retrieve(paymentIntentId);
+
+    // Already captured by a prior (possibly crashed) attempt — treat as success so the
+    // caller can proceed to finalize the ledger idempotently instead of throwing.
+    if (current.status === 'succeeded') {
+      this.logger.debug(`Capture for PaymentIntent ${paymentIntentId} already succeeded; returning idempotently.`);
+      return current;
+    }
+
     if (current.status !== 'requires_capture') {
       throw new Error(
         `Cannot capture PaymentIntent ${paymentIntentId}: expected status 'requires_capture' but found '${current.status}'`,

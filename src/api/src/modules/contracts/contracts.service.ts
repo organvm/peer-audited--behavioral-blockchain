@@ -1642,11 +1642,25 @@ export class ContractsService {
       // the loser's UPDATE matches zero rows and is a no-op. The downstream
       // settlement side effects are independently idempotent (settlement dedupe
       // / ledger sideEffectKey), so a no-op transition cannot double-allocate.
-      await db.query(
+      const claim = await db.query(
         `UPDATE contracts SET status = $1
-         WHERE id = $2 AND status NOT IN ('COMPLETED', 'FAILED')`,
+         WHERE id = $2 AND status NOT IN ('COMPLETED', 'FAILED')
+         RETURNING id`,
         [outcome, contractId],
       );
+
+      // In the non-transactional fallback there is no FOR UPDATE lock held across
+      // the read above and this write, so a concurrent resolver may have already
+      // transitioned the contract to a terminal status. When that happens the
+      // conditional UPDATE matches zero rows; we must NOT proceed to dispatch
+      // settlement or record ledger entries (the winning resolver already owns
+      // those side effects), mirroring the claimBounty / grace-day bail-out. The
+      // transactional path can never see zero rows here (the row is pinned and we
+      // already re-checked its status under the lock), so this guard is a no-op
+      // there.
+      if (!useTransaction && claim.rows.length === 0) {
+        return;
+      }
 
       // Update user integrity score
       const userResult = await db.query('SELECT * FROM users WHERE id = $1', [row.user_id]);
@@ -1762,7 +1776,10 @@ export class ContractsService {
           );
           if (escrowResult.rows.length > 0) {
             if (quote.actualAction === 'RELEASE') {
-              // Return from escrow to user
+              // Return from escrow to user. When an outer transaction is in
+              // flight (the contract row is pinned by FOR UPDATE on `client`),
+              // the posting MUST join that transaction so it rolls back with the
+              // status change if a later step fails — never commit independently.
               await this.ledger.recordTransaction(
                 escrowResult.rows[0].id,
                 userResult.rows[0].account_id,
@@ -1773,13 +1790,20 @@ export class ContractsService {
                   outcome,
                   actualAction: quote.actualAction,
                 },
+                client ?? undefined,
               );
             } else {
               // Move from escrow to revenue, then top up the bounty pool. These
-              // two postings must be atomic: capturing the full stake into
-              // revenue without the matching bounty-pool top-up misallocates
-              // funds. Wrap both in a single DB transaction when a client is
-              // available so a partial failure rolls back the capture too.
+              // two postings must be atomic with each other AND with the contract
+              // status transition: capturing the stake into revenue while the
+              // contract later reverts (outer ROLLBACK) would strand funds in
+              // SYSTEM_REVENUE for an unresolved contract.
+              //
+              // When an outer transaction client is in use we reuse it so the
+              // capture participates in — and rolls back with — that single
+              // atomic transaction (no nested BEGIN/COMMIT). Only when there is
+              // genuinely no outer transaction do we open a dedicated connection
+              // so the two postings remain atomic relative to each other.
               const revenueResult = await db.query(
                 `SELECT id FROM accounts WHERE name = 'SYSTEM_REVENUE' LIMIT 1`,
               );
@@ -1788,12 +1812,20 @@ export class ContractsService {
                   ? await db.query(`SELECT id FROM accounts WHERE name = 'FURY_BOUNTY_POOL' LIMIT 1`)
                   : { rows: [] as any[] };
 
-                const captureConnect = (this.pool as unknown as { connect?: () => Promise<PoolClient> }).connect;
-                const ledgerClient = typeof captureConnect === 'function'
-                  ? await captureConnect.call(this.pool)
-                  : null;
+                let ledgerClient: PoolClient | null = null;
+                let ownsLedgerTransaction = false;
+                if (client) {
+                  // Reuse the outer transaction; do not open a new BEGIN/COMMIT.
+                  ledgerClient = client;
+                } else {
+                  const captureConnect = (this.pool as unknown as { connect?: () => Promise<PoolClient> }).connect;
+                  ledgerClient = typeof captureConnect === 'function'
+                    ? await captureConnect.call(this.pool)
+                    : null;
+                  ownsLedgerTransaction = !!ledgerClient;
+                }
                 try {
-                  if (ledgerClient) await ledgerClient.query('BEGIN');
+                  if (ownsLedgerTransaction && ledgerClient) await ledgerClient.query('BEGIN');
 
                   await this.ledger.recordTransaction(
                     escrowResult.rows[0].id,
@@ -1820,9 +1852,12 @@ export class ContractsService {
                     );
                   }
 
-                  if (ledgerClient) await ledgerClient.query('COMMIT');
+                  if (ownsLedgerTransaction && ledgerClient) await ledgerClient.query('COMMIT');
                 } catch (captureErr) {
-                  if (ledgerClient) {
+                  // Only roll back a transaction we own here. When reusing the
+                  // outer transaction, the outer catch block performs the
+                  // ROLLBACK so the capture and status change revert together.
+                  if (ownsLedgerTransaction && ledgerClient) {
                     try {
                       await ledgerClient.query('ROLLBACK');
                     } catch {
@@ -1831,7 +1866,11 @@ export class ContractsService {
                   }
                   throw captureErr;
                 } finally {
-                  ledgerClient?.release();
+                  // Only release a connection we opened; the outer client is
+                  // released by the outer finally block.
+                  if (ownsLedgerTransaction) {
+                    ledgerClient?.release();
+                  }
                 }
               }
             }
@@ -1886,6 +1925,11 @@ export class ContractsService {
     }
   }
 
+  /** Calendar-month marker (UTC 'YYYY-MM') used to scope the per-month grace-day cap. */
+  private currentGraceMonth(): string {
+    return new Date().toISOString().slice(0, 7);
+  }
+
   async useGraceDay(contractId: string, userId: string): Promise<{ newDeadline: Date }> {
     const contract = await this.pool.query(
       'SELECT * FROM contracts WHERE id = $1',
@@ -1900,25 +1944,46 @@ export class ContractsService {
       throw new BadRequestException(`Contract is not active (status: ${row.status})`);
     }
 
-    // Single source of truth: the contracts.grace_days_used column — the same
-    // column read by getAttestationStatus to compute remaining grace days. The
-    // cap is evaluated and the counter incremented in one atomic, conditional
-    // UPDATE so the limit cannot be bypassed by concurrent requests.
-    const graceDaysUsed = Number(row.grace_days_used || 0);
-    const result = useGraceDay(graceDaysUsed, new Date(row.ends_at));
+    // MAX_GRACE_DAYS_PER_MONTH is a per-CALENDAR-MONTH cap, not a per-contract
+    // lifetime cap: contracts.grace_days_used counts grace days within the
+    // calendar month recorded in contracts.grace_period_month. When the current
+    // month differs from the stored marker the counter has logically reset to 0,
+    // so a long-running multi-month contract regains its full allowance each
+    // month. The same grace_days_used column is read by getAttestationStatus.
+    const currentMonth = this.currentGraceMonth();
+    const storedMonth: string | null = row.grace_period_month ?? null;
+    const storedCount = Number(row.grace_days_used || 0);
+    // Only count the stored usage toward the cap when it belongs to the current
+    // calendar month; otherwise the month rolled over and this is a fresh quota.
+    const usedThisMonth = storedMonth === currentMonth ? storedCount : 0;
+
+    const result = useGraceDay(usedThisMonth, new Date(row.ends_at));
     if (!result.success) {
       throw new BadRequestException(result.reason);
     }
 
-    // Atomically extend the deadline and increment the same counter, re-checking
-    // the cap under the write so two concurrent grace-day requests can't both
-    // increment past MAX_GRACE_DAYS_PER_MONTH.
+    // Atomically extend the deadline, stamp the current month, and set the
+    // counter to (usedThisMonth + 1). The CAS guard re-checks BOTH the raw
+    // counter and the month marker we read above (NULL-safe via IS NOT DISTINCT
+    // FROM) so two concurrent grace-day requests — or a request racing a month
+    // rollover — can't both pass; the loser matches zero rows and is rejected.
     const applied = await this.pool.query(
       `UPDATE contracts
-       SET ends_at = $1, grace_days_used = grace_days_used + 1
-       WHERE id = $2 AND grace_days_used = $3
+       SET ends_at = $1,
+           grace_days_used = $4,
+           grace_period_month = $5
+       WHERE id = $2
+         AND grace_days_used = $3
+         AND grace_period_month IS NOT DISTINCT FROM $6
        RETURNING grace_days_used`,
-      [result.newDeadline!.toISOString(), contractId, graceDaysUsed],
+      [
+        result.newDeadline!.toISOString(),
+        contractId,
+        storedCount,
+        usedThisMonth + 1,
+        currentMonth,
+        storedMonth,
+      ],
     );
     if (applied.rows.length === 0) {
       throw new BadRequestException('Grace day could not be applied (limit reached or concurrent update)');

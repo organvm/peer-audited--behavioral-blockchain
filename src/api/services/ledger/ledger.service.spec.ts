@@ -223,20 +223,17 @@ describe('LedgerService', () => {
 
   describe('verifyLedgerIntegrity', () => {
     // The rewritten implementation runs two queries:
-    //   1. conservation aggregate → { total_debits, total_credits }
-    //   2. per-account net query (UNION ALL of debit/credit legs, GROUP BY
-    //      account_id) → rows of { account_id, net }
-    // balanced is true when |sum(net)| < 1 AND |totalDebits - totalCredits| < 1.
+    //   1. conservation aggregate → { total_debits, total_credits } (reporting only)
+    //   2. structural-invariant aggregate → a single row of violation counts:
+    //      { non_positive_count, self_entry_count, orphaned_count }
+    // balanced is true ONLY when all three violation counts are zero. These checks
+    // are genuinely falsifiable (unlike the old tautological global-sum check).
+    const clean = { non_positive_count: '0', self_entry_count: '0', orphaned_count: '0' };
 
-    it('should return balanced=true when all accounts net to zero', async () => {
+    it('should return balanced=true for a clean ledger (no violations)', async () => {
       (mockPool.query as jest.Mock)
         .mockResolvedValueOnce({ rows: [{ total_debits: '10000', total_credits: '10000' }] }) // conservation
-        .mockResolvedValueOnce({
-          rows: [
-            { account_id: 'user', net: '0' },
-            { account_id: 'escrow', net: '0' },
-          ],
-        }); // per-account net — sums to zero
+        .mockResolvedValueOnce({ rows: [clean] }); // integrity — no violations
 
       const result = await service.verifyLedgerIntegrity();
 
@@ -248,73 +245,65 @@ describe('LedgerService', () => {
     it('should return balanced=true for empty ledger', async () => {
       (mockPool.query as jest.Mock)
         .mockResolvedValueOnce({ rows: [{ total_debits: '0', total_credits: '0' }] })
-        .mockResolvedValueOnce({ rows: [] });
+        .mockResolvedValueOnce({ rows: [clean] });
 
       const result = await service.verifyLedgerIntegrity();
 
       expect(result.balanced).toBe(true);
     });
 
-    it('should return balanced=false when accounts do not net to zero', async () => {
-      // A phantom-money entry leaves an unmatched leg: the per-account nets no
-      // longer sum to zero, so the closed-system invariant is violated.
+    it('should return balanced=false when an entry has a non-positive amount', async () => {
+      // A zero/negative amount means money was minted or destroyed on a posting.
       (mockPool.query as jest.Mock)
         .mockResolvedValueOnce({ rows: [{ total_debits: '5000', total_credits: '5000' }] })
-        .mockResolvedValueOnce({
-          rows: [
-            { account_id: 'user', net: '3000' },
-            { account_id: 'escrow', net: '-1000' },
-            // sum = +2000 ≠ 0 → unbalanced
-          ],
-        });
+        .mockResolvedValueOnce({ rows: [{ ...clean, non_positive_count: '1' }] });
 
       const result = await service.verifyLedgerIntegrity();
       expect(result.balanced).toBe(false);
     });
 
-    it('should return balanced=false when conservation totals diverge', async () => {
-      // Debits and credits sum differently → money minted/destroyed on one side.
+    it('should return balanced=false when an entry debits and credits the same account', async () => {
+      // A self-referential row is a no-op that can mask a lost posting.
       (mockPool.query as jest.Mock)
-        .mockResolvedValueOnce({ rows: [{ total_debits: '5000', total_credits: '4000' }] })
-        .mockResolvedValueOnce({
-          rows: [
-            { account_id: 'user', net: '0' },
-            { account_id: 'escrow', net: '0' },
-          ],
-        });
+        .mockResolvedValueOnce({ rows: [{ total_debits: '5000', total_credits: '5000' }] })
+        .mockResolvedValueOnce({ rows: [{ ...clean, self_entry_count: '2' }] });
 
       const result = await service.verifyLedgerIntegrity();
       expect(result.balanced).toBe(false);
-      expect(result.totalDebits).toBe(5000);
-      expect(result.totalCredits).toBe(4000);
+    });
+
+    it('should return balanced=false when an entry references a non-existent account (orphaned)', async () => {
+      // An orphaned debit/credit reference points at money in no real account.
+      (mockPool.query as jest.Mock)
+        .mockResolvedValueOnce({ rows: [{ total_debits: '5000', total_credits: '5000' }] })
+        .mockResolvedValueOnce({ rows: [{ ...clean, orphaned_count: '1' }] });
+
+      const result = await service.verifyLedgerIntegrity();
+      expect(result.balanced).toBe(false);
+    });
+
+    it('should still expose conservation SUMs for reporting even when balanced', async () => {
+      (mockPool.query as jest.Mock)
+        .mockResolvedValueOnce({ rows: [{ total_debits: '4200', total_credits: '4200' }] })
+        .mockResolvedValueOnce({ rows: [clean] });
+
+      const result = await service.verifyLedgerIntegrity();
+      expect(result.balanced).toBe(true);
+      expect(result.totalDebits).toBe(4200);
+      expect(result.totalCredits).toBe(4200);
     });
 
     it('should use provided client instead of pool', async () => {
       const externalClient = { query: jest.fn() };
       externalClient.query
         .mockResolvedValueOnce({ rows: [{ total_debits: '0', total_credits: '0' }] })
-        .mockResolvedValueOnce({ rows: [] });
+        .mockResolvedValueOnce({ rows: [clean] });
 
       const result = await service.verifyLedgerIntegrity(externalClient as any);
 
       expect(result.balanced).toBe(true);
       expect(externalClient.query).toHaveBeenCalledTimes(2);
       expect(mockPool.query).not.toHaveBeenCalled();
-    });
-
-    it('should tolerate sub-cent rounding (< 1 cent tolerance)', async () => {
-      // Net balance of 0 and conservation totals equal — well within tolerance.
-      (mockPool.query as jest.Mock)
-        .mockResolvedValueOnce({ rows: [{ total_debits: '100', total_credits: '100' }] })
-        .mockResolvedValueOnce({
-          rows: [
-            { account_id: 'a', net: '0' },
-            { account_id: 'b', net: '0' },
-          ],
-        });
-
-      const result = await service.verifyLedgerIntegrity();
-      expect(result.balanced).toBe(true);
     });
   });
 });
