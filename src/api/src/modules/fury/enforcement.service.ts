@@ -41,12 +41,17 @@ export class EnforcementService {
    * Penalties are never auto-applied before this confirmation step.
    */
   async confirmCase(caseId: string, penaltyType: string = 'REP_BURN', amountCents: number = 0) {
-    const caseResult = await this.pool.query(
-      `SELECT id FROM fury_enforcement_cases WHERE id = $1 AND status = 'PENDING_REVIEW'`,
+    // Atomically claim the case (TOCTOU-safe): only the caller that flips
+    // PENDING_REVIEW -> PENALTY_APPLIED proceeds, so two concurrent confirmations
+    // can't both apply a penalty. The loser matches zero rows and is rejected.
+    const claim = await this.pool.query(
+      `UPDATE fury_enforcement_cases SET status = 'PENALTY_APPLIED'
+       WHERE id = $1 AND status = 'PENDING_REVIEW'
+       RETURNING id`,
       [caseId]
     );
 
-    if (caseResult.rows.length === 0) {
+    if (claim.rows.length === 0) {
       throw new NotFoundException('Pending case not found');
     }
 

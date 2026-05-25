@@ -110,22 +110,38 @@ export class SettlementWorker implements OnModuleInit {
       await client.query('SELECT id FROM contracts WHERE id = $1 FOR UPDATE', [contractId]);
 
       const existing = await client.query(
-        `SELECT id, status FROM settlement_runs
+        `SELECT id, status, started_at FROM settlement_runs
          WHERE contract_id = $1 AND outcome = $2
          ORDER BY started_at DESC
          LIMIT 1`,
         [contractId, outcome],
       );
 
+      // A run that is actively PROCESSING and still fresh is owned by another worker;
+      // running the Stripe settlement concurrently with it is exactly the double-pay
+      // hazard the contract-row FOR UPDATE lock above is meant to prevent — but that
+      // lock is released at COMMIT, before the provider call, so it only serializes
+      // THIS claim. Treat a fresh PROCESSING run as owned (skip); only reclaim once it
+      // is stale enough to assume the prior worker crashed, or if it FAILED.
+      const STALE_PROCESSING_MS = 5 * 60 * 1000;
+
       if (existing.rows.length > 0) {
         if (existing.rows[0].status === 'SUCCESS') {
           await client.query('COMMIT');
           return null;
         }
-        // Reuse the existing PROCESSING/FAILED run instead of inserting a duplicate per attempt.
+        if (existing.rows[0].status === 'PROCESSING') {
+          const startedAt = new Date(existing.rows[0].started_at).getTime();
+          if (Number.isFinite(startedAt) && Date.now() - startedAt < STALE_PROCESSING_MS) {
+            await client.query('COMMIT');
+            return null;
+          }
+        }
+        // Reclaim a FAILED or stale PROCESSING run; reset started_at so the staleness
+        // window restarts for this worker.
         await client.query(
           `UPDATE settlement_runs
-           SET status = 'PROCESSING', amount_cents = $2, disposition_mode = $3, quote_json = $4, last_error = NULL
+           SET status = 'PROCESSING', amount_cents = $2, disposition_mode = $3, quote_json = $4, last_error = NULL, started_at = NOW()
            WHERE id = $1`,
           [existing.rows[0].id, amountCents, dispositionMode || (outcome === 'PASS' ? 'REFUND' : 'CAPTURE'), JSON.stringify(quote)],
         );

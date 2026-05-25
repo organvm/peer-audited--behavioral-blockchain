@@ -60,13 +60,17 @@ export class StripePayoutProvider implements PayoutProvider {
         case 'succeeded':
           return PayoutStatus.SUCCESS;
         case 'canceled': {
-          // In the FBO model a deliberate release cancels the manual hold, so a
-          // requested/manual cancellation is a successful release. But an abandoned or
-          // auto-expired authorization also lands in `canceled` and must NOT be reported as a
-          // successful settlement. Distinguish by cancellation_reason.
+          // In the FBO model a deliberate release cancels the manual hold, so ONLY a
+          // deliberate cancellation counts as a successful release. Use an allowlist
+          // (fail-closed): cancelling an intent via the API with no reason yields a
+          // null cancellation_reason, and an explicit operator/user release uses
+          // 'requested_by_customer'. Every other reason — 'abandoned', 'automatic',
+          // 'failed_invoice', 'fraudulent', 'duplicate', auto-expiry, etc. — is an
+          // involuntary cancellation where no money was actually released and must be
+          // reported as FAILED, not silently treated as a successful settlement.
           const reason = (intent as any).cancellation_reason as string | null | undefined;
-          const abandoned = reason === 'abandoned' || reason === 'automatic' || reason === 'failed_invoice';
-          return abandoned ? PayoutStatus.FAILED : PayoutStatus.SUCCESS;
+          const deliberateRelease = reason == null || reason === 'requested_by_customer';
+          return deliberateRelease ? PayoutStatus.SUCCESS : PayoutStatus.FAILED;
         }
         case 'requires_capture':
         case 'processing':
