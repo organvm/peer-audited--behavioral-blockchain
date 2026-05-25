@@ -1,11 +1,55 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Pool } from 'pg';
+import { Pool, PoolClient } from 'pg';
+import { createHash } from 'crypto';
+
+// Matches TruthLogService.GENESIS_HASH / APPEND_LOCK_KEY so audit events written
+// here stay part of the same tamper-evident chain.
+const GENESIS_HASH = '0000000000000000000000000000000000000000000000000000000000000000';
+const TRUTH_LOG_APPEND_LOCK_KEY = 0x57_54_4c_47; // 'WTLG'
 
 @Injectable()
 export class GdprService {
   private readonly logger = new Logger(GdprService.name);
 
   constructor(private readonly pool: Pool) {}
+
+  /**
+   * Appends an audit event to the tamper-evident event_log, keeping it linked to
+   * the hash chain with an explicit sequence_index (so it never relies on the
+   * BIGSERIAL default, which would collide with explicit-index writers). Mirrors
+   * TruthLogService.appendEvent / UsersService.appendTruthLogEvent.
+   */
+  private async appendTruthLogEvent(eventType: string, payload: Record<string, unknown>): Promise<void> {
+    const client: PoolClient = await this.pool.connect();
+    try {
+      await client.query('BEGIN');
+      await client.query('SELECT pg_advisory_xact_lock($1)', [TRUTH_LOG_APPEND_LOCK_KEY]);
+
+      const latestRes = await client.query(
+        `SELECT sequence_index, current_hash FROM event_log ORDER BY sequence_index DESC LIMIT 1 FOR UPDATE`,
+      );
+      const previousHash = latestRes.rows.length > 0 ? latestRes.rows[0].current_hash : GENESIS_HASH;
+      const nextIndex = latestRes.rows.length > 0 ? parseInt(latestRes.rows[0].sequence_index, 10) + 1 : 1;
+      const timestamp = new Date().toISOString();
+
+      const payloadString = JSON.stringify(payload);
+      const hashInput = `${nextIndex}|${eventType}|${timestamp}|${previousHash}|${payloadString}`;
+      const currentHash = createHash('sha256').update(hashInput).digest('hex');
+
+      await client.query(
+        `INSERT INTO event_log (sequence_index, event_type, payload, previous_hash, current_hash, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6)`,
+        [nextIndex, eventType, payload, previousHash, currentHash, timestamp],
+      );
+
+      await client.query('COMMIT');
+    } catch (e) {
+      await client.query('ROLLBACK');
+      throw e;
+    } finally {
+      client.release();
+    }
+  }
 
   /** GDPR Article 20: Export all user data in a machine-readable format. */
   async exportUserData(userId: string): Promise<Record<string, unknown>> {
@@ -132,12 +176,14 @@ export class GdprService {
     //    event_log is append-only/immutable (DB trigger). These rows are linked by
     //    id/user_id but carry no free-text personal data once the above is scrubbed.
 
-    // 7. Log the deletion event
-    await this.pool.query(
-      `INSERT INTO event_log (event_type, payload, previous_hash, current_hash)
-       VALUES ('GDPR_ERASURE_COMPLETED', $1, 'n/a', 'n/a')`,
-      [JSON.stringify({ userId, anonymizedAt: new Date().toISOString() })],
-    );
+    // 7. Log the deletion event as a properly-chained, append-only audit entry
+    //    (explicit sequence_index + real hash links, not 'n/a' — the latter both
+    //    broke the chain and relied on the BIGSERIAL default, risking a unique
+    //    sequence_index collision with explicit-index writers).
+    await this.appendTruthLogEvent('GDPR_ERASURE_COMPLETED', {
+      userId,
+      anonymizedAt: new Date().toISOString(),
+    });
 
     this.logger.log(`GDPR erasure completed for user ${userId}`);
   }

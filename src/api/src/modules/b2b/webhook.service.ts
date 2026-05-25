@@ -25,7 +25,11 @@ export interface WebhookDeliveryResult {
 @Injectable()
 export class WebhookService {
   private readonly logger = new Logger(WebhookService.name);
-  private webhookSecret = requireWebhookSecret(); // allow-secret
+  // Resolved lazily (not in a field initializer) so a missing STYX_WEBHOOK_SECRET
+  // fails webhook signing/verification at use-time rather than crashing app boot.
+  private get webhookSecret(): string {
+    return requireWebhookSecret(); // allow-secret
+  }
 
   /**
    * Pushes anonymized behavioral velocity changes to an enterprise CRM endpoint.

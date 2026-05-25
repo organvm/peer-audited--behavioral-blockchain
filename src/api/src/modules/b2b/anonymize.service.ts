@@ -43,7 +43,11 @@ function requireAnonymizeSalt(): string {
 
 @Injectable()
 export class AnonymizeService {
-  private salt = requireAnonymizeSalt(); // allow-secret
+  // Resolved lazily (not in a field initializer) so a missing ANONYMIZE_SALT
+  // fails the anonymization path at use-time rather than crashing DI/app boot.
+  private get salt(): string {
+    return requireAnonymizeSalt(); // allow-secret
+  }
 
   /**
    * One-way hash a user ID into an anonymous identifier.
