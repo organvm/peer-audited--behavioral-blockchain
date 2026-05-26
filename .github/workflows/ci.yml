@@ -39,7 +39,16 @@ jobs:
       run: npm audit --audit-level=high || echo "::warning::npm audit reported high-severity advisories; review but not blocking the merge."
 
     - name: Execute Tests with Coverage (Turborepo)
-      run: npx turbo run test -- --coverage --ci
+      # NOTE: `--ci` is intentionally NOT passed. It is jest-only; vitest's
+      # CLI rejects it as an unknown option (CAC checkUnknownOptions). With
+      # heterogeneous workspaces (jest in @styx/shared, vitest in
+      # @styx/test-harness, etc.), portable CI-mode detection comes from the
+      # `CI=true` env var that GitHub Actions sets automatically — both jest
+      # and vitest honor it. Reintroducing `--ci` here will break vitest
+      # workspaces; if jest's strict-snapshot semantics ever drift away from
+      # what `CI=true` provides, set them in each jest workspace's package
+      # script instead.
+      run: npx turbo run test -- --coverage
 
     - name: Upload Coverage Reports
       if: always()
