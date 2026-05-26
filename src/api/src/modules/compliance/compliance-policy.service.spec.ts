@@ -69,6 +69,25 @@ describe('CompliancePolicyService', () => {
     });
   });
 
+  describe('onModuleInit (PRV16 startup warning)', () => {
+    it('should warn loudly on startup when KYC enforcement is disabled', () => {
+      const warnSpy = jest
+        .spyOn((service as any).logger, 'warn')
+        .mockImplementation(() => undefined);
+      service.onModuleInit();
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringMatching(/KYC enforcement is DISABLED/i));
+    });
+
+    it('should not warn when KYC enforcement is enabled', () => {
+      process.env.KYC_ENFORCEMENT_ENABLED = 'true';
+      const warnSpy = jest
+        .spyOn((service as any).logger, 'warn')
+        .mockImplementation(() => undefined);
+      service.onModuleInit();
+      expect(warnSpy).not.toHaveBeenCalled();
+    });
+  });
+
   describe('isAgeEnforcementImplemented', () => {
     it('should return true (implemented via registration age gate)', () => {
       expect(service.isAgeEnforcementImplemented()).toBe(true);

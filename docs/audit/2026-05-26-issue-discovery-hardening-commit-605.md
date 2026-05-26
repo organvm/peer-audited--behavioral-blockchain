@@ -5,6 +5,45 @@
 - **Commit under review:** `95bc00f` — *fix: security & correctness hardening across Styx backend (#605)* (108 files, +3917/−1244)
 - **Scope:** the changed files in the hardening commit, plus pre-existing issues in those files.
 
+## Remediation status (2026-05-26)
+
+**All 89 findings have been remediated in code** on this branch (commit following
+this report). Verification: `tsc --noEmit` clean across `src/api` and the changed
+`src/shared` files, and the full API test suite green (**989 tests / 95 suites passing**),
+with co-located specs updated for every behavior change.
+
+Highlights of the fixes:
+- **Money idempotency:** Stripe idempotency keys added to `transferFunds`,
+  `processIAP`, `recordUsage`, capture/lock; ledger gains a DB-enforced
+  `idempotency_key` (migration `030`) with `ON CONFLICT DO NOTHING`; settlement
+  dedupe re-keyed per-(run,type); status transitions guarded against concurrent
+  reclaim. `payment_intent.succeeded` now verifies paid amount + currency.
+- **Auth:** banned-user guard added to wallet/oracles; enterprise SSO requires a
+  dedicated `ENTERPRISE_SSO_SECRET` (no `JWT_SECRET` fallback); logout revokes
+  refresh tokens even when the access token is expired; `CurrentUser` fails closed.
+- **Anti-fraud:** cross-contract pHash dedup restored; `isHoneypot` no longer
+  returned to auditors; honeypots injected as both PASS and FAIL; manipulated
+  media quarantined to `MANUAL_REVIEW`; dHash upgrade.
+- **Privacy/GDPR/SSRF:** transactional + complete erasure; keyed-HMAC email
+  pseudonymization; k-anonymity suppression; SSRF guard now resolves DNS, blocks
+  rebinding/redirects and all IPv4-mapped-IPv6 / obfuscated-IP forms.
+- **Ledger/consensus:** per-user grace-day cap restored; `verifyChain` recomputes
+  from the running head; BIGSERIAL sequence advanced after explicit inserts;
+  consensus side effects made idempotent; `resolveContract` fallback no longer
+  strands terminally-resolved contracts.
+
+**Items intentionally left for business/product confirmation (not auto-changed):**
+- **PRV16** — KYC enforcement remains toggle-gated (off by default); a loud
+  startup warning was added rather than forcing it on. Confirm the production
+  default.
+- **SH6** — KYC stake-tier boundary set to exclusive (`<`) so an exactly-at-
+  threshold stake escalates to the stricter tier. Confirm the intended legal
+  boundary.
+
+A separate commit also lands the **branching / merge / release best-practices
+system** (blocking CI, branch-protection ruleset, canonical strategy doc) — see
+`docs/architecture/branching-and-release-strategy.md`.
+
 ## How to read this report
 
 This is a **coverage-first** discovery pass. Every issue is listed — including

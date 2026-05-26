@@ -1,4 +1,4 @@
-import { Injectable, Optional } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit, Optional } from '@nestjs/common';
 import { Request } from 'express';
 import * as geoip from 'geoip-lite';
 import { Pool } from 'pg';
@@ -34,7 +34,9 @@ type ComplianceActionDecisionCore = Pick<ComplianceDecision, 'allowed' | 'code' 
 const MINIMUM_AGE_YEARS = 18;
 
 @Injectable()
-export class CompliancePolicyService {
+export class CompliancePolicyService implements OnModuleInit {
+  private readonly logger = new Logger(CompliancePolicyService.name);
+
   private static readonly RESTRICTED_REFUND_ONLY_ACTIONS = new Set<ComplianceAction>([
     'CREATE_CONTRACT',
     'FILE_DISPUTE',
@@ -51,6 +53,23 @@ export class CompliancePolicyService {
     private readonly pool: Pool,
     @Optional() private readonly identityVerification?: IdentityVerificationService,
   ) {}
+
+  /**
+   * PRV16: KYC enforcement is toggle-gated and OFF by default, which means
+   * unbounded-stake contracts can be created with zero identity verification. We do
+   * NOT silently force it on (that could break beta flows), but the disabled state
+   * must be LOUD so it is a deliberate, visible choice rather than an accident.
+   * Note: the age gate (>=18) is enforced unconditionally regardless of this toggle.
+   */
+  onModuleInit(): void {
+    if (!this.isKycEnforcementEnabled()) {
+      this.logger.warn(
+        'KYC enforcement is DISABLED (KYC_ENFORCEMENT_ENABLED is not "true"). ' +
+          'Contracts above the TIER_1 ($20) micro-stake threshold can be created WITHOUT identity verification. ' +
+          'The unconditional age gate (>=18) still applies. Set KYC_ENFORCEMENT_ENABLED=true to require KYC for higher stakes.',
+      );
+    }
+  }
 
   async getJurisdictionPolicy(code: string): Promise<{ tier: JurisdictionTier; dispositionMode: string } | null> {
     const result = await this.pool.query(

@@ -7,6 +7,12 @@ describe('WebhookService', () => {
   beforeEach(() => {
     jest.useFakeTimers();
     service = new WebhookService();
+    // PRV7: assertSafeWebhookUrl now resolves the hostname via DNS. Stub the
+    // resolution seam so unit tests stay offline/deterministic; default to a public
+    // IP so the SSRF guard passes for normal delivery tests.
+    jest
+      .spyOn(service as any, 'resolveHost')
+      .mockResolvedValue([{ address: '93.184.216.34' }]);
   });
 
   afterEach(() => {
@@ -158,6 +164,71 @@ describe('WebhookService', () => {
 
       expect(result.success).toBe(true);
       expect(result.attempts).toBe(2);
+    });
+  });
+
+  describe('SSRF guard (assertSafeWebhookUrl via deliverWithRetry)', () => {
+    beforeEach(() => {
+      // No fetch should ever be reached for a blocked URL.
+      global.fetch = jest.fn().mockResolvedValue({ ok: true, status: 200 }) as any;
+    });
+
+    it('should reject non-http(s) protocols', async () => {
+      await expect(
+        service.deliverWithRetry('file:///etc/passwd', { event: 'x' }),
+      ).rejects.toThrow(/protocol/i);
+      expect(global.fetch).not.toHaveBeenCalled();
+    });
+
+    it('should reject literal loopback / private / link-local IPs', async () => {
+      for (const url of [
+        'http://127.0.0.1/x',
+        'http://10.0.0.5/x',
+        'http://192.168.1.1/x',
+        'http://169.254.169.254/latest/meta-data',
+        'http://172.16.0.1/x',
+      ]) {
+        await expect(service.deliverWithRetry(url, { event: 'x' })).rejects.toThrow();
+      }
+      expect(global.fetch).not.toHaveBeenCalled();
+    });
+
+    it('should reject obfuscated / non-dotted IPv4 (decimal, octal, hex)', async () => {
+      for (const url of [
+        'http://2130706433/x', // decimal 127.0.0.1
+        'http://0x7f000001/x', // hex 127.0.0.1
+        'http://0177.0.0.1/x', // octal loopback
+      ]) {
+        await expect(service.deliverWithRetry(url, { event: 'x' })).rejects.toThrow();
+      }
+      expect(global.fetch).not.toHaveBeenCalled();
+    });
+
+    it('should reject IPv4-mapped IPv6 loopback', async () => {
+      await expect(
+        service.deliverWithRetry('http://[::ffff:127.0.0.1]/x', { event: 'x' }),
+      ).rejects.toThrow();
+      expect(global.fetch).not.toHaveBeenCalled();
+    });
+
+    it('should reject when DNS resolves a public name to a private IP (rebinding)', async () => {
+      jest
+        .spyOn(service as any, 'resolveHost')
+        .mockResolvedValue([{ address: '10.1.2.3' }]);
+      await expect(
+        service.deliverWithRetry('https://rebind.example.com/hook', { event: 'x' }),
+      ).rejects.toThrow(/loopback|private|link-local/i);
+      expect(global.fetch).not.toHaveBeenCalled();
+    });
+
+    it('should allow a public name that resolves to a public IP', async () => {
+      await expect(
+        service.deliverWithRetry('https://example.com/hook', { event: 'x' }),
+      ).resolves.toMatchObject({ success: true });
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+      // Outbound fetch must not auto-follow redirects (PRV7).
+      const opts = (global.fetch as jest.Mock).mock.calls[0][1];
+      expect(opts.redirect).toBe('manual');
     });
   });
 
