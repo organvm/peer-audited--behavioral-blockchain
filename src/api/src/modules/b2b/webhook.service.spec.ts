@@ -78,8 +78,9 @@ describe('WebhookService', () => {
 
   describe('delivery with retry', () => {
     it('should succeed on first attempt with 200 response', async () => {
-      const mockFetch = jest.fn().mockResolvedValue({ ok: true, status: 200 });
-      global.fetch = mockFetch as any;
+      const sendSpy = jest
+        .spyOn(service as any, 'sendWebhook')
+        .mockResolvedValue({ ok: true, status: 200 });
 
       const result = await service.deliverWithRetry(
         'https://example.com/webhook',
@@ -89,17 +90,18 @@ describe('WebhookService', () => {
       expect(result.success).toBe(true);
       expect(result.attempts).toBe(1);
       expect(result.statusCode).toBe(200);
-      expect(mockFetch).toHaveBeenCalledTimes(1);
+      expect(sendSpy).toHaveBeenCalledTimes(1);
 
-      // Verify HMAC headers were sent
-      const callArgs = mockFetch.mock.calls[0][1];
-      expect(callArgs.headers['X-Styx-Signature']).toMatch(/^[0-9a-f]{64}$/);
-      expect(callArgs.headers['X-Styx-Timestamp']).toBeTruthy();
+      // Verify HMAC headers were sent (2nd arg = send options).
+      const opts = sendSpy.mock.calls[0][1] as any;
+      expect(opts.headers['X-Styx-Signature']).toMatch(/^[0-9a-f]{64}$/);
+      expect(opts.headers['X-Styx-Timestamp']).toBeTruthy();
     });
 
     it('should stop on non-retryable 4xx errors', async () => {
-      const mockFetch = jest.fn().mockResolvedValue({ ok: false, status: 400 });
-      global.fetch = mockFetch as any;
+      const sendSpy = jest
+        .spyOn(service as any, 'sendWebhook')
+        .mockResolvedValue({ ok: false, status: 400 });
 
       const result = await service.deliverWithRetry(
         'https://example.com/webhook',
@@ -108,12 +110,13 @@ describe('WebhookService', () => {
 
       expect(result.success).toBe(false);
       expect(result.attempts).toBe(1);
-      expect(mockFetch).toHaveBeenCalledTimes(1);
+      expect(sendSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should retry on 500 errors up to max retries', async () => {
-      const mockFetch = jest.fn().mockResolvedValue({ ok: false, status: 500 });
-      global.fetch = mockFetch as any;
+      const sendSpy = jest
+        .spyOn(service as any, 'sendWebhook')
+        .mockResolvedValue({ ok: false, status: 500 });
 
       const promise = service.deliverWithRetry(
         'https://example.com/webhook',
@@ -125,15 +128,14 @@ describe('WebhookService', () => {
 
       expect(result.success).toBe(false);
       expect(result.attempts).toBe(3);
-      expect(mockFetch).toHaveBeenCalledTimes(3);
+      expect(sendSpy).toHaveBeenCalledTimes(3);
     });
 
     it('should retry on network errors', async () => {
-      const mockFetch = jest
-        .fn()
+      const sendSpy = jest
+        .spyOn(service as any, 'sendWebhook')
         .mockRejectedValueOnce(new Error('ECONNREFUSED'))
         .mockResolvedValueOnce({ ok: true, status: 200 });
-      global.fetch = mockFetch as any;
 
       const promise = service.deliverWithRetry(
         'https://example.com/webhook',
@@ -145,14 +147,14 @@ describe('WebhookService', () => {
 
       expect(result.success).toBe(true);
       expect(result.attempts).toBe(2);
+      expect(sendSpy).toHaveBeenCalledTimes(2);
     });
 
     it('should retry on 429 Too Many Requests', async () => {
-      const mockFetch = jest
-        .fn()
+      jest
+        .spyOn(service as any, 'sendWebhook')
         .mockResolvedValueOnce({ ok: false, status: 429 })
         .mockResolvedValueOnce({ ok: true, status: 200 });
-      global.fetch = mockFetch as any;
 
       const promise = service.deliverWithRetry(
         'https://example.com/webhook',
@@ -168,16 +170,19 @@ describe('WebhookService', () => {
   });
 
   describe('SSRF guard (assertSafeWebhookUrl via deliverWithRetry)', () => {
+    let sendSpy: jest.SpyInstance;
     beforeEach(() => {
-      // No fetch should ever be reached for a blocked URL.
-      global.fetch = jest.fn().mockResolvedValue({ ok: true, status: 200 }) as any;
+      // No network send should ever be reached for a blocked URL.
+      sendSpy = jest
+        .spyOn(service as any, 'sendWebhook')
+        .mockResolvedValue({ ok: true, status: 200 });
     });
 
     it('should reject non-http(s) protocols', async () => {
       await expect(
         service.deliverWithRetry('file:///etc/passwd', { event: 'x' }),
       ).rejects.toThrow(/protocol/i);
-      expect(global.fetch).not.toHaveBeenCalled();
+      expect(sendSpy).not.toHaveBeenCalled();
     });
 
     it('should reject literal loopback / private / link-local IPs', async () => {
@@ -190,7 +195,7 @@ describe('WebhookService', () => {
       ]) {
         await expect(service.deliverWithRetry(url, { event: 'x' })).rejects.toThrow();
       }
-      expect(global.fetch).not.toHaveBeenCalled();
+      expect(sendSpy).not.toHaveBeenCalled();
     });
 
     it('should reject obfuscated / non-dotted IPv4 (decimal, octal, hex)', async () => {
@@ -201,14 +206,14 @@ describe('WebhookService', () => {
       ]) {
         await expect(service.deliverWithRetry(url, { event: 'x' })).rejects.toThrow();
       }
-      expect(global.fetch).not.toHaveBeenCalled();
+      expect(sendSpy).not.toHaveBeenCalled();
     });
 
     it('should reject IPv4-mapped IPv6 loopback', async () => {
       await expect(
         service.deliverWithRetry('http://[::ffff:127.0.0.1]/x', { event: 'x' }),
       ).rejects.toThrow();
-      expect(global.fetch).not.toHaveBeenCalled();
+      expect(sendSpy).not.toHaveBeenCalled();
     });
 
     it('should reject when DNS resolves a public name to a private IP (rebinding)', async () => {
@@ -218,23 +223,25 @@ describe('WebhookService', () => {
       await expect(
         service.deliverWithRetry('https://rebind.example.com/hook', { event: 'x' }),
       ).rejects.toThrow(/loopback|private|link-local/i);
-      expect(global.fetch).not.toHaveBeenCalled();
+      expect(sendSpy).not.toHaveBeenCalled();
     });
 
-    it('should allow a public name that resolves to a public IP', async () => {
+    it('should allow a public name and pin the connection to the validated IP', async () => {
       await expect(
         service.deliverWithRetry('https://example.com/hook', { event: 'x' }),
       ).resolves.toMatchObject({ success: true });
-      expect(global.fetch).toHaveBeenCalledTimes(1);
-      // Outbound fetch must not auto-follow redirects (PRV7).
-      const opts = (global.fetch as jest.Mock).mock.calls[0][1];
-      expect(opts.redirect).toBe('manual');
+      expect(sendSpy).toHaveBeenCalledTimes(1);
+      // The socket is pinned to the validated resolved IP (defeats DNS rebinding).
+      const opts = sendSpy.mock.calls[0][1] as any;
+      expect(opts.pinnedAddress).toBe('93.184.216.34');
     });
   });
 
   describe('dispatchEnterpriseMetricEvent', () => {
     it('should return true on successful delivery', async () => {
-      global.fetch = jest.fn().mockResolvedValue({ ok: true, status: 200 }) as any;
+      jest
+        .spyOn(service as any, 'sendWebhook')
+        .mockResolvedValue({ ok: true, status: 200 });
 
       const result = await service.dispatchEnterpriseMetricEvent(
         'https://example.com/webhook',
@@ -245,7 +252,9 @@ describe('WebhookService', () => {
     });
 
     it('should return false on failed delivery', async () => {
-      global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 400 }) as any;
+      jest
+        .spyOn(service as any, 'sendWebhook')
+        .mockResolvedValue({ ok: false, status: 400 });
 
       const result = await service.dispatchEnterpriseMetricEvent(
         'https://example.com/webhook',

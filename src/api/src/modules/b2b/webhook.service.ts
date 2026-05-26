@@ -2,6 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { createHmac, timingSafeEqual } from 'crypto';
 import { lookup } from 'dns/promises';
 import { isIP } from 'net';
+import * as https from 'node:https';
+import * as http from 'node:http';
 
 const MAX_RETRIES = 3;
 const BASE_DELAY_MS = 1000;
@@ -54,7 +56,11 @@ export class WebhookService {
     url: string,
     payload: Record<string, unknown>,
   ): Promise<WebhookDeliveryResult> {
-    await this.assertSafeWebhookUrl(url);
+    // The guard validates the URL and returns the exact IP it resolved+approved.
+    // We pin the actual connection to that IP (sendWebhook) so a DNS-rebinding
+    // attacker cannot repoint the hostname to an internal address between this
+    // check and the request.
+    const { parsed, pinnedAddress } = await this.assertSafeWebhookUrl(url);
 
     const body = JSON.stringify(payload);
     const timestamp = Math.floor(Date.now() / 1000).toString();
@@ -62,21 +68,14 @@ export class WebhookService {
 
     for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
       try {
-        const response = await fetch(url, {
-          method: 'POST',
+        const response = await this.sendWebhook(parsed, {
           headers: {
             'Content-Type': 'application/json',
             'X-Styx-Signature': signature,
             'X-Styx-Timestamp': timestamp,
           },
           body,
-          // PRV7: never auto-follow redirects. A public URL that passed the SSRF
-          // guard could otherwise 30x-redirect the request to an internal target,
-          // which `fetch`'s default `redirect:'follow'` would chase without
-          // re-validating. 'manual' surfaces the redirect as an opaque response we
-          // do not follow.
-          redirect: 'manual',
-          signal: AbortSignal.timeout(10_000),
+          pinnedAddress,
         });
 
         if (response.ok) {
@@ -155,7 +154,9 @@ export class WebhookService {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  private async assertSafeWebhookUrl(rawUrl: string): Promise<void> {
+  private async assertSafeWebhookUrl(
+    rawUrl: string,
+  ): Promise<{ parsed: URL; pinnedAddress: string }> {
     let parsed: URL;
     try {
       parsed = new URL(rawUrl);
@@ -188,7 +189,8 @@ export class WebhookService {
       if (this.isBlockedIp(host)) {
         throw new Error('Webhook URL must not target loopback, private, or link-local addresses');
       }
-      return;
+      // Already a literal IP — pin to it directly.
+      return { parsed, pinnedAddress: host };
     }
 
     // Obvious local names short-circuit before DNS.
@@ -216,6 +218,67 @@ export class WebhookService {
         throw new Error('Webhook URL resolves to a loopback, private, or link-local address');
       }
     }
+
+    // Pin to the first validated address so the request connects to an IP we
+    // actually checked, not whatever a later DNS lookup might return.
+    return { parsed, pinnedAddress: resolved[0].address };
+  }
+
+  /**
+   * Sends a single signed POST, connecting to a pre-validated IP.
+   *
+   * Why not `fetch`: Node's global fetch re-resolves the hostname at connect
+   * time, so the IP the SSRF guard validated and the IP actually dialed can
+   * differ (DNS-rebinding TOCTOU). Here we force the socket to the validated
+   * `pinnedAddress` via a custom `lookup`, while the URL's hostname still drives
+   * the Host header and TLS SNI/certificate validation. Redirects are never
+   * followed (a 3xx is surfaced as a non-2xx response), closing the redirect
+   * SSRF vector as well.
+   *
+   * `protected` so unit tests can stub the actual network call.
+   */
+  protected sendWebhook(
+    parsed: URL,
+    opts: { headers: Record<string, string>; body: string; pinnedAddress: string },
+  ): Promise<{ ok: boolean; status: number }> {
+    const transport = parsed.protocol === 'https:' ? https : http;
+    const family = isIP(opts.pinnedAddress) || 4;
+
+    const pinnedLookup = (
+      _hostname: string,
+      options: any,
+      callback: (err: NodeJS.ErrnoException | null, address: any, family?: number) => void,
+    ): void => {
+      if (options && options.all) {
+        callback(null, [{ address: opts.pinnedAddress, family }]);
+      } else {
+        callback(null, opts.pinnedAddress, family);
+      }
+    };
+
+    return new Promise((resolve, reject) => {
+      const req = transport.request(
+        parsed,
+        {
+          method: 'POST',
+          headers: {
+            ...opts.headers,
+            'Content-Length': Buffer.byteLength(opts.body).toString(),
+          },
+          lookup: pinnedLookup as any,
+          timeout: 10_000,
+        },
+        (res) => {
+          const status = res.statusCode ?? 0;
+          res.resume(); // drain & discard the response body
+          resolve({ ok: status >= 200 && status < 300, status });
+        },
+      );
+      req.on('timeout', () => req.destroy(new Error('Webhook request timed out')));
+      req.on('error', (err) => reject(err));
+      req.write(opts.body);
+      req.end();
+    });
   }
 
   /**
