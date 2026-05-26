@@ -120,7 +120,11 @@ describe('LedgerService', () => {
 
       expect(resultId).toBe('idem-entry');
       const insertCall = externalClient.query.mock.calls[0];
-      expect(insertCall[0]).toContain('ON CONFLICT (idempotency_key) DO NOTHING');
+      // Must repeat the partial-index predicate so Postgres infers the partial
+      // UNIQUE index (migration 030) as the conflict arbiter.
+      expect(insertCall[0]).toContain(
+        'ON CONFLICT (idempotency_key) WHERE idempotency_key IS NOT NULL DO NOTHING',
+      );
       expect(insertCall[1]).toEqual(['acct-A', 'acct-B', 500, 'contract-1', { type: 'X' }, 'styx_key_1']);
     });
 

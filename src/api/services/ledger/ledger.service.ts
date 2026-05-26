@@ -52,7 +52,10 @@ export class LedgerService {
         const insertEntryQuery = `
           INSERT INTO entries (debit_account_id, credit_account_id, amount, contract_id, metadata, idempotency_key)
           VALUES ($1, $2, $3, $4, $5, $6)
-          ON CONFLICT (idempotency_key) DO NOTHING
+          -- The unique index (migration 030) is PARTIAL (WHERE idempotency_key IS NOT NULL),
+          -- so the ON CONFLICT clause must repeat that predicate; otherwise Postgres cannot
+          -- infer it as the arbiter and raises "no unique or exclusion constraint matching".
+          ON CONFLICT (idempotency_key) WHERE idempotency_key IS NOT NULL DO NOTHING
           RETURNING id;
         `;
         const entryResult = await dbClient.query(insertEntryQuery, [
