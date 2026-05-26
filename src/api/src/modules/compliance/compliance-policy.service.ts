@@ -55,18 +55,30 @@ export class CompliancePolicyService implements OnModuleInit {
   ) {}
 
   /**
-   * PRV16: KYC enforcement is toggle-gated and OFF by default, which means
-   * unbounded-stake contracts can be created with zero identity verification. We do
-   * NOT silently force it on (that could break beta flows), but the disabled state
-   * must be LOUD so it is a deliberate, visible choice rather than an accident.
+   * PRV16: KYC enforcement fails CLOSED in production — it is ON by default and is
+   * only disabled by an explicit KYC_ENFORCEMENT_ENABLED=false. Outside production
+   * it is opt-in (default off) so local/dev/test flows are not blocked. Whenever it
+   * ends up disabled the state is logged LOUDLY so it is a deliberate, visible choice.
    * Note: the age gate (>=18) is enforced unconditionally regardless of this toggle.
    */
   onModuleInit(): void {
-    if (!this.isKycEnforcementEnabled()) {
+    if (this.isKycEnforcementEnabled()) return;
+
+    const message =
+      'KYC enforcement is DISABLED. Contracts above the TIER_1 ($20) micro-stake ' +
+      'threshold can be created WITHOUT identity verification. The unconditional age ' +
+      'gate (>=18) still applies.';
+
+    // In production the default is ON, so a disabled state can only mean someone set
+    // KYC_ENFORCEMENT_ENABLED=false explicitly — that is a dangerous, deliberate
+    // compliance decision and must be an error-level signal.
+    if (process.env.NODE_ENV === 'production') {
+      this.logger.error(
+        `${message} PRODUCTION has KYC_ENFORCEMENT_ENABLED=false — confirm this is an intentional, compliant decision.`,
+      );
+    } else {
       this.logger.warn(
-        'KYC enforcement is DISABLED (KYC_ENFORCEMENT_ENABLED is not "true"). ' +
-          'Contracts above the TIER_1 ($20) micro-stake threshold can be created WITHOUT identity verification. ' +
-          'The unconditional age gate (>=18) still applies. Set KYC_ENFORCEMENT_ENABLED=true to require KYC for higher stakes.',
+        `${message} (KYC is default-ON in production; set KYC_ENFORCEMENT_ENABLED=true to enforce here.)`,
       );
     }
   }
@@ -84,7 +96,13 @@ export class CompliancePolicyService implements OnModuleInit {
   }
 
   isKycEnforcementEnabled(): boolean {
-    return String(process.env.KYC_ENFORCEMENT_ENABLED || 'false').toLowerCase() === 'true';
+    const flag = String(process.env.KYC_ENFORCEMENT_ENABLED ?? '').toLowerCase();
+    if (process.env.NODE_ENV === 'production') {
+      // Fail closed in production: enforce KYC unless EXPLICITLY disabled.
+      return flag !== 'false';
+    }
+    // Non-production: opt-in so dev/test/local flows are not blocked by default.
+    return flag === 'true';
   }
 
   isAgeEnforcementImplemented(): boolean {

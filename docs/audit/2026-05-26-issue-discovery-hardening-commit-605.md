@@ -32,13 +32,14 @@ Highlights of the fixes:
   consensus side effects made idempotent; `resolveContract` fallback no longer
   strands terminally-resolved contracts.
 
-**Items intentionally left for business/product confirmation (not auto-changed):**
-- **PRV16** — KYC enforcement remains toggle-gated (off by default); a loud
-  startup warning was added rather than forcing it on. Confirm the production
-  default.
-- **SH6** — KYC stake-tier boundary set to exclusive (`<`) so an exactly-at-
-  threshold stake escalates to the stricter tier. Confirm the intended legal
-  boundary.
+**Policy decisions (confirmed by product/compliance, now implemented):**
+- **PRV16** — KYC enforcement **fails closed in production**: ON by default,
+  disabled only by an explicit `KYC_ENFORCEMENT_ENABLED=false` (which logs an
+  error at startup). Opt-in (default off) outside production so local/dev/test
+  flows are not blocked.
+- **SH6** — confirmed **exclusive** boundary (`<`): a stake exactly at a tier
+  threshold ($20.00 / $500.00) escalates to the stricter KYC tier. No code
+  change required (current behavior).
 
 A separate commit also lands the **branching / merge / release best-practices
 system** (blocking CI, branch-protection ruleset, canonical strategy doc) — see
