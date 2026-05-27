@@ -33,8 +33,14 @@ jobs:
     - name: Security Audit (advisory, non-blocking)
       run: npm audit --audit-level=high || echo "::warning::npm audit reported high-severity advisories; review but not blocking the merge."
 
-    - name: Execute Tests with Coverage (Turborepo)
-      run: npx turbo run test -- --coverage --ci
+    - name: Execute Tests (Turborepo)
+      # NOTE: do not forward `--coverage --ci` here. Those are jest-only flags:
+      # `--ci` makes the vitest workspaces (ask-styx, test-harness) throw
+      # `CACError: Unknown option --ci`, and `--coverage` currently fails api
+      # suite-loading. Each workspace owns its own test invocation. Re-introducing
+      # coverage-threshold gating is tracked as a follow-up once coverage mode is
+      # fixed (see docs/audit/2026-05-26-index-propagation-and-vacuum-log.md).
+      run: npx turbo run test
 
     - name: Upload Coverage Reports
       if: always()
