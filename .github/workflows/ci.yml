@@ -121,7 +121,11 @@ jobs:
     - name: Run Beta Readiness Suite
       env:
         READINESS_PROFILE: beta
-        READINESS_REQUIRE_TARGETS: "true"
+        # Advisory in PR CI: beta readiness validates a LIVE deployed target, which
+        # PRs don't have. Don't hard-require targets here (that turned "no live URL"
+        # into a red check) — the suite skips cleanly when no target is set. The
+        # deploy/promotion workflows set this true where a live URL exists.
+        READINESS_REQUIRE_TARGETS: "false"
         BETA_API_URL: ${{ secrets.CI_BETA_API_URL || secrets.CI_GATE05_API_URL }}
         BETA_WEB_URL: ${{ secrets.BETA_WEB_URL }}
         BETA_ENV_LABEL: ${{ secrets.BETA_ENV_LABEL }}
