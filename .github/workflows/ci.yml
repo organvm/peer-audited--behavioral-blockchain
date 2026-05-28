@@ -126,9 +126,13 @@ jobs:
         # into a red check) — the suite skips cleanly when no target is set. The
         # deploy/promotion workflows set this true where a live URL exists.
         READINESS_REQUIRE_TARGETS: "false"
-        BETA_API_URL: ${{ secrets.CI_BETA_API_URL || secrets.CI_GATE05_API_URL }}
-        BETA_WEB_URL: ${{ secrets.BETA_WEB_URL }}
-        BETA_ENV_LABEL: ${{ secrets.BETA_ENV_LABEL }}
+        # Explicitly empty the target URLs on PR CI so the suite takes the
+        # skip-clean path regardless of any stale secret (e.g. a CI_GATE05_API_URL
+        # pointing at a broken/old environment). Deploy & promotion workflows set
+        # these where a live URL actually exists.
+        BETA_API_URL: ""
+        BETA_WEB_URL: ""
+        BETA_ENV_LABEL: ""
       run: npm run beta:readiness
 
     - name: Upload Beta Readiness Summary
