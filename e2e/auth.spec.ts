@@ -113,6 +113,13 @@ test.describe('Authentication', () => {
       route.fulfill({ status: 200, contentType: 'application/json', body: '[]' }),
     );
 
+    // Pre-seed the auth cookie so the post-register redirect lands on /dashboard
+    // (proxy.ts gates protected routes on the styx_auth_token cookie) instead of
+    // bouncing back to /login — this asserts the true register-success path.
+    await page.context().addCookies([
+      { name: 'styx_auth_token', value: 'jwt-e2e-token', domain: 'localhost', path: '/' },
+    ]);
+
     await page.goto('/register');
     await page.fill('input[type="email"], input[name="email"]', 'new@styx.test');
 

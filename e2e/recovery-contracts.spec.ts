@@ -99,13 +99,13 @@ test.describe('Attestation Flow', () => {
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify({
-            contractId: mockContractId,
-            oathCategory: 'RECOVERY_NO_CONTACT_TEXT',
-            streakDays: 7,
-            daysRemaining: 23,
-            graceDaysAvailable: 2,
-            todayAttested: false,
-            totalStrikes: 0,
+            contract_id: mockContractId,
+            oath_category: 'RECOVERY_NO_CONTACT_TEXT',
+            streak_days: 7,
+            days_remaining: 23,
+            grace_days_available: 2,
+            today_attested: false,
+            total_strikes: 0,
           }),
         });
       }
@@ -132,13 +132,13 @@ test.describe('Attestation Flow', () => {
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify({
-            contractId: mockContractId,
-            oathCategory: 'RECOVERY_NO_CONTACT_TEXT',
-            streakDays: 5,
-            daysRemaining: 25,
-            graceDaysAvailable: 2,
-            todayAttested: false,
-            totalStrikes: 0,
+            contract_id: mockContractId,
+            oath_category: 'RECOVERY_NO_CONTACT_TEXT',
+            streak_days: 5,
+            days_remaining: 25,
+            grace_days_available: 2,
+            today_attested: false,
+            total_strikes: 0,
           }),
         });
       }
