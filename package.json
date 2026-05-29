@@ -47,9 +47,5 @@
     "yaml": "2.8.3",
     "cross-spawn": "7.0.5",
     "postcss": "8.5.15"
-  },
-  "dependencies": {
-    "expo": "56.0.3",
-    "next": "16.2.6"
   }
 }
