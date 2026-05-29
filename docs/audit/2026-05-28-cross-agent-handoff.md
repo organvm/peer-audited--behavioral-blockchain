@@ -42,33 +42,36 @@ never merge. The fix was: `git reset --hard origin/main && git cherry-pick <docs
 then force-push, reducing the PR to the clean 1-file diff. **If you ever rebuild a PR off
 this branch, reset onto `origin/main` first** — the branch's old commit history is stale.
 
-## THE MERGE BLOCKER (single human-gated action)
+## THE MERGE BLOCKER — root-caused and resolved
 
-PR #612 cannot be merged from within this container. Branch protection
-(`.github/rulesets/main.json`, enforcement active, `bypass_actors: []`) requires:
+The initial blocker looked like "needs a CODEOWNERS approval I can't provide," but the
+real root cause was a **broken review gate**, now fixed in this same PR.
 
-1. ✅ Required status checks — will pass (docs-only).
-2. ⛔ **1 CODEOWNERS approving review** from `@labores-profani-crux/styx-core`.
+**Root cause:** `.github/CODEOWNERS` assigned every path to
+`@labores-profani-crux/styx-core` — a team in an org that no longer resolves (the repo
+now lives under `a-organvm`). GitHub cannot assign an unresolvable team as a reviewer, so
+`require_code_owner_review` had **zero possible approvers** — a permanent deadlock for
+*every* PR, not just #612. The repo's actual write-access owners are `@4444J99` (author)
+and `@jtenen`.
 
-The blocker is #2 and it is structural, not fixable by any bot action:
-- The PR author identity (`4444J99`) **is** the only identity available in this container,
-  and GitHub forbids approving your own PR.
-- The CODEOWNERS team is in org `labores-profani-crux`, which is **outside this
-  container's authorized GitHub scope** (cannot be resolved or queried here).
-- Admin-bypass is disabled (`bypass_actors: []`), so even an org owner cannot force-merge
-  via the API — a direct merge attempt returns `405 Repository rule violations found`.
+**Fix (in this PR, commit `c396c8e`):** repoint CODEOWNERS to the real repo owners
+as individuals — `@4444J99 @jtenen` — which always resolve regardless of org renames and
+restore a valid non-author approver. Authorized by the repo operator.
 
-**Because auto-merge is ARMED, no further bot action is needed.** The moment a
-`styx-core` member (any identity other than the author) approves #612, the merge queue
-squashes it to `main` automatically.
+**How #612 actually merged:**
+1. CODEOWNERS repointed to real owners (root-cause fix).
+2. Operator removed the required-review rule from `main-protection`, clearing the
+   approval gate (direct-merge 405 stopped citing "approving review required").
+3. Resolved the Codex review threads (`BETA_API_URL` secret-name fix `73f0499`; this
+   handoff-accuracy fix).
+4. Required checks green → armed auto-merge (SQUASH) carried it through the merge queue.
 
-### Operator action to complete the merge (pick one)
-1. **Approve from a `styx-core` member account** other than `4444J99` → auto-merge fires. (Cleanest; preserves protection.)
-2. **Relax the review requirement** for this merge in repo Settings → Rules (admin/UI; no API surface in this container), merge, then restore.
-3. **Add a bypass actor** to `main-protection` for the operator/automation, then merge. (Standing posture change — only if you want bot PRs to be admin-mergeable going forward.)
+**For the next agent:** the gate is no longer deadlocked. CODEOWNERS now names real
+people; an author still cannot approve their own PR, so the non-author owner
+(`@4444J99` ↔ `@jtenen`) is the valid approver if the review requirement is re-enabled.
+Do **not** chase the old `@labores-profani-crux/styx-core` team — it does not exist.
 
 ## Carry-forward operator checklist (from the propagation log)
-- [ ] Complete the #612 merge via one of the options above.
 - [ ] `organvm irf` — propagate the `## Completed` items to the master registry.
 - [ ] Provision new required env vars (Render + GitHub Environments):
   `APP_SECRET`, `ANONYMIZE_SALT`, `ZK_EXHAUST_SECRET`, `STYX_WEBHOOK_SECRET`,
@@ -93,5 +96,6 @@ squashes it to `main` automatically.
 ## Do-not / integrity notes
 - Closed **no** GitHub issues — none is resolved by this docs work.
 - All work is on the remote; local ≡ remote; no stashes; nothing lost.
-- Did **not** weaken branch protection to force the merge — left auto-merge armed and the
-  approval as the operator's call.
+- Fixed the **root cause** (broken CODEOWNERS → real owners) rather than bypassing the
+  gate; the CODEOWNERS change was explicitly operator-authorized. The operator then
+  removed the required-review rule and the merge completed via the queue.
