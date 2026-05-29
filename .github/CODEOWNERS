@@ -1,29 +1,39 @@
 # CODEOWNERS — Styx: peer-audited behavioral blockchain
 # https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+#
+# Code owners MUST be users/teams that exist in THIS repository's org and have write
+# access — otherwise GitHub cannot assign them as reviewers and a
+# `require_code_owner_review` branch-protection rule becomes permanently unsatisfiable
+# (every PR blocks with no possible approver). The previous entries pointed at
+# `@labores-profani-crux/styx-core`, a team in an org that no longer resolves (the repo
+# now lives under `a-organvm`), which deadlocked code-owner review. Owners are therefore
+# pinned to the repository's actual admin collaborators as individuals, which always
+# resolve regardless of org renames. Two owners are listed so neither is left unable to
+# get their own PRs reviewed (an author cannot approve their own PR).
 
-# Default: all changes require review from core team
-*                           @labores-profani-crux/styx-core
+# Default: all changes require review from a repo admin
+*                           @4444J99 @jtenen
 
 # API domain services (ledger, escrow, fury, health)
-src/api/services/           @labores-profani-crux/styx-core
-src/api/src/modules/        @labores-profani-crux/styx-core
+src/api/services/           @4444J99 @jtenen
+src/api/src/modules/        @4444J99 @jtenen
 
 # Shared algorithms (integrity score, behavioral logic)
-src/shared/                 @labores-profani-crux/styx-core
+src/shared/                 @4444J99 @jtenen
 
 # Web frontend
-src/web/                    @labores-profani-crux/styx-core
+src/web/                    @4444J99 @jtenen
 
 # Mobile
-src/mobile/                 @labores-profani-crux/styx-core
+src/mobile/                 @4444J99 @jtenen
 
 # Infrastructure & CI
-.github/                    @labores-profani-crux/styx-core
-infra/                      @labores-profani-crux/styx-core
-Dockerfile                  @labores-profani-crux/styx-core
-docker-compose.yml          @labores-profani-crux/styx-core
+.github/                    @4444J99 @jtenen
+infra/                      @4444J99 @jtenen
+Dockerfile                  @4444J99 @jtenen
+docker-compose.yml          @4444J99 @jtenen
 
 # Security-sensitive files
-.github/SECURITY.md         @labores-profani-crux/styx-core
-src/api/guards/             @labores-profani-crux/styx-core
-src/api/services/security/  @labores-profani-crux/styx-core
+.github/SECURITY.md         @4444J99 @jtenen
+src/api/guards/             @4444J99 @jtenen
+src/api/services/security/  @4444J99 @jtenen
