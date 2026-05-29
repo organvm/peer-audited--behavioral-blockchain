@@ -86,7 +86,7 @@ E2E runs in CI via the `e2e` job in `ci.yml` (chromium + firefox) — it builds 
 
 ### 1.4 Validation Gates
 
-Nine validation scripts live in `scripts/validation/`, each returning exit code 0 (pass), 1 (fail), or 2 (skip / not-applicable in this context). Gates **04–07** run in the main CI job (`build_and_test_matrix`); the integration/simulation gates run in the beta-readiness suite (`scripts/smoke/beta-readiness.sh`) or as standalone checks.
+Nine validation scripts live in `scripts/validation/`, each returning exit code 0 (pass), 1 (fail), or 2 (skip / not-applicable in this context). Gates **04–07** run in the main CI job (`build_and_test_matrix`). The beta-readiness suite (`scripts/smoke/beta-readiness.sh`) additionally runs **01** and **05** (and re-runs 04/06/07); gates **02, 03, 08, and 09** are standalone checks not currently wired into CI.
 
 | Gate | Script | Purpose |
 |------|--------|---------|
