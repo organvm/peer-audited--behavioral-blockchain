@@ -31,7 +31,7 @@ terraform {
     }
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "~> 4.0"
+      version = "~> 5.0"
     }
   }
 }
@@ -82,6 +82,12 @@ variable "environment" {
   default = "production"
 }
 
+variable "repo_url" {
+  type        = string
+  description = "Git repository URL Render builds the Docker services from."
+  default     = "https://github.com/a-organvm/peer-audited--behavioral-blockchain"
+}
+
 # --- Providers ---
 
 provider "render" {
@@ -95,23 +101,28 @@ provider "cloudflare" {
 # --- Render: API Service ---
 
 resource "render_web_service" "styx_api" {
-  name           = "styx-api"
-  region         = "oregon"
-  plan           = "starter"
-  runtime        = "docker"
-  docker_path    = "./src/api/Dockerfile"
-  docker_context = "."
-  branch         = "main"
+  name   = "styx-api"
+  region = "oregon"
+  plan   = "starter"
+
+  runtime_source = {
+    docker = {
+      repo_url        = var.repo_url
+      branch          = "main"
+      dockerfile_path = "./src/api/Dockerfile"
+      context         = "."
+    }
+  }
 
   env_vars = {
-    NODE_ENV          = var.environment
-    DATABASE_URL      = var.database_url
-    REDIS_URL         = var.redis_url
-    STRIPE_SECRET_KEY = var.stripe_secret_key
-    JWT_SECRET        = var.jwt_secret
-    ANONYMIZE_SALT    = var.anonymize_salt
-    R2_ENDPOINT       = "https://${var.cloudflare_account_id}.r2.cloudflarestorage.com"
-    R2_BUCKET         = cloudflare_r2_bucket.styx_proofs.name
+    NODE_ENV          = { value = var.environment }
+    DATABASE_URL      = { value = var.database_url }
+    REDIS_URL         = { value = var.redis_url }
+    STRIPE_SECRET_KEY = { value = var.stripe_secret_key }
+    JWT_SECRET        = { value = var.jwt_secret }
+    ANONYMIZE_SALT    = { value = var.anonymize_salt }
+    R2_ENDPOINT       = { value = "https://${var.cloudflare_account_id}.r2.cloudflarestorage.com" }
+    R2_BUCKET         = { value = cloudflare_r2_bucket.styx_proofs.name }
   }
 
   health_check_path = "/health"
@@ -120,17 +131,22 @@ resource "render_web_service" "styx_api" {
 # --- Render: Web Dashboard ---
 
 resource "render_web_service" "styx_web" {
-  name           = "styx-web"
-  region         = "oregon"
-  plan           = "starter"
-  runtime        = "docker"
-  docker_path    = "./src/web/Dockerfile"
-  docker_context = "."
-  branch         = "main"
+  name   = "styx-web"
+  region = "oregon"
+  plan   = "starter"
+
+  runtime_source = {
+    docker = {
+      repo_url        = var.repo_url
+      branch          = "main"
+      dockerfile_path = "./src/web/Dockerfile"
+      context         = "."
+    }
+  }
 
   env_vars = {
-    NODE_ENV            = var.environment
-    NEXT_PUBLIC_API_URL = "https://${render_web_service.styx_api.name}.onrender.com"
+    NODE_ENV            = { value = var.environment }
+    NEXT_PUBLIC_API_URL = { value = "https://${render_web_service.styx_api.name}.onrender.com" }
   }
 }
 
@@ -139,44 +155,64 @@ resource "render_web_service" "styx_web" {
 resource "cloudflare_r2_bucket" "styx_proofs" {
   account_id = var.cloudflare_account_id
   name       = "styx-proofs"
-  location   = "WNAM"
+  # v5 location codes are lowercase ("wnam" = Western North America); v4 used "WNAM".
+  location = "wnam"
 }
 
-# R2 Lifecycle: auto-delete proof media 30 days after final review
-# Prevents unbounded storage growth and maintains GDPR compliance.
+# R2 object-lifecycle policies — auto-expire proof media 30 days after final
+# review, honeypots after 7 (storage hygiene + GDPR data-minimization).
+#
+# Provider v5 (regenerated from Cloudflare's OpenAPI schema) replaces v4's
+# day-based blocks (delete_objects_after { days = N }) with age *transitions*
+# whose conditions are expressed in SECONDS — the schema states "after an object
+# reaches an age in seconds." Day intent is therefore encoded as days * 86400:
+#   30d = 2592000s · 7d = 604800s · 1d = 86400s
 resource "cloudflare_r2_bucket_lifecycle" "proofs_cleanup" {
-  account_id = var.cloudflare_account_id
-  bucket     = cloudflare_r2_bucket.styx_proofs.name
+  account_id  = var.cloudflare_account_id
+  bucket_name = cloudflare_r2_bucket.styx_proofs.name
 
-  rules {
-    id      = "auto-expire-proofs"
-    enabled = true
+  rules = [
+    {
+      id      = "auto-expire-proofs"
+      enabled = true
 
-    conditions {
-      prefix = "proofs/"
-    }
+      conditions = {
+        prefix = "proofs/"
+      }
 
-    abort_multipart_uploads_after {
-      days = 1
-    }
+      # Abort incomplete multipart uploads after 1 day (86400s).
+      abort_multipart_uploads_transition = {
+        condition = {
+          type    = "Age"
+          max_age = 86400
+        }
+      }
 
-    delete_objects_after {
-      days = 30
-    }
-  }
+      # Delete proof objects 30 days (2592000s) after upload.
+      delete_objects_transition = {
+        condition = {
+          type    = "Age"
+          max_age = 2592000
+        }
+      }
+    },
+    {
+      id      = "auto-expire-honeypots"
+      enabled = true
 
-  rules {
-    id      = "auto-expire-honeypots"
-    enabled = true
+      conditions = {
+        prefix = "honeypots/"
+      }
 
-    conditions {
-      prefix = "honeypots/"
-    }
-
-    delete_objects_after {
-      days = 7
-    }
-  }
+      # Delete honeypot objects 7 days (604800s) after upload.
+      delete_objects_transition = {
+        condition = {
+          type    = "Age"
+          max_age = 604800
+        }
+      }
+    },
+  ]
 }
 
 # --- Outputs ---
