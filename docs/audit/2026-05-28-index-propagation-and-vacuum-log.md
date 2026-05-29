@@ -161,7 +161,7 @@ Continues from `2026-05-27-cross-agent-handoff.md`. All PRs (#605–#611) are no
 2. **Advisory CI jobs are pre-existing red (`terraform_validate`, `beta_readiness`, `e2e`).**
    - *Research:* all three have `continue-on-error: true`; they need real Terraform, live API
      endpoints, and browser environments that don't exist in this container.
-   - *Plan:* Terraform fmt/validate is a one-line local fix. Beta readiness requires `CI_BETA_API_URL`
+   - *Plan:* Terraform fmt/validate is a one-line local fix. Beta readiness requires `BETA_API_URL`
      secret. E2E requires a deployed web build.
    - *Status:* **LOGGED — operator action required for secrets/infra.**
 
@@ -200,7 +200,7 @@ Continues from `2026-05-27-cross-agent-handoff.md`. All PRs (#605–#611) are no
   pinned to pre-validated IP, all A-records validated, redirects disabled, tenant-gated.
 - [ ] Review and merge PR #604 (npm audit ERESOLVE fix) independently.
 - [ ] Fix advisory CI jobs once real infra is available:
-  `CI_BETA_API_URL`, `BETA_WEB_URL`, `BETA_ENV_LABEL` secrets for beta_readiness;
+  `BETA_API_URL`, `BETA_WEB_URL`, `BETA_ENV_LABEL` secrets for beta_readiness;
   `terraform fmt` in a Terraform-equipped environment.
 - [ ] Build `docs/logos/` tetradic layer (telos / pragma / praxis / receptio / alchemical-io).
   This is a tracked VACUUM (Symmetry 0.0 per `docs/CLAUDE.md`).
