@@ -40,7 +40,7 @@ jobs:
       - name: Turbo Cache
         uses: actions/cache@v4
         with:
-          path: node_modules/.cache/turbo
+          path: .turbo/cache
           key: turbo-${{ hashFiles('package-lock.json', 'turbo.json') }}
           restore-keys: |
             turbo-
