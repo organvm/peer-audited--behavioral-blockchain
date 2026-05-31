@@ -1,11 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 import CrisisIntervention from "../../components/guardrails/CrisisIntervention";
 import { useAuth } from "../../contexts/AuthContext";
 
-export default function GuardrailsPage() {
+function GuardrailsContent() {
   const { user, isLoading: authLoading } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -36,5 +37,20 @@ export default function GuardrailsPage() {
       onContactSupport={handleDismiss}
       userId={user?.id}
     />
+  );
+}
+
+export default function GuardrailsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-black text-white flex items-center justify-center">
+          <Loader2 className="animate-spin mr-3" size={24} />
+          <span className="text-neutral-400 font-bold">Loading...</span>
+        </div>
+      }
+    >
+      <GuardrailsContent />
+    </Suspense>
   );
 }
