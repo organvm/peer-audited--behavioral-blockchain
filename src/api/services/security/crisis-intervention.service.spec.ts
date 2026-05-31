@@ -25,7 +25,7 @@ describe("CrisisInterventionService", () => {
       expect(result.resources[1].name).toBe(
         "National Suicide Prevention Lifeline",
       );
-      expect(result.actionTaken).toContain("recorded");
+      expect(result.actionTaken).toContain("cooldown");
       expect(result.escalated).toBe(false);
     });
 
