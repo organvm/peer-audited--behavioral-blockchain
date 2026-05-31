@@ -52,10 +52,14 @@ export class AdminController {
 
   @Post("crisis/escalate")
   @ApiOperation({ summary: "Manually trigger crisis intervention for a user" })
-  async escalateCrisis(@Body() body: CrisisEscalateDto) {
+  async escalateCrisis(
+    @Body() body: CrisisEscalateDto,
+    @CurrentUser() admin: { id: string },
+  ) {
     const detection = this.crisisDetection.analyzeContent(body.trigger);
+    const detectionOnly = detection.severity !== "NONE" ? detection : undefined;
     await this.truthLog.appendEvent("ADMIN_CRISIS_ESCALATED", {
-      adminId: "SYSTEM",
+      adminId: admin.id,
       targetUserId: body.userId,
       severity: detection.severity,
       trigger: body.trigger,
@@ -63,7 +67,7 @@ export class AdminController {
     return this.crisisIntervention.reportCrisis(
       body.userId,
       body.trigger,
-      detection,
+      detectionOnly,
     );
   }
 

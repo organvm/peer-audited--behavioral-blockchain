@@ -362,4 +362,67 @@ describe("AdminController", () => {
       expect(result.disputeFeeSideEffects).toHaveLength(1);
     });
   });
+
+  describe("escalateCrisis", () => {
+    it("should analyze content, log audit, and report crisis", async () => {
+      (mockCrisisDetection.analyzeContent as jest.Mock).mockReturnValueOnce({
+        isCrisis: true,
+        severity: "CRITICAL",
+        matchedKeywords: ["suicide"],
+      });
+      (mockCrisisIntervention.reportCrisis as jest.Mock).mockResolvedValueOnce({
+        message: "logged",
+        resources: [],
+        actionTaken: "recorded",
+        escalated: true,
+      });
+
+      const result = await controller.escalateCrisis(
+        { userId: "user-1", trigger: "suicide" },
+        { id: "ADMIN_root" },
+      );
+
+      expect(mockCrisisDetection.analyzeContent).toHaveBeenCalledWith(
+        "suicide",
+      );
+      expect(mockTruthLog.appendEvent).toHaveBeenCalledWith(
+        "ADMIN_CRISIS_ESCALATED",
+        expect.objectContaining({
+          adminId: "ADMIN_root",
+          targetUserId: "user-1",
+        }),
+      );
+      expect(mockCrisisIntervention.reportCrisis).toHaveBeenCalledWith(
+        "user-1",
+        "suicide",
+        expect.objectContaining({ severity: "CRITICAL" }),
+      );
+      expect(result.escalated).toBe(true);
+    });
+
+    it("should pass undefined detection when severity is NONE", async () => {
+      (mockCrisisDetection.analyzeContent as jest.Mock).mockReturnValueOnce({
+        isCrisis: false,
+        severity: "NONE",
+        matchedKeywords: [],
+      });
+      (mockCrisisIntervention.reportCrisis as jest.Mock).mockResolvedValueOnce({
+        message: "logged",
+        resources: [],
+        actionTaken: "recorded",
+        escalated: false,
+      });
+
+      await controller.escalateCrisis(
+        { userId: "user-2", trigger: "off-platform concern" },
+        { id: "ADMIN_root" },
+      );
+
+      expect(mockCrisisIntervention.reportCrisis).toHaveBeenCalledWith(
+        "user-2",
+        "off-platform concern",
+        undefined,
+      );
+    });
+  });
 });
