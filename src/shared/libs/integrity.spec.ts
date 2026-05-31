@@ -98,12 +98,12 @@ describe('calculateIntegrity', () => {
     const clean = calculateIntegrity(makeUser({ completedOaths: 200 }));
     expect(clean).toBe(775);
 
-    // Same user with 1 fraud strike (score = 50 + 1000 - 15 = 1035 → compressed: 500 + 535*0.5 = 767)
+    // Same user with 1 fraud strike (score = 50 + 1000 - 15 = 1035 → compressed: 500 + 535*0.5 = 767.5 → 768)
     const withFraud = calculateIntegrity(makeUser({ completedOaths: 200, fraudStrikes: 1 }));
-    expect(withFraud).toBe(767);
+    expect(withFraud).toBe(768);
 
-    // Fraud penalty still registers as a visible delta (775 → 767 = 8 points)
-    expect(clean - withFraud).toBe(8);
+    // Fraud penalty still registers as a visible delta (775 → 768 = 7 points, ~half of 15 due to compression)
+    expect(clean - withFraud).toBe(7);
   });
 });
 
