@@ -22,7 +22,7 @@ export class CrisisController {
     @Body() body: CrisisEscalateDto,
     @CurrentUser() user: { id: string },
   ) {
-    const targetUserId = body.userId || user.id;
+    const targetUserId = user.id;
     const trigger = body.trigger || "self-report";
     const detection = this.crisisDetection.analyzeContent(trigger);
     const storedSeverity =
