@@ -490,7 +490,7 @@ export const api = {
       resources: Array<{ name: string; contact: string; instructions: string }>;
       actionTaken: string;
       escalated: boolean;
-    }>("/admin/crisis/escalate", {
+    }>("/crisis/escalate", {
       method: "POST",
       body: JSON.stringify({ userId, trigger }),
     }),

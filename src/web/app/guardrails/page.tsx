@@ -6,20 +6,20 @@ import { Loader2 } from "lucide-react";
 import CrisisIntervention from "../../components/guardrails/CrisisIntervention";
 import { useAuth } from "../../contexts/AuthContext";
 
+const VALID_SEVERITIES = new Set(["info", "warning", "critical"]);
+
 function GuardrailsContent() {
   const { user, isLoading: authLoading } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const severityParam = searchParams.get("severity") as
-    | "info"
-    | "warning"
-    | "critical"
-    | null;
+  const severityRaw = searchParams.get("severity");
+  const severity = VALID_SEVERITIES.has(severityRaw ?? "")
+    ? (severityRaw as "info" | "warning" | "critical")
+    : "warning";
   const trigger = searchParams.get("trigger");
   const cooldownParam = searchParams.get("cooldown");
 
-  const severity = severityParam || "warning";
   const cooldownMinutes = cooldownParam ? parseInt(cooldownParam, 10) : 15;
 
   const handleDismiss = () => {
@@ -34,7 +34,6 @@ function GuardrailsContent() {
       trigger={trigger || undefined}
       cooldownMinutes={cooldownMinutes}
       onDismiss={handleDismiss}
-      onContactSupport={handleDismiss}
       userId={user?.id}
     />
   );
