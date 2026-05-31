@@ -57,11 +57,13 @@ export class AdminController {
     @CurrentUser() admin: { id: string },
   ) {
     const detection = this.crisisDetection.analyzeContent(body.trigger);
+    const storedSeverity =
+      detection.severity !== "NONE" ? detection.severity : "HIGH";
     const detectionOnly = detection.severity !== "NONE" ? detection : undefined;
     await this.truthLog.appendEvent("ADMIN_CRISIS_ESCALATED", {
       adminId: admin.id,
       targetUserId: body.userId,
-      severity: detection.severity,
+      severity: storedSeverity,
       trigger: body.trigger,
     });
     return this.crisisIntervention.reportCrisis(
