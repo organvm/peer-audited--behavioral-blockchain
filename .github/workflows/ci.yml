@@ -87,6 +87,9 @@ jobs:
             src/*/coverage/
           retention-days: 14
 
+      - name: Build for Validation Gates (Turborepo)
+        run: npx turbo run build
+
       - name: Gate 04 — Redacted Build Check
         run: bash scripts/validation/04-redacted-build-check.sh
 
