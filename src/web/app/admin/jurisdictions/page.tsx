@@ -7,8 +7,9 @@ import {
   Loader2,
   AlertTriangle,
   MapPin,
-  Save,
   RefreshCw,
+  ShieldAlert,
+  ShieldCheck,
 } from "lucide-react";
 import { api } from "../../../services/api-client";
 import { useAuth } from "../../../contexts/AuthContext";
@@ -40,16 +41,20 @@ export default function JurisdictionsPage() {
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>("ALL");
+  const [killSwitchActive, setKillSwitchActive] = useState(false);
+  const [killSwitchLoading, setKillSwitchLoading] = useState(false);
 
-  const loadJurisdictions = useCallback(async () => {
+  const loadData = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await api.getJurisdictions();
-      setJurisdictions(data.jurisdictions || []);
+      const [jurisdictionsData, killSwitchData] = await Promise.all([
+        api.getJurisdictions(),
+        api.getKillSwitch(),
+      ]);
+      setJurisdictions(jurisdictionsData.jurisdictions || []);
+      setKillSwitchActive(killSwitchData.refundOnlyMode);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to load jurisdictions",
-      );
+      setError(err instanceof Error ? err.message : "Failed to load data");
     } finally {
       setLoading(false);
     }
@@ -62,8 +67,8 @@ export default function JurisdictionsPage() {
       setLoading(false);
       return;
     }
-    loadJurisdictions();
-  }, [authUser, authLoading, loadJurisdictions]);
+    loadData();
+  }, [authUser, authLoading, loadData]);
 
   const handleTierChange = async (code: string, newTier: string) => {
     setSaving(code);
@@ -78,6 +83,20 @@ export default function JurisdictionsPage() {
       );
     } finally {
       setSaving(null);
+    }
+  };
+
+  const handleKillSwitchToggle = async () => {
+    setKillSwitchLoading(true);
+    try {
+      const result = await api.setKillSwitch(!killSwitchActive);
+      setKillSwitchActive(result.refundOnlyMode);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to toggle kill switch",
+      );
+    } finally {
+      setKillSwitchLoading(false);
     }
   };
 
@@ -138,12 +157,59 @@ export default function JurisdictionsPage() {
           </h1>
         </div>
         <button
-          onClick={loadJurisdictions}
+          onClick={loadData}
           className="ml-auto p-2 text-neutral-400 hover:text-white transition-colors"
           title="Refresh"
         >
           <RefreshCw size={20} />
         </button>
+      </div>
+
+      {/* Kill Switch */}
+      <div
+        className={`mb-8 p-6 rounded-2xl border ${
+          killSwitchActive
+            ? "bg-red-950/50 border-red-800"
+            : "bg-neutral-900 border-neutral-800"
+        }`}
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {killSwitchActive ? (
+              <ShieldAlert className="text-red-500" size={24} />
+            ) : (
+              <ShieldCheck className="text-green-500" size={24} />
+            )}
+            <div>
+              <h2 className="font-bold uppercase tracking-widest text-sm">
+                Kill Switch — Refund-Only Mode
+              </h2>
+              <p className="text-neutral-400 text-sm mt-1">
+                {killSwitchActive
+                  ? "ACTIVE: All settlements forced to REFUND mode regardless of jurisdiction"
+                  : "INACTIVE: Settlements follow jurisdiction policy (CAPTURE for TIER_1, REFUND for TIER_2/3)"}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={handleKillSwitchToggle}
+            disabled={killSwitchLoading}
+            className={`px-6 py-3 font-bold rounded-xl transition-colors flex items-center gap-2 ${
+              killSwitchActive
+                ? "bg-green-700 hover:bg-green-600 text-white"
+                : "bg-red-700 hover:bg-red-600 text-white"
+            }`}
+          >
+            {killSwitchLoading ? (
+              <Loader2 className="animate-spin" size={16} />
+            ) : killSwitchActive ? (
+              <ShieldCheck size={16} />
+            ) : (
+              <ShieldAlert size={16} />
+            )}
+            {killSwitchActive ? "Deactivate" : "Activate"}
+          </button>
+        </div>
       </div>
 
       {/* Tier Summary */}

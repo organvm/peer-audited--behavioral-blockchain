@@ -536,6 +536,18 @@ export const api = {
       body: JSON.stringify(data),
     }),
 
+  getKillSwitch: () =>
+    request<{ refundOnlyMode: boolean }>("/admin/kill-switch"),
+
+  setKillSwitch: (enabled: boolean) =>
+    request<{ refundOnlyMode: boolean; message: string }>(
+      "/admin/kill-switch",
+      {
+        method: "POST",
+        body: JSON.stringify({ enabled }),
+      },
+    ),
+
   getDisputes: () =>
     request<
       Array<{

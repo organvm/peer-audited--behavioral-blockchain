@@ -32,6 +32,7 @@ import {
   ResolveContractDto,
   UpdateJurisdictionDto,
 } from "./dto";
+import { JurisdictionDispositionMapper } from "../compliance/jurisdiction-disposition.mapper";
 
 @ApiTags("Admin")
 @ApiBearerAuth()
@@ -175,6 +176,41 @@ export class AdminController {
     });
 
     return { jurisdiction: result.rows[0] };
+  }
+
+  // --- Kill Switch (Refund-Only Override) ---
+
+  @Get("kill-switch")
+  @ApiOperation({
+    summary: "Get current kill switch status (refund-only mode)",
+  })
+  getKillSwitch() {
+    return {
+      refundOnlyMode: JurisdictionDispositionMapper.isRefundOnlyMode(),
+    };
+  }
+
+  @Post("kill-switch")
+  @ApiOperation({
+    summary: "Toggle kill switch — force all settlements to REFUND mode",
+  })
+  async setKillSwitch(
+    @Body() body: { enabled: boolean },
+    @CurrentUser() admin: { id: string },
+  ) {
+    JurisdictionDispositionMapper.setRefundOnlyMode(body.enabled);
+
+    await this.truthLog.appendEvent("KILL_SWITCH_TOGGLED", {
+      adminId: admin.id,
+      enabled: body.enabled,
+    });
+
+    return {
+      refundOnlyMode: body.enabled,
+      message: body.enabled
+        ? "Kill switch ACTIVE — all settlements forced to REFUND mode"
+        : "Kill switch INACTIVE — settlements follow jurisdiction policy",
+    };
   }
 
   // --- Integrity ---
