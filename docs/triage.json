@@ -26,6 +26,23 @@
       "completed": "2026-06-01T15:40:59Z",
       "reconciled": true,
       "test_passed": true
+    },
+    {
+      "id": "build-tier1-quick",
+      "phase": "Tier 1 — Quick code features (tests, small fixes)",
+      "issues": [
+        207,
+        44,
+        45,
+        66,
+        46,
+        47,
+        52
+      ],
+      "started": "2026-06-01T15:54:09Z",
+      "completed": "2026-06-01T15:57:13Z",
+      "reconciled": true,
+      "test_passed": true
     }
   ],
   "issues": {
@@ -447,7 +464,7 @@
       "title": "feat: behavior swap contracts (substitution-based oaths)"
     },
     "120": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -456,18 +473,23 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:41Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
         "devops"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:41Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "Deploy ask-styx-proxy Cloudflare Worker"
     },
     "121": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -476,18 +498,23 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:41Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
         "devops"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:41Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "Enable GitHub Pages + set ASK_STYX_WORKER_URL repo variable"
     },
     "122": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -496,14 +523,19 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:41Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
         "devops"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:41Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "Update wrangler.toml ALLOWED_ORIGIN after confirming GH Pages URL"
     },
     "123": {
@@ -1629,7 +1661,7 @@
       "title": "docs: formalize 9 theorem proofs as LaTeX/Markdown"
     },
     "200": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -1638,6 +1670,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:42Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:27Z"
         }
       ],
       "labels": [
@@ -1646,8 +1683,8 @@
         "artifact-dissection"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:42Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:27Z",
       "title": "docs: thesis production pipeline (PDF build, citation check)"
     },
     "201": {
@@ -1803,14 +1840,34 @@
     },
     "207": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "build-tier1-quick",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/ask-styx/tests/ChatMessage.test.tsx:1",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:42Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "BUILD_STARTED",
+          "at": "2026-06-01T15:56:52Z"
+        },
+        {
+          "from": "BUILD_STARTED",
+          "to": "BUILD_DONE",
+          "at": "2026-06-01T15:56:52Z"
+        },
+        {
+          "from": "BUILD_DONE",
+          "to": "TESTED",
+          "at": "2026-06-01T15:56:52Z"
+        },
+        {
+          "from": "TESTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T15:57:11Z"
         }
       ],
       "labels": [
@@ -1818,12 +1875,12 @@
         "artifact-dissection"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:42Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T15:57:11Z",
       "title": "test: ChatMessage + ChatInterface component tests (Vitest)"
     },
     "208": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -1832,6 +1889,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:42Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
@@ -1839,12 +1901,12 @@
         "artifact-dissection"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:42Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "chore: build verify + wrangler.toml ALLOWED_ORIGIN"
     },
     "209": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -1853,6 +1915,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:42Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:27Z"
         }
       ],
       "labels": [
@@ -1860,8 +1927,8 @@
         "artifact-dissection"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:42Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:27Z",
       "title": "chore: init git, create remote repo, push, verify GH Pages live"
     },
     "210": {
@@ -1909,7 +1976,7 @@
       "title": "audit: Phase 2 — read market & research foundation (market-analysis, competitor, behavioral-econ)"
     },
     "212": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -1918,6 +1985,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:42Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:26Z"
         }
       ],
       "labels": [
@@ -1926,8 +1998,8 @@
         "audit"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:42Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:26Z",
       "title": "audit: Phase 3 — read infrastructure & ops (render.yaml, .env.example, docker-compose, terraform)"
     },
     "213": {
@@ -1974,7 +2046,7 @@
       "title": "audit: Phase 5 — search marketing & content (pitch, positioning, brand)"
     },
     "215": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -1983,6 +2055,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:42Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:27Z"
         }
       ],
       "labels": [
@@ -1990,12 +2067,12 @@
         "audit"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:42Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:27Z",
       "title": "audit: Phase 6 — search growth & retention (feedback, iteration, testing)"
     },
     "216": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -2004,6 +2081,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:42Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:27Z"
         }
       ],
       "labels": [
@@ -2012,8 +2094,8 @@
         "audit"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:42Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:27Z",
       "title": "audit: Phase 7 — read business model & metrics (b2b metrics service, revenue docs)"
     },
     "217": {
@@ -2193,7 +2275,7 @@
       "title": "docs: compile stub inventory report (by workspace, type, priority)"
     },
     "225": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -2202,6 +2284,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:42Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:27Z"
         }
       ],
       "labels": [
@@ -2210,12 +2297,12 @@
         "audit"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:42Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:27Z",
       "title": "audit: Phase 1 — service layer deep dive (40+ files in src/api/services/)"
     },
     "226": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -2224,6 +2311,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:42Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:27Z"
         }
       ],
       "labels": [
@@ -2232,8 +2324,8 @@
         "audit"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:42Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:27Z",
       "title": "audit: Phase 2 — NestJS module layer deep dive (100+ files in src/api/src/modules/)"
     },
     "227": {
@@ -2279,7 +2371,7 @@
       "title": "audit: Phase 4 — frontend inventory (src/web/app/, utils/, stores/, components/)"
     },
     "229": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -2288,6 +2380,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:42Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:27Z"
         }
       ],
       "labels": [
@@ -2296,12 +2393,12 @@
         "audit"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:42Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:27Z",
       "title": "audit: Phase 5 — mobile inventory (src/mobile/screens/, services/)"
     },
     "230": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -2310,6 +2407,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:42Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:27Z"
         }
       ],
       "labels": [
@@ -2318,8 +2420,8 @@
         "audit"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:42Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:27Z",
       "title": "audit: Phase 6 — desktop inventory (src/desktop/src/panels/)"
     },
     "231": {
@@ -2536,7 +2638,7 @@
       "title": "docs: create organizational topology map (repo/organ/system/orchestration layers)"
     },
     "241": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -2545,6 +2647,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:42Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:27Z"
         }
       ],
       "labels": [
@@ -2553,8 +2660,8 @@
         "governance"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:42Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:27Z",
       "title": "chore: run system sync (registry validate, metrics calculate, seed validate)"
     },
     "242": {
@@ -2637,7 +2744,7 @@
       "title": "feat: export beta-readiness.json artifact from service"
     },
     "245": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -2646,6 +2753,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:42Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
@@ -2653,12 +2765,12 @@
         "artifact-dissection"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:42Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "devops: integrate BetaReadiness as CI pre-deploy gate"
     },
     "246": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -2667,6 +2779,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:42Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:57Z"
         }
       ],
       "labels": [
@@ -2674,12 +2791,12 @@
         "artifact-dissection"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:42Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:57Z",
       "title": "feat: create scripts/doc-intelligence/ directory structure"
     },
     "247": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -2688,6 +2805,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:42Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:57Z"
         }
       ],
       "labels": [
@@ -2695,12 +2817,12 @@
         "artifact-dissection"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:42Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:57Z",
       "title": "feat: doc inventory script (hash, size, git metadata per file)"
     },
     "248": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -2709,6 +2831,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:42Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:57Z"
         }
       ],
       "labels": [
@@ -2716,12 +2843,12 @@
         "artifact-dissection"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:42Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:57Z",
       "title": "feat: atomic element extraction script"
     },
     "249": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -2730,6 +2857,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:42Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:57Z"
         }
       ],
       "labels": [
@@ -2737,12 +2869,12 @@
         "artifact-dissection"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:42Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:57Z",
       "title": "feat: unity-contention classification script"
     },
     "250": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -2751,6 +2883,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:43Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:57Z"
         }
       ],
       "labels": [
@@ -2759,12 +2896,12 @@
         "artifact-dissection"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:43Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:57Z",
       "title": "feat: parse 10 competitor deep-dive files for feature gaps"
     },
     "251": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -2773,6 +2910,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:43Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:57Z"
         }
       ],
       "labels": [
@@ -2780,8 +2922,8 @@
         "artifact-dissection"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:43Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:57Z",
       "title": "feat: generate implementation-ready ticket templates with API signatures"
     },
     "252": {
@@ -3126,7 +3268,7 @@
       "title": "feat: activate domain-expert agent contexts — epic tracker"
     },
     "268": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -3135,6 +3277,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:43Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:27Z"
         }
       ],
       "labels": [
@@ -3142,8 +3289,8 @@
         "agent-context"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:43Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:27Z",
       "title": "business: define enterprise ICP (firmographics, psychographics, buying triggers)"
     },
     "269": {
@@ -3168,7 +3315,7 @@
       "title": "business: build unit economics model ($39 consumer contract)"
     },
     "270": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -3177,6 +3324,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:43Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:27Z"
         }
       ],
       "labels": [
@@ -3184,8 +3336,8 @@
         "agent-context"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:43Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:27Z",
       "title": "business: SEO keyword research for No-Contact recovery niche"
     },
     "271": {
@@ -3210,7 +3362,7 @@
       "title": "docs: draft App Store UGC moderation policy checklist"
     },
     "272": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -3219,6 +3371,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:43Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:27Z"
         }
       ],
       "labels": [
@@ -3226,8 +3383,8 @@
         "agent-context"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:43Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:27Z",
       "title": "devops: draft incident response runbook (severity, escalation, rollback)"
     },
     "273": {
@@ -3485,7 +3642,7 @@
       "title": "Customer Success Department — Task Tracker"
     },
     "293": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -3494,6 +3651,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:43Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:27Z"
         }
       ],
       "labels": [
@@ -3501,8 +3663,8 @@
         "enterprise"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:43Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:27Z",
       "title": "Enterprise Sales / B2B Department — Task Tracker"
     },
     "294": {
@@ -3592,7 +3754,7 @@
       "title": "checklist: App Store launch readiness gate"
     },
     "298": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -3601,6 +3763,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:43Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:27Z"
         }
       ],
       "labels": [
@@ -3609,8 +3776,8 @@
         "checklist"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:43Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:27Z",
       "title": "checklist: Enterprise sales readiness gate"
     },
     "299": {
@@ -3724,7 +3891,7 @@
       "title": "docs: Incident response runbook & monitoring playbook"
     },
     "303": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -3733,6 +3900,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:43Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:27Z"
         }
       ],
       "labels": [
@@ -3740,8 +3912,8 @@
         "docs"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:43Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:27Z",
       "title": "docs: A/B testing framework & user research protocol"
     },
     "304": {
@@ -3766,7 +3938,7 @@
       "title": "docs: Marketing strategy, content calendar & PR plan"
     },
     "305": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -3775,6 +3947,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:44Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:27Z"
         }
       ],
       "labels": [
@@ -3782,8 +3959,8 @@
         "docs"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:44Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:27Z",
       "title": "docs: SLA template & enterprise security posture"
     },
     "307": {
@@ -3827,7 +4004,7 @@
       "title": "feat: Ostrich effect detection (F-AEGIS-09)"
     },
     "31": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -3836,6 +4013,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:44Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
@@ -3843,8 +4025,8 @@
         "testing"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:44Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "Configure Stripe test key for Gate 03 full-loop validation"
     },
     "318": {
@@ -4163,7 +4345,7 @@
       "title": "Enterprise UX audit — HR + coach dashboard usability"
     },
     "332": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -4172,14 +4354,19 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:44Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
         "devops"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:44Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "Uptime monitoring setup — UptimeRobot/BetterUptime"
     },
     "333": {
@@ -4225,7 +4412,7 @@
       "title": "Database backup policy + tested restore procedure"
     },
     "335": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -4234,18 +4421,23 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:44Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
         "devops"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:44Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "Incident response runbook v1 — severity, escalation, rollback"
     },
     "336": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -4254,18 +4446,23 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:44Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
         "devops"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:44Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "Load testing — 500 concurrent users simulation"
     },
     "337": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -4274,14 +4471,19 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:44Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
         "devops"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:44Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "CDN/WAF production config verification"
     },
     "338": {
@@ -4306,7 +4508,7 @@
       "title": "APNs/FCM credential management — secure push notification keys"
     },
     "339": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -4315,14 +4517,19 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:44Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
         "devops"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:44Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "Load testing — 5,000 concurrent users at scale"
     },
     "340": {
@@ -4609,7 +4816,7 @@
       "title": "In-app help / chatbot integration"
     },
     "359": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -4618,6 +4825,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:44Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
@@ -4625,8 +4837,8 @@
         "enterprise"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:44Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "Identify 50 target therapists/coaches — ICP definition"
     },
     "360": {
@@ -4652,7 +4864,7 @@
       "title": "Outreach sequence — 5-email cold outreach + LinkedIn"
     },
     "361": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -4661,6 +4873,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:44Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
@@ -4668,8 +4885,8 @@
         "enterprise"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:44Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "Enterprise demo environment — sandboxed Render instance"
     },
     "362": {
@@ -4717,7 +4934,7 @@
       "title": "First pilot onboarding — 1-3 practitioners"
     },
     "364": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -4726,6 +4943,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:45Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
@@ -4733,8 +4955,8 @@
         "enterprise"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:45Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "Enterprise pricing live — published tiers + billing"
     },
     "365": {
@@ -4800,7 +5022,7 @@
       "title": "Engage legal counsel (retainer)"
     },
     "368": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -4809,18 +5031,23 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:45Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
         "enhancement"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:45Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "Seed deep agents for LEG, FIN, PRD, OPS departments"
     },
     "369": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -4829,18 +5056,23 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:45Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
         "enhancement"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:45Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "Internal dogfood beta — founders + 5-10 trusted people"
     },
     "370": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -4849,14 +5081,19 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:45Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
         "devops"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:45Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "Monitoring + alerting setup — Sentry + uptime"
     },
     "371": {
@@ -5063,7 +5300,7 @@
       "title": "Kotlin contractor — Android health data bridge"
     },
     "382": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -5072,14 +5309,19 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:45Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
         "enhancement"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:45Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "QA / Beta Coordinator — part-time hire"
     },
     "383": {
@@ -5124,7 +5366,7 @@
       "title": "Enterprise Sales / BD — hiring (if fundraise)"
     },
     "385": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -5133,18 +5375,23 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:45Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
         "devops"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:45Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "DevOps / SRE — part-time (if fundraise)"
     },
     "39": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -5153,6 +5400,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:45Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
@@ -5160,12 +5412,12 @@
         "testing"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:45Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "Provision CI secrets for strict beta_readiness gate"
     },
     "40": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -5174,6 +5426,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:45Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
@@ -5181,12 +5438,12 @@
         "testing"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:45Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "Require beta_readiness status check in main branch protection"
     },
     "41": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -5195,6 +5452,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:45Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
@@ -5202,8 +5464,8 @@
         "testing"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:45Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "Establish first live beta_readiness baseline run and evidence"
     },
     "415": {
@@ -5267,7 +5529,7 @@
       "title": "Thesis: Notation and symbol guide"
     },
     "418": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -5276,6 +5538,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:45Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
@@ -5283,8 +5550,8 @@
         "devops"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:45Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "Thesis: Production pipeline (PDF build, citation check)"
     },
     "419": {
@@ -5365,7 +5632,7 @@
       "title": "Ask Styx: GitHub Pages deploy workflow"
     },
     "422": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -5374,14 +5641,19 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:45Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
         "enhancement"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:45Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "Ask Styx: Integration tests — E2E question→answer flow"
     },
     "423": {
@@ -5549,7 +5821,7 @@
       "title": "DisputeTimeline: Tests — rendering, state transitions, edge cases"
     },
     "431": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -5558,18 +5830,23 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:45Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
         "enhancement"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:45Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "Agents: Legal domain context + prompt engineering"
     },
     "432": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -5578,18 +5855,23 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:45Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
         "enhancement"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:45Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "Agents: Finance domain context + prompt engineering"
     },
     "433": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -5598,18 +5880,23 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:45Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
         "enhancement"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:45Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "Agents: Product domain context + prompt engineering"
     },
     "434": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -5618,18 +5905,23 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:45Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
         "enhancement"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:45Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "Agents: Ops domain context + prompt engineering"
     },
     "435": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -5638,14 +5930,19 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:45Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:56Z"
         }
       ],
       "labels": [
         "enhancement"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:45Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:56Z",
       "title": "Agents: Integration tests — multi-agent routing"
     },
     "436": {
@@ -5729,8 +6026,8 @@
       "title": "Audit: Map all modules → feature coverage matrix"
     },
     "44": {
-      "action": "BUILD",
-      "batch": null,
+      "action": "WAITING",
+      "batch": "build-tier1-quick",
       "closed_at": null,
       "evidence": null,
       "history": [
@@ -5738,14 +6035,19 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:46Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "WAITING",
+          "at": "2026-06-01T15:57:13Z"
         }
       ],
       "labels": [
         "enhancement"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:46Z",
+      "state": "WAITING",
+      "state_updated": "2026-06-01T15:57:13Z",
       "title": "Mobile capture: replace simulated proof media with real camera backend"
     },
     "440": {
@@ -5849,7 +6151,7 @@
       "title": "Audit: Executive summary + priority action list"
     },
     "445": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -5858,18 +6160,23 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:46Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:57Z"
         }
       ],
       "labels": [
         "enhancement"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:46Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:57Z",
       "title": "Governance: Registry validation automation"
     },
     "446": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -5878,18 +6185,23 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:46Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:57Z"
         }
       ],
       "labels": [
         "enhancement"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:46Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:57Z",
       "title": "Governance: Tier promotion criteria + gate checks"
     },
     "447": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -5898,14 +6210,19 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:46Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:57Z"
         }
       ],
       "labels": [
         "enhancement"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:46Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:57Z",
       "title": "Governance: Promotion dashboard + audit trail"
     },
     "448": {
@@ -5946,7 +6263,7 @@
     },
     "45": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "build-tier1-quick",
       "closed_at": null,
       "evidence": null,
       "history": [
@@ -6146,7 +6463,7 @@
     },
     "46": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "build-tier1-quick",
       "closed_at": null,
       "evidence": null,
       "history": [
@@ -6354,7 +6671,7 @@
     },
     "47": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "build-tier1-quick",
       "closed_at": null,
       "evidence": null,
       "history": [
@@ -6765,7 +7082,7 @@
       "title": "TKT-P1-015: Tests — slashing calculation + false positive safeguards"
     },
     "49": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -6774,6 +7091,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:47Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:57Z"
         }
       ],
       "labels": [
@@ -6782,8 +7104,8 @@
         "recovery"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:47Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:57Z",
       "title": "decision: Weekly live sessions — in-app scheduling vs external operational cadence"
     },
     "490": {
@@ -6805,7 +7127,7 @@
       "title": "Service scaffolding — NestJS module + 19 contract checks"
     },
     "491": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -6814,14 +7136,19 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:47Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:57Z"
         }
       ],
       "labels": [
         "devops"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:47Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:57Z",
       "title": "CI integration — pre-deploy gate + status reporting"
     },
     "492": {
@@ -7340,7 +7667,7 @@
     },
     "52": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "build-tier1-quick",
       "closed_at": null,
       "evidence": null,
       "history": [
@@ -7416,7 +7743,7 @@
       "title": "Tests — state transitions + timer accuracy"
     },
     "523": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -7425,18 +7752,23 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:48Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:57Z"
         }
       ],
       "labels": [
         "devops"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:48Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:57Z",
       "title": "Infrastructure — k6/artillery setup + test scenarios"
     },
     "524": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -7445,18 +7777,23 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:48Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:57Z"
         }
       ],
       "labels": [
         "devops"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:48Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:57Z",
       "title": "Fury Router queue saturation test suite"
     },
     "525": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -7465,14 +7802,19 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:48Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:57Z"
         }
       ],
       "labels": [
         "devops"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:48Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:57Z",
       "title": "Tests — baseline establishment + regression thresholds"
     },
     "526": {
@@ -7571,7 +7913,7 @@
       "title": "feat: Redemption / re-entry path after contract failure"
     },
     "530": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -7580,14 +7922,19 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:48Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:57Z"
         }
       ],
       "labels": [
         "devops"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:48Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:57Z",
       "title": "Gate enforcement — CI integration + blocking status"
     },
     "531": {
@@ -7665,7 +8012,7 @@
       "title": "Gate enforcement — legal + UX + performance criteria"
     },
     "535": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -7674,16 +8021,21 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:48Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:57Z"
         }
       ],
       "labels": [],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:48Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:57Z",
       "title": "Checklist automation — enterprise infrastructure criteria"
     },
     "536": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -7692,12 +8044,17 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:48Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:57Z"
         }
       ],
       "labels": [],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:48Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:57Z",
       "title": "Gate enforcement — security + DPA + demo readiness"
     },
     "537": {
@@ -8239,7 +8596,7 @@
       "title": "Create legal artifact appendices (FBO diagram, ToS markup, checklists)"
     },
     "57": {
-      "action": "BUILD",
+      "action": "TRACK",
       "batch": null,
       "closed_at": null,
       "evidence": null,
@@ -8248,6 +8605,11 @@
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:49Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "TRACKING",
+          "at": "2026-06-01T15:53:57Z"
         }
       ],
       "labels": [
@@ -8256,8 +8618,8 @@
         "recovery"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:49Z",
+      "state": "TRACKING",
+      "state_updated": "2026-06-01T15:53:57Z",
       "title": "decision: Community features / local meetups — in-app or operational?"
     },
     "572": {
@@ -8710,7 +9072,7 @@
     },
     "66": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "build-tier1-quick",
       "closed_at": null,
       "evidence": null,
       "history": [
