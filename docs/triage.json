@@ -55,6 +55,94 @@
       "completed": "2026-06-01T16:00:43Z",
       "reconciled": true,
       "test_passed": true
+    },
+    {
+      "id": "bug-603-npm-audit",
+      "phase": "BUG",
+      "issues": [
+        603
+      ],
+      "started": "2026-06-01T19:30:13Z",
+      "completed": "2026-06-01T19:30:57Z",
+      "reconciled": true,
+      "test_passed": true
+    },
+    {
+      "id": "exists-desktop-enterprise",
+      "phase": "BUILD",
+      "issues": [
+        546,
+        548,
+        549,
+        550,
+        551
+      ],
+      "started": "2026-06-01T19:35:05Z",
+      "completed": "2026-06-01T19:35:29Z",
+      "reconciled": true,
+      "test_passed": true
+    },
+    {
+      "id": "build-survey-attest-waitlist",
+      "phase": "BUILD",
+      "issues": [
+        46,
+        47,
+        52
+      ],
+      "started": "2026-06-01T19:38:23Z",
+      "completed": "2026-06-01T19:43:50Z",
+      "reconciled": true,
+      "test_passed": true
+    },
+    {
+      "id": "build-behavioral-enhancements",
+      "phase": "BUILD",
+      "issues": [
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119
+      ],
+      "started": "2026-06-01T19:44:04Z",
+      "completed": "2026-06-01T19:49:47Z",
+      "reconciled": true,
+      "test_passed": true
+    },
+    {
+      "id": "build-desktop-dispute",
+      "phase": "BUILD",
+      "issues": [
+        256,
+        257,
+        258,
+        327,
+        427,
+        428,
+        429,
+        430
+      ],
+      "started": "2026-06-01T19:49:59Z",
+      "completed": "2026-06-01T19:54:39Z",
+      "reconciled": true,
+      "test_passed": true
+    },
+    {
+      "id": "build-enterprise-rbac-billing",
+      "phase": "BUILD",
+      "issues": [
+        547,
+        552,
+        553,
+        554
+      ],
+      "started": "2026-06-01T19:54:52Z",
+      "completed": "2026-06-01T19:56:44Z",
+      "reconciled": true,
+      "test_passed": true
     }
   ],
   "issues": {
@@ -337,142 +425,282 @@
     },
     "113": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "build-behavioral-enhancements",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/shared/libs/behavioral-enhancements.ts:1-46 CrabBucketSignal/CrabBucketSeverity/classifyCrabBucketRisk; src/api/database/migrations/037_behavioral_enhancements_tables.sql:1-12 crab_bucket_signals table; src/api/src/modules/behavioral/behavioral-enhancements.service.ts:29-48 analyzeCrabBucketRisk",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:40Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "BUILD_STARTED",
+          "at": "2026-06-01T19:44:09Z"
+        },
+        {
+          "from": "BUILD_STARTED",
+          "to": "BUILD_DONE",
+          "at": "2026-06-01T19:49:30Z"
+        },
+        {
+          "from": "BUILD_DONE",
+          "to": "TESTED",
+          "at": "2026-06-01T19:49:30Z"
+        },
+        {
+          "from": "TESTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T19:49:41Z"
         }
       ],
       "labels": [
         "enhancement"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:40Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T19:49:41Z",
       "title": "feat: social environment sabotage detection (Crab Bucket Alert)"
     },
     "114": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "build-behavioral-enhancements",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/shared/libs/behavioral-enhancements.ts:60-88 CommitmentDevice/DEFAULT_COMMITMENT_DEVICE_CATALOG/calculateStakeWithDevice; src/api/src/modules/behavioral/behavioral-enhancements.service.ts:50-68 catalog/stake calc",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:40Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "BUILD_STARTED",
+          "at": "2026-06-01T19:44:09Z"
+        },
+        {
+          "from": "BUILD_STARTED",
+          "to": "BUILD_DONE",
+          "at": "2026-06-01T19:49:30Z"
+        },
+        {
+          "from": "BUILD_DONE",
+          "to": "TESTED",
+          "at": "2026-06-01T19:49:30Z"
+        },
+        {
+          "from": "TESTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T19:49:41Z"
         }
       ],
       "labels": [
         "enhancement"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:40Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T19:49:41Z",
       "title": "feat: commitment device marketplace (one-time setup actions)"
     },
     "115": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "build-behavioral-enhancements",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/shared/libs/behavioral-enhancements.ts:90-163 IdentityDomain/IDENTITY_REFRAMING_TABLE/reframeMessage; src/api/src/modules/behavioral/behavioral-enhancements.service.ts:70-78 getReframingForContract",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:40Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "BUILD_STARTED",
+          "at": "2026-06-01T19:44:09Z"
+        },
+        {
+          "from": "BUILD_STARTED",
+          "to": "BUILD_DONE",
+          "at": "2026-06-01T19:49:30Z"
+        },
+        {
+          "from": "BUILD_DONE",
+          "to": "TESTED",
+          "at": "2026-06-01T19:49:30Z"
+        },
+        {
+          "from": "TESTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T19:49:41Z"
         }
       ],
       "labels": [
         "enhancement"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:40Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T19:49:41Z",
       "title": "feat: identity-based reframing engine for notifications"
     },
     "116": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "build-behavioral-enhancements",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/shared/libs/behavioral-enhancements.ts:165-197 EscalationSchedule/createDefaultEscalationSchedule/calculateNextStake; src/api/src/modules/behavioral/behavioral-enhancements.service.ts:80-95 enableSaveMoreTomorrow",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:40Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "BUILD_STARTED",
+          "at": "2026-06-01T19:44:09Z"
+        },
+        {
+          "from": "BUILD_STARTED",
+          "to": "BUILD_DONE",
+          "at": "2026-06-01T19:49:30Z"
+        },
+        {
+          "from": "BUILD_DONE",
+          "to": "TESTED",
+          "at": "2026-06-01T19:49:30Z"
+        },
+        {
+          "from": "TESTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T19:49:41Z"
         }
       ],
       "labels": [
         "enhancement"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:40Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T19:49:41Z",
       "title": "feat: Save More Tomorrow upward stake escalation"
     },
     "117": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "build-behavioral-enhancements",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/shared/libs/behavioral-enhancements.ts:199-235 ProfessionalModeConfig/PROFESSIONAL_MODE_DEFAULTS/applyProfessionalModeCopy; src/api/src/modules/behavioral/behavioral-enhancements.service.ts:97-103",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:40Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "BUILD_STARTED",
+          "at": "2026-06-01T19:44:09Z"
+        },
+        {
+          "from": "BUILD_STARTED",
+          "to": "BUILD_DONE",
+          "at": "2026-06-01T19:49:30Z"
+        },
+        {
+          "from": "BUILD_DONE",
+          "to": "TESTED",
+          "at": "2026-06-01T19:49:30Z"
+        },
+        {
+          "from": "TESTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T19:49:41Z"
         }
       ],
       "labels": [
         "enhancement"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:40Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T19:49:41Z",
       "title": "feat: Professional Mode UX (self-distancing & detachment)"
     },
     "118": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "build-behavioral-enhancements",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/shared/libs/behavioral-enhancements.ts:237-273 HabituationMetrics/detectHabituation; src/api/src/modules/behavioral/behavioral-enhancements.service.ts:105-140 detectContractHabituation",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:40Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "BUILD_STARTED",
+          "at": "2026-06-01T19:44:09Z"
+        },
+        {
+          "from": "BUILD_STARTED",
+          "to": "BUILD_DONE",
+          "at": "2026-06-01T19:49:30Z"
+        },
+        {
+          "from": "BUILD_DONE",
+          "to": "TESTED",
+          "at": "2026-06-01T19:49:30Z"
+        },
+        {
+          "from": "TESTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T19:49:41Z"
         }
       ],
       "labels": [
         "enhancement"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:40Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T19:49:41Z",
       "title": "feat: habituation detector & creative disruption for long-running contracts"
     },
     "119": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "build-behavioral-enhancements",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/shared/libs/behavioral-enhancements.ts:275-310 BehaviorSwapContract/validateSwapEligibility/calculateSwapStake; src/api/database/migrations/037_behavioral_enhancements_tables.sql:14-25 behavior_swaps table; src/api/src/modules/behavioral/behavioral-enhancements.service.ts:142-170 proposeBehaviorSwap",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:41Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "BUILD_STARTED",
+          "at": "2026-06-01T19:44:09Z"
+        },
+        {
+          "from": "BUILD_STARTED",
+          "to": "BUILD_DONE",
+          "at": "2026-06-01T19:49:30Z"
+        },
+        {
+          "from": "BUILD_DONE",
+          "to": "TESTED",
+          "at": "2026-06-01T19:49:30Z"
+        },
+        {
+          "from": "TESTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T19:49:41Z"
         }
       ],
       "labels": [
         "enhancement"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:41Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T19:49:41Z",
       "title": "feat: behavior swap contracts (substitution-based oaths)"
     },
     "120": {
@@ -3027,14 +3255,34 @@
     },
     "256": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "build-desktop-dispute",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/desktop/src/components/DisputeTimeline.tsx:1-105 DisputeTimeline component",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:43Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "BUILD_STARTED",
+          "at": "2026-06-01T19:50:04Z"
+        },
+        {
+          "from": "BUILD_STARTED",
+          "to": "BUILD_DONE",
+          "at": "2026-06-01T19:54:26Z"
+        },
+        {
+          "from": "BUILD_DONE",
+          "to": "TESTED",
+          "at": "2026-06-01T19:54:26Z"
+        },
+        {
+          "from": "TESTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T19:54:34Z"
         }
       ],
       "labels": [
@@ -3043,20 +3291,40 @@
         "artifact-dissection"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:43Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T19:54:34Z",
       "title": "feat: DisputeTimeline component in src/desktop/src/panels/"
     },
     "257": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "build-desktop-dispute",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/desktop/src/components/AuditTrailViewer.tsx:1-147 AuditTrailViewer component",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:43Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "BUILD_STARTED",
+          "at": "2026-06-01T19:50:04Z"
+        },
+        {
+          "from": "BUILD_STARTED",
+          "to": "BUILD_DONE",
+          "at": "2026-06-01T19:54:26Z"
+        },
+        {
+          "from": "BUILD_DONE",
+          "to": "TESTED",
+          "at": "2026-06-01T19:54:26Z"
+        },
+        {
+          "from": "TESTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T19:54:34Z"
         }
       ],
       "labels": [
@@ -3065,20 +3333,40 @@
         "artifact-dissection"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:43Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T19:54:34Z",
       "title": "feat: AuditTrailViewer component"
     },
     "258": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "build-desktop-dispute",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/desktop/src/components/EvidenceComparator.tsx:1-117 EvidenceComparator component",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:43Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "BUILD_STARTED",
+          "at": "2026-06-01T19:50:04Z"
+        },
+        {
+          "from": "BUILD_STARTED",
+          "to": "BUILD_DONE",
+          "at": "2026-06-01T19:54:26Z"
+        },
+        {
+          "from": "BUILD_DONE",
+          "to": "TESTED",
+          "at": "2026-06-01T19:54:26Z"
+        },
+        {
+          "from": "TESTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T19:54:34Z"
         }
       ],
       "labels": [
@@ -3087,8 +3375,8 @@
         "artifact-dissection"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:43Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T19:54:34Z",
       "title": "feat: EvidenceComparator component"
     },
     "259": {
@@ -4232,22 +4520,42 @@
     },
     "327": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "build-desktop-dispute",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/desktop/src/components/NoContactRecoveryPanel.tsx:1-140 NoContactRecoveryPanel with 5-flow audit",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:44Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "BUILD_STARTED",
+          "at": "2026-06-01T19:50:04Z"
+        },
+        {
+          "from": "BUILD_STARTED",
+          "to": "BUILD_DONE",
+          "at": "2026-06-01T19:54:26Z"
+        },
+        {
+          "from": "BUILD_DONE",
+          "to": "TESTED",
+          "at": "2026-06-01T19:54:26Z"
+        },
+        {
+          "from": "TESTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T19:54:34Z"
         }
       ],
       "labels": [
         "product"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:44Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T19:54:34Z",
       "title": "No-Contact recovery UX audit — 5 critical flows"
     },
     "328": {
@@ -5750,14 +6058,34 @@
     },
     "427": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "build-desktop-dispute",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/desktop/src/components/DisputeTimeline.tsx:30-38 scaffolding+state management",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:45Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "BUILD_STARTED",
+          "at": "2026-06-01T19:50:04Z"
+        },
+        {
+          "from": "BUILD_STARTED",
+          "to": "BUILD_DONE",
+          "at": "2026-06-01T19:54:26Z"
+        },
+        {
+          "from": "BUILD_DONE",
+          "to": "TESTED",
+          "at": "2026-06-01T19:54:26Z"
+        },
+        {
+          "from": "TESTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T19:54:34Z"
         }
       ],
       "labels": [
@@ -5765,20 +6093,40 @@
         "desktop"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:45Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T19:54:34Z",
       "title": "DisputeTimeline: Component scaffolding + state management"
     },
     "428": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "build-desktop-dispute",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/desktop/src/components/DisputeTimeline.tsx:55-101 evidence node rendering+timeline layout",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:45Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "BUILD_STARTED",
+          "at": "2026-06-01T19:50:04Z"
+        },
+        {
+          "from": "BUILD_STARTED",
+          "to": "BUILD_DONE",
+          "at": "2026-06-01T19:54:26Z"
+        },
+        {
+          "from": "BUILD_DONE",
+          "to": "TESTED",
+          "at": "2026-06-01T19:54:26Z"
+        },
+        {
+          "from": "TESTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T19:54:34Z"
         }
       ],
       "labels": [
@@ -5786,20 +6134,40 @@
         "desktop"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:45Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T19:54:34Z",
       "title": "DisputeTimeline: Evidence node rendering + timeline layout"
     },
     "429": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "build-desktop-dispute",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/desktop/src/components/DisputeTimeline.tsx:39-52 zoom/filter/detail interaction",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:45Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "BUILD_STARTED",
+          "at": "2026-06-01T19:50:04Z"
+        },
+        {
+          "from": "BUILD_STARTED",
+          "to": "BUILD_DONE",
+          "at": "2026-06-01T19:54:26Z"
+        },
+        {
+          "from": "BUILD_DONE",
+          "to": "TESTED",
+          "at": "2026-06-01T19:54:26Z"
+        },
+        {
+          "from": "TESTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T19:54:34Z"
         }
       ],
       "labels": [
@@ -5807,20 +6175,40 @@
         "desktop"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:45Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T19:54:34Z",
       "title": "DisputeTimeline: Interaction — zoom, filter, detail panels"
     },
     "430": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "build-desktop-dispute",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/desktop/src/components/DisputeTimeline.spec.tsx:1-80 6 tests",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:45Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "BUILD_STARTED",
+          "at": "2026-06-01T19:50:04Z"
+        },
+        {
+          "from": "BUILD_STARTED",
+          "to": "BUILD_DONE",
+          "at": "2026-06-01T19:54:26Z"
+        },
+        {
+          "from": "BUILD_DONE",
+          "to": "TESTED",
+          "at": "2026-06-01T19:54:26Z"
+        },
+        {
+          "from": "TESTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T19:54:34Z"
         }
       ],
       "labels": [
@@ -5828,8 +6216,8 @@
         "desktop"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:45Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T19:54:34Z",
       "title": "DisputeTimeline: Tests — rendering, state transitions, edge cases"
     },
     "431": {
@@ -6480,14 +6868,34 @@
     },
     "46": {
       "action": "BUILD",
-      "batch": "build-tier1-quick",
+      "batch": "build-survey-attest-waitlist",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/api/database/migrations/034_survey_system.sql:1-11 survey_responses table; src/api/src/modules/contracts/survey.service.ts:1-85 SurveyService; src/api/src/modules/contracts/contracts.controller.ts:397-409 survey endpoints",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:46Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "BUILD_STARTED",
+          "at": "2026-06-01T19:38:27Z"
+        },
+        {
+          "from": "BUILD_STARTED",
+          "to": "BUILD_DONE",
+          "at": "2026-06-01T19:43:31Z"
+        },
+        {
+          "from": "BUILD_DONE",
+          "to": "TESTED",
+          "at": "2026-06-01T19:43:36Z"
+        },
+        {
+          "from": "TESTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T19:43:41Z"
         }
       ],
       "labels": [
@@ -6498,8 +6906,8 @@
         "recovery"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:46Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T19:43:41Z",
       "title": "feat: Baseline & final survey system (emotional distress, urge frequency, behavioral metrics)"
     },
     "460": {
@@ -6688,14 +7096,34 @@
     },
     "47": {
       "action": "BUILD",
-      "batch": "build-tier1-quick",
+      "batch": "build-survey-attest-waitlist",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/api/database/migrations/035_attestation_emotional_tracking.sql:1-6 emotional columns; src/api/src/modules/contracts/dto.ts:33-58 EmotionalTrackingDto; src/api/src/modules/contracts/contracts.service.ts:2647-2703 submitAttestation with emotional tracking",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:46Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "BUILD_STARTED",
+          "at": "2026-06-01T19:38:27Z"
+        },
+        {
+          "from": "BUILD_STARTED",
+          "to": "BUILD_DONE",
+          "at": "2026-06-01T19:43:31Z"
+        },
+        {
+          "from": "BUILD_DONE",
+          "to": "TESTED",
+          "at": "2026-06-01T19:43:36Z"
+        },
+        {
+          "from": "TESTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T19:43:43Z"
         }
       ],
       "labels": [
@@ -6706,8 +7134,8 @@
         "recovery"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:46Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T19:43:43Z",
       "title": "feat: Extend daily attestation with emotional tracking (urge level, triggers, coping)"
     },
     "470": {
@@ -7684,14 +8112,34 @@
     },
     "52": {
       "action": "BUILD",
-      "batch": "build-tier1-quick",
+      "batch": "build-survey-attest-waitlist",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/api/database/migrations/036_cohort_waitlist.sql:1-15 waitlist_entries table; src/api/src/modules/contracts/waitlist.service.ts:1-104 WaitlistService; src/api/src/modules/contracts/contracts.controller.ts:411-444 waitlist endpoints",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:48Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "BUILD_STARTED",
+          "at": "2026-06-01T19:38:27Z"
+        },
+        {
+          "from": "BUILD_STARTED",
+          "to": "BUILD_DONE",
+          "at": "2026-06-01T19:43:31Z"
+        },
+        {
+          "from": "BUILD_DONE",
+          "to": "TESTED",
+          "at": "2026-06-01T19:43:36Z"
+        },
+        {
+          "from": "TESTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T19:43:45Z"
         }
       ],
       "labels": [
@@ -7701,8 +8149,8 @@
         "P1-beta-enhancer"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:48Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T19:43:45Z",
       "title": "feat: Waitlist / cohort fill queue — hold users until cohort reaches minimum"
     },
     "520": {
@@ -8262,82 +8710,117 @@
     },
     "546": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "exists-desktop-enterprise",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/api/src/common/guards/role.guard.ts:1-62 RoleGuard with @Roles() decorator; src/api/src/modules/b2b/b2b.controller.ts:35-59 assertEnterpriseMembership with tenant scoping",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:48Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T19:35:10Z"
         }
       ],
       "labels": [
         "enterprise"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:48Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T19:35:10Z",
       "title": "Schema + API — RBAC model + org authorization"
     },
     "547": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "build-enterprise-rbac-billing",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/web/app/admin/role-based-view.tsx:1-65 RoleBasedView component with ADMIN/FURY/USER role sections",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:48Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "BUILD_STARTED",
+          "at": "2026-06-01T19:54:59Z"
+        },
+        {
+          "from": "BUILD_STARTED",
+          "to": "BUILD_DONE",
+          "at": "2026-06-01T19:56:31Z"
+        },
+        {
+          "from": "BUILD_DONE",
+          "to": "TESTED",
+          "at": "2026-06-01T19:56:31Z"
+        },
+        {
+          "from": "TESTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T19:56:38Z"
         }
       ],
       "labels": [
         "enterprise"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:48Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T19:56:38Z",
       "title": "UI — dashboard layout + role-specific views"
     },
     "548": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "exists-desktop-enterprise",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/api/src/common/guards/role.guard.spec.ts:1-122 12 tests covering role/access/org isolation; src/api/src/modules/b2b/b2b.controller.spec.ts:84 enterprise-scoped billing access test",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:48Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T19:35:13Z"
         }
       ],
       "labels": [
         "enterprise"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:48Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T19:35:13Z",
       "title": "Tests — access control + org isolation"
     },
     "549": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "exists-desktop-enterprise",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/desktop/src/components/hash-collider.utils.ts:1-71 HashProof/HashCollision interfaces, similarity, severity classification, ticket draft",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:48Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T19:35:15Z"
         }
       ],
       "labels": [
         "desktop"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:48Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T19:35:15Z",
       "title": "Desktop — hash collider algorithm integration"
     },
     "55": {
@@ -8365,54 +8848,84 @@
     },
     "550": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "exists-desktop-enterprise",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/desktop/src/components/HashCollider.tsx:1-166 full React component with scan/severity grid/controls; src/desktop/src/components/HashCollider.css styles",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:48Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T19:35:18Z"
         }
       ],
       "labels": [
         "desktop"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:48Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T19:35:18Z",
       "title": "UI — visualization + parameter controls"
     },
     "551": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "exists-desktop-enterprise",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/desktop/src/components/HashCollider.spec.tsx:1-172 17 tests: utils + component rendering + severity + ticket draft",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:48Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T19:35:20Z"
         }
       ],
       "labels": [
         "desktop"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:48Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T19:35:20Z",
       "title": "Tests — collision detection accuracy + performance"
     },
     "552": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "build-enterprise-rbac-billing",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/api/database/migrations/038_enterprise_billing_scope.sql:1-24; src/api/src/modules/b2b/enterprise-scope.service.ts:1-100 EnterpriseScopeService with scope/seats",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:48Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "BUILD_STARTED",
+          "at": "2026-06-01T19:54:59Z"
+        },
+        {
+          "from": "BUILD_STARTED",
+          "to": "BUILD_DONE",
+          "at": "2026-06-01T19:56:31Z"
+        },
+        {
+          "from": "BUILD_DONE",
+          "to": "TESTED",
+          "at": "2026-06-01T19:56:31Z"
+        },
+        {
+          "from": "TESTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T19:56:38Z"
         }
       ],
       "labels": [
@@ -8420,20 +8933,40 @@
         "enterprise"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:48Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T19:56:38Z",
       "title": "Schema + API — org billing model + scope management"
     },
     "553": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "build-enterprise-rbac-billing",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/web/app/admin/billing-dashboard.tsx:1-97 BillingDashboard with metrics + scope controls",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:48Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "BUILD_STARTED",
+          "at": "2026-06-01T19:54:59Z"
+        },
+        {
+          "from": "BUILD_STARTED",
+          "to": "BUILD_DONE",
+          "at": "2026-06-01T19:56:31Z"
+        },
+        {
+          "from": "BUILD_DONE",
+          "to": "TESTED",
+          "at": "2026-06-01T19:56:31Z"
+        },
+        {
+          "from": "TESTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T19:56:38Z"
         }
       ],
       "labels": [
@@ -8441,20 +8974,40 @@
         "enterprise"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:48Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T19:56:38Z",
       "title": "UI — billing dashboard + scope controls"
     },
     "554": {
       "action": "BUILD",
-      "batch": null,
+      "batch": "build-enterprise-rbac-billing",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/api/src/modules/b2b/enterprise-scope.service.spec.ts:1-70 6 tests: scope limits, seat management, usage recording",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:48Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "BUILD_STARTED",
+          "at": "2026-06-01T19:54:59Z"
+        },
+        {
+          "from": "BUILD_STARTED",
+          "to": "BUILD_DONE",
+          "at": "2026-06-01T19:56:31Z"
+        },
+        {
+          "from": "BUILD_DONE",
+          "to": "TESTED",
+          "at": "2026-06-01T19:56:31Z"
+        },
+        {
+          "from": "TESTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T19:56:38Z"
         }
       ],
       "labels": [
@@ -8462,8 +9015,8 @@
         "enterprise"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:48Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T19:56:38Z",
       "title": "Tests — billing flow + scope enforcement"
     },
     "555": {
@@ -8977,14 +9530,19 @@
     },
     "603": {
       "action": "BUG",
-      "batch": null,
-      "closed_at": null,
-      "evidence": null,
+      "batch": "bug-603-npm-audit",
+      "closed_at": "2026-06-01T19:30:00Z",
+      "evidence": "src/ask-styx/package.json:vitest upgraded 3.2.4→4.1.7 fixing GHSA-5xrq-8626-4rwp; src/test-harness/package.json:same; remaining 25 vulns are expo transitive deps requiring expo 54→56 major bump",
       "history": [
         {
           "from": "UNREAD",
           "to": "BUG",
           "at": "2026-06-01T15:50:49Z"
+        },
+        {
+          "from": "BUG",
+          "to": "CLOSED",
+          "at": "2026-06-01T19:30:00Z"
         }
       ],
       "labels": [
@@ -8993,8 +9551,8 @@
         "security"
       ],
       "pr": null,
-      "state": "BUG",
-      "state_updated": "2026-06-01T15:50:49Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T19:30:00Z",
       "title": "fix: ERESOLVE dependency conflict + 42 npm audit vulnerabilities"
     },
     "606": {
