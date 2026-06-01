@@ -188,21 +188,29 @@ function extractPdfText(filePath) {
 }
 
 function stripHtml(raw) {
-  // First strip HTML tags with more robust patterns
+  // Single-pass HTML entity decoder avoids double-unescaping (&amp;lt; → &lt; not <)
+  function decodeEntities(text) {
+    return text.replace(/&(amp|lt|gt|quot|#39|nbsp);/gi, (match, name) => {
+      const lower = name.toLowerCase();
+      if (lower === "amp") return "&";
+      if (lower === "lt") return "<";
+      if (lower === "gt") return ">";
+      if (lower === "quot") return '"';
+      if (lower === "#39") return "'";
+      if (lower === "nbsp") return " ";
+      return match;
+    });
+  }
+
+  // First strip HTML tags, allowing whitespace in end-tag names
   const stripped = raw
-    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, " ")
-    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, " ")
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, " ")
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style\s*>/gi, " ")
     .replace(/<!--[\s\S]*?-->/g, " ")
     .replace(/<[^>]+>/g, " ");
 
-  // Then unescape HTML entities
-  return stripped
-    .replace(/&nbsp;/gi, " ")
-    .replace(/&amp;/gi, "&")
-    .replace(/&lt;/gi, "<")
-    .replace(/&gt;/gi, ">")
-    .replace(/&quot;/gi, '"')
-    .replace(/&#39;/gi, "'")
+  // Then decode entities in a single pass
+  return decodeEntities(stripped)
     .replace(/[ \t]+\n/g, "\n")
     .replace(/[ \t]{2,}/g, " ");
 }

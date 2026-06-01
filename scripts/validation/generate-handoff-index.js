@@ -30,10 +30,12 @@ function labelName(label) {
 
 function sanitizeTableCell(value) {
   return String(value ?? "")
-    .replace(/\|/g, "\\|")
-    .replace(/\r?\n+/g, " ")
+    .replace(/\\/g, "\\\\") // Escape backslashes first
+    .replace(/\|/g, "\\|") // Escape pipe to prevent cell injection
+    .replace(/[\[\]()]/g, "\\$&") // Escape markdown link/paren chars
     .replace(/[<>]/g, "") // Remove angle brackets to prevent HTML injection
     .replace(/[`~]/g, "") // Remove backticks to prevent code injection
+    .replace(/\r?\n+/g, " ")
     .trim();
 }
 
