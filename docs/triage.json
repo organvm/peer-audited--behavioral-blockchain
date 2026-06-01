@@ -43,6 +43,18 @@
       "completed": "2026-06-01T15:57:13Z",
       "reconciled": true,
       "test_passed": true
+    },
+    {
+      "id": "build-tier2-services",
+      "phase": "Tier 2 — Mobile tests + oracle circuit breaker",
+      "issues": [
+        45,
+        66
+      ],
+      "started": "2026-06-01T15:57:36Z",
+      "completed": "2026-06-01T16:00:43Z",
+      "reconciled": true,
+      "test_passed": true
     }
   ],
   "issues": {
@@ -6263,22 +6275,27 @@
     },
     "45": {
       "action": "BUILD",
-      "batch": "build-tier1-quick",
+      "batch": "build-tier2-services",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/mobile/App.navigation.spec.tsx:1",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:46Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T15:59:08Z"
         }
       ],
       "labels": [
         "testing"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:46Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T15:59:08Z",
       "title": "Mobile nav: add regression tests for SubmitProof route wiring"
     },
     "450": {
@@ -9072,14 +9089,34 @@
     },
     "66": {
       "action": "BUILD",
-      "batch": "build-tier1-quick",
+      "batch": "build-tier2-services",
       "closed_at": null,
-      "evidence": null,
+      "evidence": "src/api/services/health/circuit-breaker.service.ts:1",
       "history": [
         {
           "from": "UNREAD",
           "to": "INSPECTED",
           "at": "2026-06-01T15:50:49Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "BUILD_STARTED",
+          "at": "2026-06-01T16:00:40Z"
+        },
+        {
+          "from": "BUILD_STARTED",
+          "to": "BUILD_DONE",
+          "at": "2026-06-01T16:00:40Z"
+        },
+        {
+          "from": "BUILD_DONE",
+          "to": "TESTED",
+          "at": "2026-06-01T16:00:40Z"
+        },
+        {
+          "from": "TESTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T16:00:40Z"
         }
       ],
       "labels": [
@@ -9088,8 +9125,8 @@
         "P1-beta-enhancer"
       ],
       "pr": null,
-      "state": "INSPECTED",
-      "state_updated": "2026-06-01T15:50:49Z",
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T16:00:40Z",
       "title": "feat: Oracle circuit breaker & pausable countdown — safety mechanism for verification failures"
     },
     "67": {
