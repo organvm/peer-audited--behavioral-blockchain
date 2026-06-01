@@ -31,7 +31,7 @@ const mockTargets = [
 
 describe("NoContactRecoveryPanel", () => {
   it("renders with targets", () => {
-    render(<NoContactRecoveryPanel targets={mockTargets} userId="u1" />);
+    render(<NoContactRecoveryPanel targets={mockTargets} />);
     expect(screen.getByTestId("no-contact-recovery-panel")).toBeDefined();
     expect(screen.getByTestId("nc-target-t1")).toBeDefined();
     expect(screen.getByTestId("nc-target-t2")).toBeDefined();
@@ -39,12 +39,12 @@ describe("NoContactRecoveryPanel", () => {
   });
 
   it("shows alert for critical targets", () => {
-    render(<NoContactRecoveryPanel targets={mockTargets} userId="u1" />);
+    render(<NoContactRecoveryPanel targets={mockTargets} />);
     expect(screen.getByTestId("nc-alert")).toBeDefined();
   });
 
   it("switches to flows tab", () => {
-    render(<NoContactRecoveryPanel targets={mockTargets} userId="u1" />);
+    render(<NoContactRecoveryPanel targets={mockTargets} />);
     fireEvent.click(screen.getByText(/Flows/));
     expect(screen.getByTestId("nc-flows")).toBeDefined();
     expect(screen.getByTestId("nc-flow-f1")).toBeDefined();
@@ -52,12 +52,12 @@ describe("NoContactRecoveryPanel", () => {
   });
 
   it("shows empty state with no targets", () => {
-    render(<NoContactRecoveryPanel targets={[]} userId="u1" />);
+    render(<NoContactRecoveryPanel targets={[]} />);
     expect(screen.getByTestId("nc-targets")).toBeDefined();
   });
 
   it("displays all 5 recovery flows", () => {
-    render(<NoContactRecoveryPanel targets={mockTargets} userId="u1" />);
+    render(<NoContactRecoveryPanel targets={mockTargets} />);
     fireEvent.click(screen.getByText(/Flows/));
     [
       "nc-flow-f1",

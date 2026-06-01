@@ -54,6 +54,7 @@ valid_transition() {
   "BUILD_STARTED→CLOSED") return 0 ;; # direct path for already-implemented-in-build
   "BUILD_DONE→CLOSED") return 0 ;;    # direct close for simple fixes (no PR needed)
   "TESTED→CLOSED") return 0 ;;        # direct close after tests pass
+  "BUG→CLOSED") return 0 ;;           # bug fix verified
   *) return 1 ;;
   esac
 }

@@ -3,8 +3,6 @@ import {
   Clock,
   ZoomIn,
   ZoomOut,
-  Filter,
-  ChevronDown,
   AlertCircle,
   CheckCircle,
   XCircle,

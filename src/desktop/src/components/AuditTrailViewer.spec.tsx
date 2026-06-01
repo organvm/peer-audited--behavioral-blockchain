@@ -2,8 +2,9 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 // Jest globals available via ts-jest
 import AuditTrailViewer from "./AuditTrailViewer";
+import type { AuditEntry } from "./AuditTrailViewer";
 
-const mockEntries = [
+const mockEntries: AuditEntry[] = [
   {
     id: "a1",
     eventType: "CONTRACT_CREATED",

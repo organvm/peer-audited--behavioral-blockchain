@@ -28,7 +28,6 @@ interface RecoveryFlow {
 interface NoContactRecoveryPanelProps {
   targets: NoContactTarget[];
   flows?: RecoveryFlow[];
-  userId: string;
 }
 
 const FLOW_DEFINITIONS: RecoveryFlow[] = [
@@ -72,7 +71,6 @@ const FLOW_DEFINITIONS: RecoveryFlow[] = [
 export default function NoContactRecoveryPanel({
   targets,
   flows = FLOW_DEFINITIONS,
-  userId,
 }: NoContactRecoveryPanelProps) {
   const [activeTab, setActiveTab] = useState<"targets" | "flows">("targets");
 

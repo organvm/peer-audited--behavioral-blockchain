@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { FileSearch, Download, Eye, Calendar, Hash } from "lucide-react";
 
-interface AuditEntry {
+export interface AuditEntry {
   id: string;
   eventType: string;
   timestamp: Date;
