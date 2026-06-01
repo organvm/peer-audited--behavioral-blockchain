@@ -1,0 +1,6821 @@
+{
+  "batches": [
+    {
+      "id": "close-already-impl",
+      "phase": "Phase 1 — Close already implemented",
+      "issues": [
+        29,
+        30,
+        33,
+        162,
+        243,
+        642,
+        187,
+        201,
+        202,
+        203,
+        204,
+        205,
+        242,
+        244,
+        419,
+        420,
+        421
+      ],
+      "started": "2026-06-01T15:40:38Z",
+      "completed": "2026-06-01T15:40:59Z",
+      "reconciled": true,
+      "test_passed": true
+    }
+  ],
+  "issues": {
+    "100": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Resistance pattern detection engine — displacement, self-dramatization, victimhood, healing trap"
+    },
+    "101": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "api",
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: AI rationalization classifier — Pressfield-informed excuse analysis via Gemini"
+    },
+    "102": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta",
+        "recovery"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: BBO (Bigger Better Offer) substitution engine — active craving replacement library"
+    },
+    "103": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Styx Academy — structured psychoeducation module (reward-based learning curriculum)"
+    },
+    "104": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Zero-gap contract rollover — 'Start the Next One Today' momentum bridge"
+    },
+    "105": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Generosity loop / Pay It Forward — prosocial reward mechanism for successful completers"
+    },
+    "106": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Fury auditor wellness system — empathy fatigue prevention, bias detection, distraction flagging"
+    },
+    "107": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Emotional contagion safeguards for pod failure broadcasting"
+    },
+    "108": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "api",
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Passive proof API integrations — Strava, Duolingo, GitHub, Calm, Kindle beyond health wearables"
+    },
+    "109": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta",
+        "recovery"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Disenchantment score — reward devaluation tracking over contract lifecycle"
+    },
+    "110": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Habit discontinuity window detector — life transitions as acquisition/re-engagement triggers"
+    },
+    "111": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Implementation intention contract syntax — time + location binding beyond habit stacking"
+    },
+    "112": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Goldilocks difficulty calibration — bidirectional adaptive challenge + overambitious timetable guard"
+    },
+    "113": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: social environment sabotage detection (Crab Bucket Alert)"
+    },
+    "114": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: commitment device marketplace (one-time setup actions)"
+    },
+    "115": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: identity-based reframing engine for notifications"
+    },
+    "116": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Save More Tomorrow upward stake escalation"
+    },
+    "117": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Professional Mode UX (self-distancing & detachment)"
+    },
+    "118": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: habituation detector & creative disruption for long-running contracts"
+    },
+    "119": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: behavior swap contracts (substitution-based oaths)"
+    },
+    "120": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Deploy ask-styx-proxy Cloudflare Worker"
+    },
+    "121": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Enable GitHub Pages + set ASK_STYX_WORKER_URL repo variable"
+    },
+    "122": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Update wrangler.toml ALLOWED_ORIGIN after confirming GH Pages URL"
+    },
+    "123": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "mobile",
+        "blocked",
+        "owner:mobile-native"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "[Blocked] F-MOBILE-01: Native iOS/Android Camera Module"
+    },
+    "124": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "mobile",
+        "blocked",
+        "owner:mobile-native"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "[Blocked] F-VERIFY-02: HealthKit Native Bridge (iOS)"
+    },
+    "125": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "mobile",
+        "blocked",
+        "owner:mobile-native"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "[Blocked] F-VERIFY-03: Google Health Connect Bridge (Android)"
+    },
+    "126": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "api",
+        "b2b",
+        "blocked",
+        "business",
+        "owner:business-development"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "[Blocked] F-VERIFY-04: Fitbit/WHOOP API Integration"
+    },
+    "127": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "mobile",
+        "blocked",
+        "owner:mobile-native",
+        "owner:release-ops"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "[Blocked] F-MOBILE-03: Remote Push Notifications Setup"
+    },
+    "128": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "mobile",
+        "blocked",
+        "owner:mobile-native"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "[Blocked] F-MOBILE-04: Biometric Lock (Voice/Face)"
+    },
+    "129": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "api",
+        "b2b",
+        "blocked",
+        "business",
+        "owner:business-development"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "[Blocked] F-WEB-05: Plaid Link Integration"
+    },
+    "130": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "blocked",
+        "blockchain",
+        "owner:cryptography"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "[Blocked] F-MARKET-03: EVM Smart Contract Escrow"
+    },
+    "131": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "blocked",
+        "blockchain",
+        "owner:cryptography"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "[Blocked] F-MARKET-04: ZKP Milestone Verification"
+    },
+    "132": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "api",
+        "blocked",
+        "owner:legal-compliance",
+        "legal"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "[Blocked] F-AEGIS-05: KYC / Identity Verification Integration"
+    },
+    "133": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "blocked",
+        "business",
+        "owner:legal-compliance",
+        "owner:business-development",
+        "finance"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "[Blocked] F-INFRA-01: Secure High-Risk Merchant Account for Production Settlement"
+    },
+    "134": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "mobile",
+        "blocked",
+        "owner:mobile-native"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "[Phase Beta/Gamma] Native Mobile Blockers: HealthKit & Secure Camera"
+    },
+    "135": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops",
+        "blocked",
+        "owner:release-ops",
+        "owner:backend-platform"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "[Phase Delta] Blockers: Video Pipeline & Native Dashboard UI"
+    },
+    "136": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "blocked",
+        "business",
+        "owner:legal-compliance",
+        "legal"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "[Blocked] F-LEGAL-05: Skill-Based Contest Whitepaper + Counsel Sign-Off"
+    },
+    "137": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "blocked",
+        "business",
+        "owner:legal-compliance"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "[Blocked] F-LEGAL-07: Prize Indemnity Insurance Procurement"
+    },
+    "138": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "devops",
+        "blocked",
+        "business",
+        "owner:legal-compliance",
+        "owner:release-ops"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "[Blocked] F-INFRA-09: Web Shop Payment Routing + Apple Neutral Notice Compliance"
+    },
+    "139": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "b2b",
+        "blocked",
+        "business",
+        "owner:business-development"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "[Blocked] F-INFRA-10: \"Styx-Certified\" Hardware Partnership Program"
+    },
+    "140": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "b2b",
+        "blocked",
+        "business",
+        "owner:business-development"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "[Blocked] F-B2B-09: Insurance Cross-Pollination Partnership"
+    },
+    "141": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "mobile",
+        "blocked",
+        "business",
+        "owner:mobile-native",
+        "owner:release-ops",
+        "ops"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "[Blocked] Beta Ops: App Store Connect + TestFlight Provisioning"
+    },
+    "142": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "mobile",
+        "blocked",
+        "business",
+        "owner:cryptography"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "[Blocked] F-VERIFY-09: C2PA Content Provenance + TSA Infrastructure"
+    },
+    "143": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "mobile",
+        "blocked",
+        "business",
+        "owner:mobile-native"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "[Blocked] F-VERIFY-11: Continuous Mobile App Attestation SDK Procurement"
+    },
+    "144": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "blocked",
+        "blockchain",
+        "owner:cryptography"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "[Blocked] F-VERIFY-14: ZK Privacy Layer for Digital Exhaust (Proving Engine)"
+    },
+    "145": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "devops",
+        "blocked"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Blocked Handoff Burn-down - 2026-03-05"
+    },
+    "146": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "blocked",
+        "owner:legal-compliance",
+        "owner:release-ops",
+        "legal"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "[Blocked] F-LEGAL-09: App Store UGC Moderation Policy + Submission Package"
+    },
+    "147": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "blocked",
+        "owner:legal-compliance",
+        "owner:business-development",
+        "legal"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "[Blocked] F-LEGAL-11: Stablecoin Stakes Regulatory + Banking Pathway"
+    },
+    "148": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "blocked",
+        "owner:legal-compliance",
+        "legal"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "[Blocked] F-LEGAL-10: Cross-Jurisdictional Consent Matrix Counsel Review"
+    },
+    "162": {
+      "action": "UNCLASSIFIED",
+      "batch": "close-already-impl",
+      "closed_at": null,
+      "evidence": "src/shared/libs/integrity.ts:42",
+      "history": [
+        {
+          "from": "UNREAD",
+          "to": "INSPECTED",
+          "at": "2026-06-01T15:40:51Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T15:40:51Z"
+        }
+      ],
+      "labels": [
+        "bug",
+        "api",
+        "P2-post-beta",
+        "full-breath-audit"
+      ],
+      "pr": null,
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T15:40:51Z",
+      "title": "fix: integrity score has no ceiling — fraud penalties become negligible at high scores"
+    },
+    "164": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops",
+        "P2-post-beta",
+        "owner:backend-platform",
+        "full-breath-audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "fix: Redis single point of failure — no HA configuration"
+    },
+    "165": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "api",
+        "P2-post-beta",
+        "full-breath-audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: offline/fallback LLM for grill-me, ELI5, and ask-styx chat"
+    },
+    "177": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops",
+        "owner:legal-compliance"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Skill-contest legal whitepaper & release gate (TKT-P1-019)"
+    },
+    "179": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "devops",
+        "P2-post-beta",
+        "unimplemented-plan"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: automate doc-intelligence pipeline (ingest, parse, drift-check)"
+    },
+    "180": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "enhancement",
+        "P2-post-beta",
+        "unimplemented-plan"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: research-to-ticket conversion pipeline"
+    },
+    "182": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "desktop",
+        "P2-post-beta",
+        "unimplemented-plan"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: The Judge frontend forensic panels in src/desktop"
+    },
+    "183": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "P2-post-beta",
+        "unimplemented-plan"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: E2G final implementation mapping report"
+    },
+    "184": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "good first issue",
+        "unimplemented-plan"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "chore: add FUNDING.yml for GitHub Sponsors"
+    },
+    "186": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: doctoral dissertation — epic tracker"
+    },
+    "187": {
+      "action": "UNCLASSIFIED",
+      "batch": "close-already-impl",
+      "closed_at": null,
+      "evidence": ".github/workflows/deploy-ask-styx.yml:1",
+      "history": [
+        {
+          "from": "UNREAD",
+          "to": "INSPECTED",
+          "at": "2026-06-01T15:40:51Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T15:40:51Z"
+        }
+      ],
+      "labels": [
+        "enhancement",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T15:40:51Z",
+      "title": "feat: Ask Styx standalone SPA — epic tracker"
+    },
+    "188": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "artifact-dissection",
+        "audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "audit: business/ops gap analysis — epic tracker"
+    },
+    "189": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "artifact-dissection",
+        "audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "audit: stub/placeholder inventory — epic tracker"
+    },
+    "190": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "artifact-dissection",
+        "audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "audit: architecture completeness matrix — epic tracker"
+    },
+    "191": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "artifact-dissection",
+        "audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "audit: cross-tool comprehensive summary — epic tracker"
+    },
+    "192": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "artifact-dissection",
+        "governance"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "governance: registry + tier promotion — epic tracker"
+    },
+    "193": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: create docs/thesis/ directory structure + chapter scaffolds"
+    },
+    "194": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: set up BibTeX bibliography from existing 200+ citations"
+    },
+    "195": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: write thesis notation and symbol guide"
+    },
+    "196": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: create chapter reading notes templates"
+    },
+    "197": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "research",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: map 79 existing docs into thesis chapter structure"
+    },
+    "198": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: draft Chapter 1 — Introduction and Problem Statement"
+    },
+    "199": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "research",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: formalize 9 theorem proofs as LaTeX/Markdown"
+    },
+    "200": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "devops",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: thesis production pipeline (PDF build, citation check)"
+    },
+    "201": {
+      "action": "UNCLASSIFIED",
+      "batch": "close-already-impl",
+      "closed_at": null,
+      "evidence": "src/ask-styx/src/App.tsx:1",
+      "history": [
+        {
+          "from": "UNREAD",
+          "to": "INSPECTED",
+          "at": "2026-06-01T15:40:51Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T15:40:51Z"
+        }
+      ],
+      "labels": [
+        "enhancement",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T15:40:51Z",
+      "title": "feat: scaffold ask-styx repo (package.json, Vite, Tailwind, tsconfig)"
+    },
+    "202": {
+      "action": "UNCLASSIFIED",
+      "batch": "close-already-impl",
+      "closed_at": null,
+      "evidence": "src/ask-styx/src/App.tsx:1",
+      "history": [
+        {
+          "from": "UNREAD",
+          "to": "INSPECTED",
+          "at": "2026-06-01T15:40:51Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T15:40:51Z"
+        }
+      ],
+      "labels": [
+        "enhancement",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T15:40:51Z",
+      "title": "feat: extract + adapt ChatMessage.tsx from monorepo"
+    },
+    "203": {
+      "action": "UNCLASSIFIED",
+      "batch": "close-already-impl",
+      "closed_at": null,
+      "evidence": "src/ask-styx/src/App.tsx:1",
+      "history": [
+        {
+          "from": "UNREAD",
+          "to": "INSPECTED",
+          "at": "2026-06-01T15:40:51Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T15:40:51Z"
+        }
+      ],
+      "labels": [
+        "enhancement",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T15:40:51Z",
+      "title": "feat: extract + adapt ChatInterface.tsx (worker URL swap)"
+    },
+    "204": {
+      "action": "UNCLASSIFIED",
+      "batch": "close-already-impl",
+      "closed_at": null,
+      "evidence": "src/ask-styx/worker/index.ts:1",
+      "history": [
+        {
+          "from": "UNREAD",
+          "to": "INSPECTED",
+          "at": "2026-06-01T15:40:51Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T15:40:51Z"
+        }
+      ],
+      "labels": [
+        "enhancement",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T15:40:51Z",
+      "title": "feat: build Cloudflare Worker ask-styx-proxy (~50 lines)"
+    },
+    "205": {
+      "action": "UNCLASSIFIED",
+      "batch": "close-already-impl",
+      "closed_at": null,
+      "evidence": ".github/workflows/deploy-ask-styx.yml:1",
+      "history": [
+        {
+          "from": "UNREAD",
+          "to": "INSPECTED",
+          "at": "2026-06-01T15:40:51Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T15:40:51Z"
+        }
+      ],
+      "labels": [
+        "devops",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T15:40:51Z",
+      "title": "feat: add GH Pages deploy workflow (.github/workflows/deploy.yml)"
+    },
+    "206": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "chore: add seed.yaml + CLAUDE.md to ask-styx repo"
+    },
+    "207": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "testing",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "test: ChatMessage + ChatInterface component tests (Vitest)"
+    },
+    "208": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "chore: build verify + wrangler.toml ALLOWED_ORIGIN"
+    },
+    "209": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "chore: init git, create remote repo, push, verify GH Pages live"
+    },
+    "210": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "artifact-dissection",
+        "audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "audit: Phase 1 — read core strategic docs (implementation-status, E2G, roadmap)"
+    },
+    "211": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "research",
+        "artifact-dissection",
+        "audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "audit: Phase 2 — read market & research foundation (market-analysis, competitor, behavioral-econ)"
+    },
+    "212": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops",
+        "artifact-dissection",
+        "audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "audit: Phase 3 — read infrastructure & ops (render.yaml, .env.example, docker-compose, terraform)"
+    },
+    "213": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "artifact-dissection",
+        "audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "audit: Phase 4 — search operational detail docs (ops, monitoring, support, hiring)"
+    },
+    "214": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "business",
+        "artifact-dissection",
+        "audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "audit: Phase 5 — search marketing & content (pitch, positioning, brand)"
+    },
+    "215": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "artifact-dissection",
+        "audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "audit: Phase 6 — search growth & retention (feedback, iteration, testing)"
+    },
+    "216": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "business",
+        "artifact-dissection",
+        "audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "audit: Phase 7 — read business model & metrics (b2b metrics service, revenue docs)"
+    },
+    "217": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "business",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: compile gap analysis final report (6-category, risk assessment)"
+    },
+    "218": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "tech-debt",
+        "artifact-dissection",
+        "audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "audit: Phase 1 — grep comment markers (TODO, FIXME, HACK, STUB, WIP)"
+    },
+    "219": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "tech-debt",
+        "artifact-dissection",
+        "audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "audit: Phase 2 — grep function/method stubs (throw not implemented, bare returns)"
+    },
+    "220": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "tech-debt",
+        "artifact-dissection",
+        "audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "audit: Phase 3 — grep component/UI placeholders (Coming soon, placeholder text)"
+    },
+    "221": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "tech-debt",
+        "artifact-dissection",
+        "audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "audit: Phase 4 — grep hardcoded mock data (const mockData, MOCK:, STUB:)"
+    },
+    "222": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "tech-debt",
+        "artifact-dissection",
+        "audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "audit: Phase 5 — filename-based detection (stub, placeholder, mock, dummy in name)"
+    },
+    "223": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "tech-debt",
+        "artifact-dissection",
+        "audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "audit: Phase 6 — targeted directory scans (services/, modules/, screens/, panels/)"
+    },
+    "224": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "tech-debt",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: compile stub inventory report (by workspace, type, priority)"
+    },
+    "225": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "api",
+        "artifact-dissection",
+        "audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "audit: Phase 1 — service layer deep dive (40+ files in src/api/services/)"
+    },
+    "226": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "api",
+        "artifact-dissection",
+        "audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "audit: Phase 2 — NestJS module layer deep dive (100+ files in src/api/src/modules/)"
+    },
+    "227": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "artifact-dissection",
+        "audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "audit: Phase 3 — shared libraries inventory (src/shared/libs/)"
+    },
+    "228": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "artifact-dissection",
+        "audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "audit: Phase 4 — frontend inventory (src/web/app/, utils/, stores/, components/)"
+    },
+    "229": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "mobile",
+        "artifact-dissection",
+        "audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "audit: Phase 5 — mobile inventory (src/mobile/screens/, services/)"
+    },
+    "230": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "desktop",
+        "artifact-dissection",
+        "audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "audit: Phase 6 — desktop inventory (src/desktop/src/panels/)"
+    },
+    "231": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "database",
+        "artifact-dissection",
+        "audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "audit: Phase 7 — database schema + seed data (schema.sql, seed.sql)"
+    },
+    "232": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "artifact-dissection",
+        "audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "audit: Phase 8 — synthesize completeness matrix (19 feature areas, % scoring)"
+    },
+    "233": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: publish architecture completeness matrix report"
+    },
+    "234": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "artifact-dissection",
+        "audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "audit: extract 8 architecture files content from docs/architecture/"
+    },
+    "235": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "artifact-dissection",
+        "audit"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "audit: retrieve git log (last 10+ commits with context)"
+    },
+    "236": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: write final comprehensive audit summary"
+    },
+    "237": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "artifact-dissection",
+        "governance"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "governance: register Styx in registry-v2.json (add entry, bump counts)"
+    },
+    "238": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "artifact-dissection",
+        "governance"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "governance: promote seed.yaml tier standard -> flagship"
+    },
+    "239": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "artifact-dissection",
+        "governance"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: create habitat governance lifecycle standard (12-habitat-governance-lifecycle.md)"
+    },
+    "240": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "artifact-dissection",
+        "governance"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: create organizational topology map (repo/organ/system/orchestration layers)"
+    },
+    "241": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops",
+        "artifact-dissection",
+        "governance"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "chore: run system sync (registry validate, metrics calculate, seed validate)"
+    },
+    "242": {
+      "action": "UNCLASSIFIED",
+      "batch": "close-already-impl",
+      "closed_at": null,
+      "evidence": "src/api/src/modules/ops/beta-readiness.service.ts:1",
+      "history": [
+        {
+          "from": "UNREAD",
+          "to": "INSPECTED",
+          "at": "2026-06-01T15:40:51Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T15:40:52Z"
+        }
+      ],
+      "labels": [
+        "enhancement",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T15:40:52Z",
+      "title": "feat: define BetaReadinessContract TypeScript interface"
+    },
+    "243": {
+      "action": "UNCLASSIFIED",
+      "batch": "close-already-impl",
+      "closed_at": null,
+      "evidence": "src/api/src/modules/ops/beta-readiness.service.ts:1",
+      "history": [
+        {
+          "from": "UNREAD",
+          "to": "INSPECTED",
+          "at": "2026-06-01T15:40:51Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T15:40:51Z"
+        }
+      ],
+      "labels": [
+        "enhancement",
+        "api",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T15:40:51Z",
+      "title": "feat: implement BetaReadiness NestJS service with Gates 01-08 checks"
+    },
+    "244": {
+      "action": "UNCLASSIFIED",
+      "batch": "close-already-impl",
+      "closed_at": null,
+      "evidence": "src/api/src/modules/ops/beta-readiness.service.ts:1",
+      "history": [
+        {
+          "from": "UNREAD",
+          "to": "INSPECTED",
+          "at": "2026-06-01T15:40:52Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T15:40:52Z"
+        }
+      ],
+      "labels": [
+        "enhancement",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T15:40:52Z",
+      "title": "feat: export beta-readiness.json artifact from service"
+    },
+    "245": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "devops: integrate BetaReadiness as CI pre-deploy gate"
+    },
+    "246": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: create scripts/doc-intelligence/ directory structure"
+    },
+    "247": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: doc inventory script (hash, size, git metadata per file)"
+    },
+    "248": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: atomic element extraction script"
+    },
+    "249": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: unity-contention classification script"
+    },
+    "250": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "research",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: parse 10 competitor deep-dive files for feature gaps"
+    },
+    "251": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: generate implementation-ready ticket templates with API signatures"
+    },
+    "252": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: cross-reference gaps with doc-ingest-register"
+    },
+    "253": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "business",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: create investor slide deck (10-15 slides)"
+    },
+    "254": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "business",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: write executive summary PDF (2-3 pages)"
+    },
+    "255": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "business",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: compile risk matrix + resource plan"
+    },
+    "256": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "desktop",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: DisputeTimeline component in src/desktop/src/panels/"
+    },
+    "257": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "desktop",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: AuditTrailViewer component"
+    },
+    "258": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "desktop",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: EvidenceComparator component"
+    },
+    "259": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: inventory all 7 E2G documents with overlap analysis"
+    },
+    "260": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: create canonical E2G status matrix (suggestion -> status -> file ref)"
+    },
+    "261": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "chore: create .github/FUNDING.yml with GitHub Sponsors placeholder"
+    },
+    "262": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "artifact-dissection",
+        "session-archive"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "archive: pre-migration session transcripts (intake/ scope, 2 sessions + 15 subagents)"
+    },
+    "263": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "artifact-dissection",
+        "session-archive"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "archive: primary development session transcripts (8 sessions + 80+ subagents)"
+    },
+    "264": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "artifact-dissection",
+        "session-archive"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "archive: documentation session transcripts (docs/ scope, 4 sessions + 30+ subagents)"
+    },
+    "265": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "artifact-dissection",
+        "cache-cleanup"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "chore: audit + clean ephemeral tool result cache (27+ files across 3 project dirs)"
+    },
+    "266": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "artifact-dissection"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "chore: create MEMORY.md for all 3 project directories"
+    },
+    "267": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "artifact-dissection",
+        "agent-context"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: activate domain-expert agent contexts — epic tracker"
+    },
+    "268": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "business",
+        "agent-context"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "business: define enterprise ICP (firmographics, psychographics, buying triggers)"
+    },
+    "269": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "business",
+        "agent-context"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "business: build unit economics model ($39 consumer contract)"
+    },
+    "270": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "business",
+        "agent-context"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "business: SEO keyword research for No-Contact recovery niche"
+    },
+    "271": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "agent-context"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: draft App Store UGC moderation policy checklist"
+    },
+    "272": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops",
+        "agent-context"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "devops: draft incident response runbook (severity, escalation, rollback)"
+    },
+    "273": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "audit",
+        "agent-context"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "audit: UX flow audit — 5 critical flows (friction, safety, a11y, copy)"
+    },
+    "274": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "agent-context"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: draft FAQ v1 — 10 help articles with linguistic cloaker vocabulary"
+    },
+    "275": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: archived plan catalog (14 plans)"
+    },
+    "276": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: active plan catalog (22 plans)"
+    },
+    "277": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: codex plan catalog (8 plans)"
+    },
+    "283": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "business",
+        "legal"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Legal & Compliance Department — Task Tracker"
+    },
+    "285": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "business",
+        "product"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Product & Design Department — Task Tracker"
+    },
+    "286": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "business",
+        "ops"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Operations & Infrastructure Department — Task Tracker"
+    },
+    "288": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "business",
+        "marketing"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Growth & Marketing Department — Task Tracker"
+    },
+    "29": {
+      "action": "UNCLASSIFIED",
+      "batch": "close-already-impl",
+      "closed_at": null,
+      "evidence": "src/mobile/services/UploadService.ts:1",
+      "history": [
+        {
+          "from": "UNREAD",
+          "to": "INSPECTED",
+          "at": "2026-06-01T15:40:51Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T15:40:51Z"
+        }
+      ],
+      "labels": [
+        "enhancement",
+        "mobile"
+      ],
+      "pr": null,
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T15:40:51Z",
+      "title": "Replace mock UploadService with real R2 integration"
+    },
+    "290": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "business",
+        "finance"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Finance & Revenue Department — Task Tracker"
+    },
+    "291": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "business",
+        "support"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Customer Success Department — Task Tracker"
+    },
+    "293": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "business",
+        "enterprise"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Enterprise Sales / B2B Department — Task Tracker"
+    },
+    "294": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "business",
+        "milestone"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "milestone: Launch operations timeline (Mar-Dec 2026)"
+    },
+    "295": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "ops",
+        "checklist"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "checklist: TestFlight Beta readiness gate"
+    },
+    "296": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "ops",
+        "finance",
+        "checklist"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "checklist: Real-money pilot readiness gate"
+    },
+    "297": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "legal",
+        "ops",
+        "checklist"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "checklist: App Store launch readiness gate"
+    },
+    "298": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "ops",
+        "enterprise",
+        "checklist"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "checklist: Enterprise sales readiness gate"
+    },
+    "299": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "business",
+        "hiring"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "hiring: Team building timeline (3 scenarios)"
+    },
+    "30": {
+      "action": "UNCLASSIFIED",
+      "batch": "close-already-impl",
+      "closed_at": null,
+      "evidence": "src/api/services/security/geofence.service.ts:1",
+      "history": [
+        {
+          "from": "UNREAD",
+          "to": "INSPECTED",
+          "at": "2026-06-01T15:40:51Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T15:40:51Z"
+        }
+      ],
+      "labels": [
+        "enhancement",
+        "api"
+      ],
+      "pr": null,
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T15:40:51Z",
+      "title": "Replace mock GeofenceService IP lookup with MaxMind"
+    },
+    "300": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "marketing",
+        "docs"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: GTM strategy & user acquisition plan"
+    },
+    "301": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "finance",
+        "docs"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: KPI framework, MRR targets & unit economics dashboard"
+    },
+    "302": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "ops",
+        "docs"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: Incident response runbook & monitoring playbook"
+    },
+    "303": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "product",
+        "docs"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: A/B testing framework & user research protocol"
+    },
+    "304": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "marketing",
+        "docs"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: Marketing strategy, content calendar & PR plan"
+    },
+    "305": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enterprise",
+        "docs"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: SLA template & enterprise security posture"
+    },
+    "307": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: RAIN mindfulness notifications (F-AEGIS-08)"
+    },
+    "308": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Ostrich effect detection (F-AEGIS-09)"
+    },
+    "31": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops",
+        "testing"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Configure Stripe test key for Gate 03 full-loop validation"
+    },
+    "318": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "owner:legal-compliance",
+        "legal"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Skill-contest whitepaper draft + legal review"
+    },
+    "319": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "owner:legal-compliance",
+        "legal"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "App Store UGC moderation policy document"
+    },
+    "320": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "owner:legal-compliance",
+        "legal"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Cross-jurisdictional consent matrix — data consent by state"
+    },
+    "321": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "owner:legal-compliance",
+        "legal"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Reviewer sanctions + appeal rights policy"
+    },
+    "322": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "owner:legal-compliance",
+        "legal"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Partner authority disclosure review"
+    },
+    "323": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "owner:legal-compliance",
+        "legal"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "SOC 2 Type I audit initiation"
+    },
+    "324": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "owner:legal-compliance",
+        "legal"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Enterprise DPA template — Data Processing Agreement"
+    },
+    "325": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "owner:legal-compliance",
+        "owner:business-development",
+        "legal"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Prize indemnity insurance evaluation"
+    },
+    "326": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "product"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Define beta success metrics — concrete targets"
+    },
+    "327": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "product"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "No-Contact recovery UX audit — 5 critical flows"
+    },
+    "328": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "product"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "User interview protocol — structured guide for 10 beta users"
+    },
+    "329": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "product"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "A/B test plan: onboarding variants"
+    },
+    "33": {
+      "action": "UNCLASSIFIED",
+      "batch": "close-already-impl",
+      "closed_at": null,
+      "evidence": "src/desktop/src/components/HashCollider.tsx:1",
+      "history": [
+        {
+          "from": "UNREAD",
+          "to": "INSPECTED",
+          "at": "2026-06-01T15:40:51Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T15:40:51Z"
+        }
+      ],
+      "labels": [
+        "enhancement",
+        "desktop"
+      ],
+      "pr": null,
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T15:40:51Z",
+      "title": "HashCollider desktop panel uses mock pHash simulation"
+    },
+    "330": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "product"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Feature prioritization from analytics — data-driven backlog"
+    },
+    "331": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "product"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Enterprise UX audit — HR + coach dashboard usability"
+    },
+    "332": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Uptime monitoring setup — UptimeRobot/BetterUptime"
+    },
+    "333": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops",
+        "owner:release-ops"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Render starter → production plan upgrade evaluation"
+    },
+    "334": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops",
+        "owner:release-ops"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Database backup policy + tested restore procedure"
+    },
+    "335": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Incident response runbook v1 — severity, escalation, rollback"
+    },
+    "336": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Load testing — 500 concurrent users simulation"
+    },
+    "337": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "CDN/WAF production config verification"
+    },
+    "338": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops",
+        "owner:release-ops"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "APNs/FCM credential management — secure push notification keys"
+    },
+    "339": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Load testing — 5,000 concurrent users at scale"
+    },
+    "340": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops",
+        "owner:release-ops"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Auto-scaling + cost alerting configuration"
+    },
+    "345": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "marketing",
+        "follow-up"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Referral loop — waitlist and cohort invite mechanic"
+    },
+    "346": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "marketing",
+        "follow-up"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "PR strategy for App Store launch — press kit + target list + narrative"
+    },
+    "348": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "finance"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Unit economics model v1 — $39 contract profitability"
+    },
+    "349": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "finance"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Stripe production account setup — real-money switch"
+    },
+    "350": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "finance"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Financial reconciliation process — Stripe vs internal records"
+    },
+    "351": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "finance"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "CAC/LTV tracking dashboard"
+    },
+    "352": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "finance"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "B2B pricing model — $49/$149/$349/$999+ tiers"
+    },
+    "353": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "finance"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Revenue reporting — MRR, churn, ARPU monthly report"
+    },
+    "354": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "support"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Support channel setup — email + Discord for beta"
+    },
+    "355": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "support"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "FAQ / Help Center v1 — 10 help articles"
+    },
+    "356": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "support"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Onboarding email sequence — 7-day drip campaign"
+    },
+    "357": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "support"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Churn signal detection — predictive patterns"
+    },
+    "358": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "support"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "In-app help / chatbot integration"
+    },
+    "359": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "b2b",
+        "enterprise"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Identify 50 target therapists/coaches — ICP definition"
+    },
+    "360": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "b2b",
+        "owner:business-development",
+        "enterprise"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Outreach sequence — 5-email cold outreach + LinkedIn"
+    },
+    "361": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "b2b",
+        "enterprise"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Enterprise demo environment — sandboxed Render instance"
+    },
+    "362": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "b2b",
+        "owner:legal-compliance",
+        "enterprise"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Security questionnaire template — pre-filled answers"
+    },
+    "363": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "b2b",
+        "owner:business-development",
+        "enterprise"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "First pilot onboarding — 1-3 practitioners"
+    },
+    "364": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "b2b",
+        "enterprise"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Enterprise pricing live — published tiers + billing"
+    },
+    "365": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops",
+        "owner:release-ops"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Apple Developer Account + TestFlight setup"
+    },
+    "366": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "owner:mobile-native"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Hire/contract mobile native engineer (Swift)"
+    },
+    "367": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "owner:legal-compliance",
+        "legal"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Engage legal counsel (retainer)"
+    },
+    "368": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Seed deep agents for LEG, FIN, PRD, OPS departments"
+    },
+    "369": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Internal dogfood beta — founders + 5-10 trusted people"
+    },
+    "370": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Monitoring + alerting setup — Sentry + uptime"
+    },
+    "371": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "support"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Support channel setup — email + Discord"
+    },
+    "372": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "owner:release-ops"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TestFlight external beta — 50-100 users"
+    },
+    "374": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "product"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Beta feedback synthesis + iteration cycle"
+    },
+    "375": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "legal",
+        "finance"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Real-money pilot — 10-25 users"
+    },
+    "376": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "marketing"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Open beta expansion — 500+ users"
+    },
+    "377": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "owner:release-ops",
+        "legal"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "App Store submission"
+    },
+    "378": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "owner:release-ops"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "App Store launch (public) — general availability"
+    },
+    "379": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "owner:mobile-native"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Mobile Native Engineer (Swift) — contract sourcing"
+    },
+    "380": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "owner:legal-compliance"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Legal Counsel — retainer engagement"
+    },
+    "381": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "owner:mobile-native"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Kotlin contractor — Android health data bridge"
+    },
+    "382": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "QA / Beta Coordinator — part-time hire"
+    },
+    "383": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "marketing"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Growth / Community Manager — hiring"
+    },
+    "384": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "owner:business-development",
+        "enterprise"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Enterprise Sales / BD — hiring (if fundraise)"
+    },
+    "385": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "DevOps / SRE — part-time (if fundraise)"
+    },
+    "39": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops",
+        "testing"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Provision CI secrets for strict beta_readiness gate"
+    },
+    "40": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops",
+        "testing"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Require beta_readiness status check in main branch protection"
+    },
+    "41": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops",
+        "testing"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Establish first live beta_readiness baseline run and evidence"
+    },
+    "415": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Thesis: Directory structure + chapter scaffolding"
+    },
+    "416": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Thesis: BibTeX bibliography from 200+ citations"
+    },
+    "417": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Thesis: Notation and symbol guide"
+    },
+    "418": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "devops"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Thesis: Production pipeline (PDF build, citation check)"
+    },
+    "419": {
+      "action": "UNCLASSIFIED",
+      "batch": "close-already-impl",
+      "closed_at": null,
+      "evidence": "src/ask-styx/src/App.tsx:1",
+      "history": [
+        {
+          "from": "UNREAD",
+          "to": "INSPECTED",
+          "at": "2026-06-01T15:40:52Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T15:40:52Z"
+        }
+      ],
+      "labels": [
+        "enhancement"
+      ],
+      "pr": null,
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T15:40:52Z",
+      "title": "Ask Styx: Standalone React SPA scaffolding"
+    },
+    "420": {
+      "action": "UNCLASSIFIED",
+      "batch": "close-already-impl",
+      "closed_at": null,
+      "evidence": "src/ask-styx/worker/index.ts:1",
+      "history": [
+        {
+          "from": "UNREAD",
+          "to": "INSPECTED",
+          "at": "2026-06-01T15:40:52Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T15:40:52Z"
+        }
+      ],
+      "labels": [
+        "enhancement",
+        "devops"
+      ],
+      "pr": null,
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T15:40:52Z",
+      "title": "Ask Styx: Proxy worker deployment (Cloudflare)"
+    },
+    "421": {
+      "action": "UNCLASSIFIED",
+      "batch": "close-already-impl",
+      "closed_at": null,
+      "evidence": ".github/workflows/deploy-ask-styx.yml:1",
+      "history": [
+        {
+          "from": "UNREAD",
+          "to": "INSPECTED",
+          "at": "2026-06-01T15:40:52Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T15:40:52Z"
+        }
+      ],
+      "labels": [
+        "enhancement",
+        "devops"
+      ],
+      "pr": null,
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T15:40:52Z",
+      "title": "Ask Styx: GitHub Pages deploy workflow"
+    },
+    "422": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Ask Styx: Integration tests — E2E question→answer flow"
+    },
+    "423": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Gap analysis: Infrastructure & ops audit"
+    },
+    "424": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Gap analysis: Business model & metrics audit"
+    },
+    "425": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Gap analysis: Growth & retention audit"
+    },
+    "426": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Gap analysis: Remediation plan + priority matrix"
+    },
+    "427": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "desktop"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "DisputeTimeline: Component scaffolding + state management"
+    },
+    "428": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "desktop"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "DisputeTimeline: Evidence node rendering + timeline layout"
+    },
+    "429": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "desktop"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "DisputeTimeline: Interaction — zoom, filter, detail panels"
+    },
+    "430": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "desktop"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "DisputeTimeline: Tests — rendering, state transitions, edge cases"
+    },
+    "431": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Agents: Legal domain context + prompt engineering"
+    },
+    "432": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Agents: Finance domain context + prompt engineering"
+    },
+    "433": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Agents: Product domain context + prompt engineering"
+    },
+    "434": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Agents: Ops domain context + prompt engineering"
+    },
+    "435": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Agents: Integration tests — multi-agent routing"
+    },
+    "436": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Audit: Scan codebase for TODO/FIXME/stub placeholders"
+    },
+    "437": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Audit: Prioritize stubs by blast radius + phase relevance"
+    },
+    "438": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Audit: Generate remediation tickets for critical stubs"
+    },
+    "439": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Audit: Map all modules → feature coverage matrix"
+    },
+    "44": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Mobile capture: replace simulated proof media with real camera backend"
+    },
+    "440": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Audit: Identify architectural gaps + missing integrations"
+    },
+    "441": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Audit: Completeness scoring + gap remediation plan"
+    },
+    "442": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Audit: Aggregate findings from all audit phases"
+    },
+    "443": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Audit: Cross-reference gaps across tools + sessions"
+    },
+    "444": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Audit: Executive summary + priority action list"
+    },
+    "445": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Governance: Registry validation automation"
+    },
+    "446": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Governance: Tier promotion criteria + gate checks"
+    },
+    "447": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Governance: Promotion dashboard + audit trail"
+    },
+    "448": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-005: Schema + API — lockdown rules + timelock enforcement"
+    },
+    "449": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-005: UI — danger zone indicator + timelock countdown"
+    },
+    "45": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "testing"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Mobile nav: add regression tests for SubmitProof route wiring"
+    },
+    "450": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-005: Tests — lockdown triggers + timelock expiry"
+    },
+    "451": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-012: Schema + API — risk multiplier rules + schedule config"
+    },
+    "452": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-012: UI — multiplier indicator + schedule display"
+    },
+    "453": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-012: Tests — multiplier calculation + edge cases"
+    },
+    "454": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-017: Schema + API — partner linking + notification triggers"
+    },
+    "455": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-017: UI — partner invitation + status dashboard"
+    },
+    "456": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-017: Tests — protocol flow + notification delivery"
+    },
+    "457": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-010: Schema + API — progress tracking + downscale logic"
+    },
+    "458": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-010: UI — progress visualization + downscale flow"
+    },
+    "459": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-010: Tests — progress calculation + UX state transitions"
+    },
+    "46": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "api",
+        "brainstorm-audit",
+        "P1-beta-enhancer",
+        "recovery"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Baseline & final survey system (emotional distress, urge frequency, behavioral metrics)"
+    },
+    "460": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-016: Schema + API — oath storage + identity binding"
+    },
+    "461": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-016: UI — oath creation flow + identity confirmation"
+    },
+    "462": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-016: Tests — onboarding flow + oath persistence"
+    },
+    "463": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-018: Schema + API — gradient calculation + leaderboard data"
+    },
+    "464": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-018: UI — dashboard visualization + real-time leaderboard"
+    },
+    "465": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-018: Tests — gradient math + leaderboard ranking"
+    },
+    "466": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-006: API — push notification dispatch + device registration"
+    },
+    "467": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "owner:mobile-native"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-006: Native — APNs (iOS) + FCM (Android) integration"
+    },
+    "468": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-006: Tests — delivery confirmation + fallback scenarios"
+    },
+    "469": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "legal"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-019: Whitepaper draft — skill-vs-chance legal argument"
+    },
+    "47": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "api",
+        "brainstorm-audit",
+        "P1-beta-enhancer",
+        "recovery"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Extend daily attestation with emotional tracking (urge level, triggers, coping)"
+    },
+    "470": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "owner:legal-compliance"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-019: Legal review — counsel sign-off on classification"
+    },
+    "471": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-019: Release gate — automated check before contest features"
+    },
+    "472": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-009: Schema + API — exclusion registry + cooling-off periods"
+    },
+    "473": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-009: UI — self-exclusion flow + responsible-use settings"
+    },
+    "474": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-009: Tests — exclusion enforcement + re-entry validation"
+    },
+    "475": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "owner:mobile-native"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-007: Native — HealthKit/Google Health Connect integration"
+    },
+    "476": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-007: UI — health data display + consent management"
+    },
+    "477": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-007: Tests — data sync accuracy + privacy compliance"
+    },
+    "478": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-013: API — video upload + processing pipeline"
+    },
+    "479": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-013: UI — upload progress + processing state display"
+    },
+    "48": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "api",
+        "brainstorm-audit",
+        "P2-post-beta",
+        "b2b"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: B2B cohort orchestration — orgs create/manage cohorts for their clients"
+    },
+    "480": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-013: Tests — upload flow + processing state machine"
+    },
+    "481": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-014: Schema — mask configuration + audit trail"
+    },
+    "482": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-014: UI — masked display toggle + audit workbench"
+    },
+    "483": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-014: Tests — masking rules + display fidelity"
+    },
+    "484": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-008: Schema + API — routing algorithm + cluster detection"
+    },
+    "485": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-008: Admin UI — cluster visualization + override controls"
+    },
+    "486": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-008: Tests — routing fairness + collusion detection accuracy"
+    },
+    "487": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-015: Schema + API — slashing rules + honey-trap triggers"
+    },
+    "488": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-015: Admin UI — enforcement dashboard + evidence review"
+    },
+    "489": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "TKT-P1-015: Tests — slashing calculation + false positive safeguards"
+    },
+    "49": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "question",
+        "brainstorm-audit",
+        "recovery"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "decision: Weekly live sessions — in-app scheduling vs external operational cadence"
+    },
+    "490": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Service scaffolding — NestJS module + 19 contract checks"
+    },
+    "491": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "CI integration — pre-deploy gate + status reporting"
+    },
+    "492": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Tests — all 19 readiness criteria pass/fail"
+    },
+    "493": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Schema + API — survey definitions + response storage"
+    },
+    "494": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "UI — survey presentation + completion tracking"
+    },
+    "495": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Tests — survey flow + statistical analysis pipeline"
+    },
+    "496": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Schema — emotional tracking fields (urge, trigger, outcome)"
+    },
+    "497": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "UI — daily attestation emotional input components"
+    },
+    "498": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Tests — attestation flow + data integrity"
+    },
+    "499": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Schema + API — queue management + cohort threshold logic"
+    },
+    "50": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "brainstorm-audit",
+        "P2-post-beta",
+        "b2b"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Pod vs Arena experiment framework (Model A vs Model B cohort comparison)"
+    },
+    "500": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "UI — waitlist position display + notification opt-in"
+    },
+    "501": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Tests — queue ordering + cohort fill triggers"
+    },
+    "502": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Schema + API — referral tracking + reward distribution"
+    },
+    "503": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "UI — referral link generation + reward status"
+    },
+    "504": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Tests — referral attribution + double-spend prevention"
+    },
+    "507": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Tests — conversion tracking + email delivery"
+    },
+    "508": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Schema — violation code definitions + rejection reasons"
+    },
+    "509": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "API — violation code CRUD + audit trail"
+    },
+    "51": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "brainstorm-audit",
+        "P2-post-beta",
+        "recovery"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: In-app messaging/chat within pods"
+    },
+    "510": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Tests — taxonomy completeness + audit logging"
+    },
+    "511": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Schema + API — exclusion criteria + suspension logic"
+    },
+    "512": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "UI — exclusion request flow + suspension status"
+    },
+    "513": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Tests — exclusion triggers + re-entry validation"
+    },
+    "514": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Schema + API — tier definitions + escalation rules"
+    },
+    "515": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "UI — verification requirement display per tier"
+    },
+    "516": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Tests — tier transitions + escalation triggers"
+    },
+    "517": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "API — content moderation queue + automated filtering"
+    },
+    "518": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Admin UI — moderation dashboard + appeal flow"
+    },
+    "519": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Tests — filter accuracy + moderation latency"
+    },
+    "52": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "api",
+        "brainstorm-audit",
+        "P1-beta-enhancer"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Waitlist / cohort fill queue — hold users until cohort reaches minimum"
+    },
+    "520": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Schema + API — circuit breaker state machine + pause logic"
+    },
+    "521": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "UI — countdown display + pause/resume controls"
+    },
+    "522": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Tests — state transitions + timer accuracy"
+    },
+    "523": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Infrastructure — k6/artillery setup + test scenarios"
+    },
+    "524": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Fury Router queue saturation test suite"
+    },
+    "525": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Tests — baseline establishment + regression thresholds"
+    },
+    "526": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Copy — linguistically safe notification templates"
+    },
+    "527": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "UI — notification display + acknowledgment flow"
+    },
+    "528": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Tests — copy validation + delivery confirmation"
+    },
+    "529": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Checklist automation — readiness criteria check script"
+    },
+    "53": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "brainstorm-audit",
+        "P2-post-beta",
+        "recovery"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Redemption / re-entry path after contract failure"
+    },
+    "530": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "devops"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Gate enforcement — CI integration + blocking status"
+    },
+    "531": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Checklist automation — financial readiness criteria"
+    },
+    "532": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "legal"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Gate enforcement — settlement + compliance verification"
+    },
+    "533": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Checklist automation — App Store guidelines compliance"
+    },
+    "534": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Gate enforcement — legal + UX + performance criteria"
+    },
+    "535": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Checklist automation — enterprise infrastructure criteria"
+    },
+    "536": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Gate enforcement — security + DPA + demo readiness"
+    },
+    "537": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Schema + API — spike calculation + stake doubling logic"
+    },
+    "538": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "UI — spike indicator + incentive display"
+    },
+    "539": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Tests — calculation accuracy + edge cases"
+    },
+    "54": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "api",
+        "brainstorm-audit",
+        "P2-post-beta",
+        "recovery"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Motivation profiling at intake — tailor experience to user archetype"
+    },
+    "540": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Schema — per-state compliance flags + feature toggles"
+    },
+    "541": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Admin UI — state toggle management + audit trail"
+    },
+    "542": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Tests — toggle enforcement + state combinations"
+    },
+    "543": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "UI — stake amount selector + bounds enforcement"
+    },
+    "544": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "API — validation + jurisdictional bounds lookup"
+    },
+    "545": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Tests — bounds enforcement + UX state management"
+    },
+    "546": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enterprise"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Schema + API — RBAC model + org authorization"
+    },
+    "547": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enterprise"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "UI — dashboard layout + role-specific views"
+    },
+    "548": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enterprise"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Tests — access control + org isolation"
+    },
+    "549": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "desktop"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Desktop — hash collider algorithm integration"
+    },
+    "55": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "brainstorm-audit",
+        "P2-post-beta",
+        "b2b"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: B2B per-seat subscription licensing for organizations"
+    },
+    "550": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "desktop"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "UI — visualization + parameter controls"
+    },
+    "551": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "desktop"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Tests — collision detection accuracy + performance"
+    },
+    "552": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "b2b",
+        "enterprise"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Schema + API — org billing model + scope management"
+    },
+    "553": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "b2b",
+        "enterprise"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "UI — billing dashboard + scope controls"
+    },
+    "554": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "b2b",
+        "enterprise"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Tests — billing flow + scope enforcement"
+    },
+    "555": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "epic"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "🏛 Phase Beta — Market-safe money enablement (Alpha→Beta gate)"
+    },
+    "556": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "epic"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "🏛 Phase Gamma — Proof integrity at scale (Beta→Gamma gate)"
+    },
+    "557": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "epic"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "🏛 Phase Delta — Retention + network effects (Gamma→Delta gate)"
+    },
+    "558": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "epic"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "🏛 Phase Omega — Enterprise expansion (Delta→Omega gate)"
+    },
+    "559": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "devops",
+        "blocked"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Blocked Handoff Burn-down - 2026-03-09"
+    },
+    "56": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "enhancement",
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Progressive badge/achievement system beyond leaderboard tiers"
+    },
+    "568": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "P2-post-beta",
+        "legal"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Create legal artifact appendices (FBO diagram, ToS markup, checklists)"
+    },
+    "57": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "question",
+        "brainstorm-audit",
+        "recovery"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "decision: Community features / local meetups — in-app or operational?"
+    },
+    "572": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "devops",
+        "blocked"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Blocked Handoff Burn-down - 2026-03-16"
+    },
+    "578": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "devops",
+        "blocked"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Blocked Handoff Burn-down - 2026-03-23"
+    },
+    "581": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "devops",
+        "blocked"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Blocked Handoff Burn-down - 2026-03-30"
+    },
+    "582": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "devops",
+        "blocked"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Blocked Handoff Burn-down - 2026-04-06"
+    },
+    "584": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "devops",
+        "blocked"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Blocked Handoff Burn-down - 2026-04-13"
+    },
+    "585": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "devops",
+        "blocked"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Blocked Handoff Burn-down - 2026-04-20"
+    },
+    "587": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "devops",
+        "blocked"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Blocked Handoff Burn-down - 2026-04-27"
+    },
+    "588": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "devops",
+        "blocked"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Blocked Handoff Burn-down - 2026-05-04"
+    },
+    "589": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "devops",
+        "blocked"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Blocked Handoff Burn-down - 2026-05-11"
+    },
+    "591": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs/architecture: triplicate research docs (truth-blockchain v1/v2 + feasibility-stack) need dedup + provenance frontmatter"
+    },
+    "592": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs/architecture: Fury consensus parameter contradicted three ways across corpus"
+    },
+    "596": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "docs: AGENTS.md verified developer guidance update"
+    },
+    "597": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "business"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "expansive inquiry: Styx revenue gap — why no money"
+    },
+    "598": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "business"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "premortem: extract sellable artifact + get paid in 30 days"
+    },
+    "599": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Propagate brand identity from .env to platform-specific files at build time"
+    },
+    "602": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "devops",
+        "blocked"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Blocked Handoff Burn-down - 2026-05-18"
+    },
+    "603": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "bug",
+        "dependencies",
+        "security"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "fix: ERESOLVE dependency conflict + 42 npm audit vulnerabilities"
+    },
+    "606": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "documentation",
+        "devops",
+        "blocked"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "Blocked Handoff Burn-down - 2026-05-25"
+    },
+    "64": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Abandonment typology detection & happy graduation flow"
+    },
+    "642": {
+      "action": "UNCLASSIFIED",
+      "batch": "close-already-impl",
+      "closed_at": null,
+      "evidence": "src/api/src/modules/contracts/contracts.service.ts:1938",
+      "history": [
+        {
+          "from": "UNREAD",
+          "to": "INSPECTED",
+          "at": "2026-06-01T15:40:51Z"
+        },
+        {
+          "from": "INSPECTED",
+          "to": "CLOSED",
+          "at": "2026-06-01T15:40:51Z"
+        }
+      ],
+      "labels": [
+        "bug",
+        "api"
+      ],
+      "pr": null,
+      "state": "CLOSED",
+      "state_updated": "2026-06-01T15:40:51Z",
+      "title": "Apply integrity ceiling compression to persisted score delta path"
+    },
+    "65": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Post-contract exit interviews — structured feedback collection"
+    },
+    "66": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "api",
+        "brainstorm-audit",
+        "P1-beta-enhancer"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Oracle circuit breaker & pausable countdown — safety mechanism for verification failures"
+    },
+    "67": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "security",
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Cross-jurisdictional verification consent matrix — privacy compliance per state/country"
+    },
+    "68": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta",
+        "b2b"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: 'Invite Your Coach' B2B self-onboarding — practitioner-led acquisition channel"
+    },
+    "69": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta",
+        "b2b"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Practitioner risk intelligence — composite relapse risk score & NLP journal alerts"
+    },
+    "70": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta",
+        "recovery"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Day 21 micro-reward — dopamine danger zone intervention"
+    },
+    "71": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Milestone-triggered shareable resilience reports — social proof for recovery"
+    },
+    "72": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Sequential-to-simultaneous habit unlocking engine — multi-behavior progression"
+    },
+    "73": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Ecological momentary assessment (EMA) — stress pulse micro-surveys"
+    },
+    "74": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Stake tapering & incentive fading — gradual transition from extrinsic to intrinsic motivation"
+    },
+    "75": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Goodharting detection bounties — anti-gaming verification for metric manipulation"
+    },
+    "76": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Multi-judge adjudication panel — escalated dispute resolution for high-stakes contracts"
+    },
+    "77": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: High-stakes tournament mode — competitive bracket format for group challenges"
+    },
+    "78": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Consumer premium membership tier — subscription model for power users"
+    },
+    "79": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "mobile",
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: 'Digital Detox' as primary GTM vertical — Screen Time API integration"
+    },
+    "80": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Video call spot-checks — live verification for high-stakes contracts"
+    },
+    "81": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Counter-claim & harassment filing — Fury auditor accountability mechanism"
+    },
+    "82": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "security",
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Proof-of-Personhood / anti-Sybil layer — multi-account abuse prevention"
+    },
+    "83": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Decentralized dispute resolution (Schelling-point / Kleros-style) — trustless adjudication"
+    },
+    "84": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: 'Inquisitor' RPG mode — gamified progression system for Fury auditors"
+    },
+    "85": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "api",
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Geographic payment routing engine — jurisdiction-aware processor selection"
+    },
+    "86": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta",
+        "recovery"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Recovery Ambassador Program — peer referral network for recovery niche"
+    },
+    "87": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Contingency management reward escalation — graduated positive reinforcement schedule"
+    },
+    "88": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Asymmetric whistleblower system — enhanced anonymous reporting with graduated bounties"
+    },
+    "89": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Data revenue sharing with users — behavioral data ownership & compensation"
+    },
+    "90": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Stablecoin-denominated stakes — crypto payment rail for regulatory flexibility"
+    },
+    "91": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "api",
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Oracle failure fallback — staked arbiter network for verification system outages"
+    },
+    "92": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "security",
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: DECO privacy-preserving oracle — TLS-based verification without data exposure"
+    },
+    "93": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Multi-instrument personality & motivation assessment battery at intake"
+    },
+    "94": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Friction audit & environmental design wizard at contract creation"
+    },
+    "95": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Neurologically-timed instant reward system — per-proof micro-rewards & variable bonuses"
+    },
+    "96": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Automaticity & habit strength visualization (repetition-based, not calendar-based)"
+    },
+    "97": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Temptation bundling engine — Premack's Principle reward gating"
+    },
+    "98": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Visual streak chain with 'Never Miss Twice' asymmetric penalty rule"
+    },
+    "99": {
+      "action": "UNCLASSIFIED",
+      "batch": null,
+      "closed_at": null,
+      "evidence": null,
+      "history": [],
+      "labels": [
+        "brainstorm-audit",
+        "P2-post-beta"
+      ],
+      "pr": null,
+      "state": "UNREAD",
+      "state_updated": null,
+      "title": "feat: Gateway Oath tier — Two-Minute Rule with progressive habit shaping ladder"
+    }
+  }
+}
