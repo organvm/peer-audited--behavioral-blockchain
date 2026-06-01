@@ -8,6 +8,11 @@ import { Pool } from "pg";
 import { validate } from "class-validator";
 import { plainToInstance } from "class-transformer";
 import { CreateContractDto, SubmitProofDto } from "./dto";
+import { SurveyService } from "./survey.service";
+import { WaitlistService } from "./waitlist.service";
+
+const mockSurveyService = {} as unknown as SurveyService;
+const mockWaitlistService = {} as unknown as WaitlistService;
 
 const mockContractsService = {
   getUserContracts: jest.fn(),
@@ -43,6 +48,8 @@ describe("ContractsController", () => {
       mockStripe,
       mockLedger,
       mockTruthLog,
+      mockSurveyService,
+      mockWaitlistService,
     );
     jest.clearAllMocks();
   });
