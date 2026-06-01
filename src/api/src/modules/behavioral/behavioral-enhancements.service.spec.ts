@@ -86,7 +86,7 @@ describe("BehavioralEnhancementsService", () => {
   });
 
   describe("Habituation Detection", () => {
-    it("detects habituation for aged contracts", async () => {
+    it("detects HABITUATED for perfectly consistent old contracts", async () => {
       mockQuery
         .mockResolvedValueOnce({ rows: [{ age_days: 60 }] })
         .mockResolvedValueOnce({
@@ -99,7 +99,50 @@ describe("BehavioralEnhancementsService", () => {
           })),
         });
       const result = await service.detectContractHabituation("c1");
+      expect(result.status).toBe(HabituationStatus.HABITUATED);
+      expect(result.streakVariance).toBe(0);
+      expect(result.timeOfDayVariance).toBe(0);
+    });
+
+    it("detects PLATEAU when weekly rates vary moderately", async () => {
+      mockQuery
+        .mockResolvedValueOnce({ rows: [{ age_days: 45 }] })
+        .mockResolvedValueOnce({
+          rows: [
+            ...[...Array(7)].map((_, i) => ({
+              attestation_date: new Date(Date.now() - i * 86400000)
+                .toISOString()
+                .split("T")[0],
+              status: "ATTESTED" as const,
+              hour: 8 + (i % 6),
+            })),
+            ...[...Array(7)].map((_, i) => ({
+              attestation_date: new Date(Date.now() - (7 + i) * 86400000)
+                .toISOString()
+                .split("T")[0],
+              status: "ATTESTED" as const,
+              hour: 10 + (i % 4),
+            })),
+            ...[...Array(7)].map((_, i) => ({
+              attestation_date: new Date(Date.now() - (14 + i) * 86400000)
+                .toISOString()
+                .split("T")[0],
+              status: "ATTESTED" as const,
+              hour: 9 + (i % 3),
+            })),
+            ...[...Array(4)].map((_, i) => ({
+              attestation_date: new Date(Date.now() - (21 + i) * 86400000)
+                .toISOString()
+                .split("T")[0],
+              status: "ATTESTED" as const,
+              hour: 14,
+            })),
+          ],
+        });
+      const result = await service.detectContractHabituation("c1");
       expect(result.status).toBe(HabituationStatus.PLATEAU);
+      expect(result.streakVariance).toBeGreaterThan(0);
+      expect(result.timeOfDayVariance).toBeGreaterThan(0);
     });
   });
 

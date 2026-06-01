@@ -164,6 +164,7 @@ export class BehavioralEnhancementsService {
     );
 
     const weeklyRates = [0, 0, 0, 0];
+    const hours: number[] = [];
     const now = new Date();
     for (const a of attestations) {
       const daysAgo = Math.floor(
@@ -171,10 +172,24 @@ export class BehavioralEnhancementsService {
       );
       const weekIdx = Math.min(Math.floor(daysAgo / 7), 3);
       weeklyRates[3 - weekIdx]++;
+      if (a.hour != null) hours.push(Number(a.hour));
     }
     const rates = weeklyRates.map((r) => Math.min(r / 7, 1));
 
-    return detectHabituation(contract.age_days, rates, 0.05);
+    const rateMean = rates.reduce((a, b) => a + b, 0) / rates.length;
+    const streakVariance =
+      rates.reduce((sum, r) => sum + (r - rateMean) ** 2, 0) / rates.length;
+
+    const hourMean =
+      hours.length > 0 ? hours.reduce((a, b) => a + b, 0) / hours.length : 0;
+    const timeOfDayVariance =
+      hours.length > 1
+        ? hours.reduce((sum, h) => sum + (h - hourMean) ** 2, 0) / hours.length
+        : 0;
+
+    const metrics = detectHabituation(contract.age_days, rates, streakVariance);
+    metrics.timeOfDayVariance = timeOfDayVariance;
+    return metrics;
   }
 
   async proposeBehaviorSwap(
