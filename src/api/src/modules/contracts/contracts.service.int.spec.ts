@@ -3,13 +3,16 @@ import { ContractsService } from "./contracts.service";
 import { LedgerService } from "../../../services/ledger/ledger.service";
 import { TruthLogService } from "../../../services/ledger/truth-log.service";
 import { StripeFboService } from "../../../services/escrow/stripe.service";
+import { StripeFBOService as RealStripeFBOService } from "../payments/stripe-fbo.service";
 import { DisputeService } from "../../../services/escrow/dispute.service";
 import { FuryRouterService } from "../../../services/fury-router/fury-router.service";
 import { AegisProtocolService } from "../../../services/health/aegis.service";
 import { RecoveryProtocolService } from "../../../services/health/recovery-protocol.service";
+import { DynamicPenaltyService } from "../../../services/health/dynamic-penalty.service";
 import { AnomalyService } from "../../../services/anomaly/anomaly.service";
 import { SettlementService } from "../payments/settlement.service";
 import { NotificationsService } from "../notifications/notifications.service";
+import { CompliancePolicyService } from "../compliance/compliance-policy.service";
 import { WaitlistService } from "./waitlist.service";
 import { SurveyService } from "./survey.service";
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from "@testcontainers/postgresql";
@@ -48,13 +51,16 @@ describe("ContractsService (Integration)", () => {
         { provide: LedgerService, useValue: { recordTransaction: jest.fn() } },
         { provide: TruthLogService, useValue: { appendEvent: jest.fn() } },
         { provide: StripeFboService, useValue: { holdStake: jest.fn(), captureStake: jest.fn(), cancelHold: jest.fn(), resolveDisposition: jest.fn() } },
+        { provide: RealStripeFBOService, useValue: { captureFunds: jest.fn() } },
         { provide: DisputeService, useValue: {} },
         { provide: FuryRouterService, useValue: {} },
         { provide: AegisProtocolService, useValue: { validateCreation: jest.fn() } },
         { provide: RecoveryProtocolService, useValue: { validateCreation: jest.fn() } },
+        { provide: DynamicPenaltyService, useValue: {} },
         { provide: AnomalyService, useValue: {} },
         { provide: SettlementService, useValue: {} },
         { provide: NotificationsService, useValue: { create: jest.fn() } },
+        { provide: CompliancePolicyService, useValue: {} },
         { provide: WaitlistService, useValue: {} },
         { provide: SurveyService, useValue: {} }
       ],
