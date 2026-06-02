@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import { Test, TestingModule } from "@nestjs/testing";
 import { ContractsService } from "./contracts.service";
 import { LedgerService } from "../../../services/ledger/ledger.service";
@@ -81,8 +82,8 @@ describe("ContractsService (Integration)", () => {
   describe("submitAttestation", () => {
     it("should insert an attestation and handle ON CONFLICT properly", async () => {
       // Setup user and contract
-      const userId = "test-user-int";
-      const contractId = "test-contract-int";
+      const userId = uuidv4();
+      const contractId = uuidv4();
 
       // Insert dummy user
       await pool.query(
