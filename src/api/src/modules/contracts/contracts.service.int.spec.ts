@@ -93,9 +93,9 @@ describe("ContractsService (Integration)", () => {
 
       // Insert active contract
       await pool.query(
-        `INSERT INTO contracts (id, user_id, status, oath_category, stake_amount, duration_days, timezone) 
+        `INSERT INTO contracts (id, user_id, status, oath_category, verification_method, stake_amount, duration_days) 
          VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-        [contractId, userId, "ACTIVE", "RECOVERY_SUBSTANCE", 100, 30, "UTC"]
+        [contractId, userId, "ACTIVE", "RECOVERY_SUBSTANCE", "CAMERA", 100, 30]
       );
 
       // Submit first attestation
