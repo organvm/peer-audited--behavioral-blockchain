@@ -75,8 +75,9 @@ describe("CrmService (Integration)", () => {
 
       // Add some events for velocity (not strictly needed for this test as velocity is a subquery on event_log)
       await pool.query(
-        `INSERT INTO event_log (user_id, event_type, metadata) VALUES ($1, 'CONTRACT_RESOLVED', '{}')`,
-        [userId1]
+        `INSERT INTO event_log (event_type, payload, previous_hash, current_hash) 
+         VALUES ('CONTRACT_RESOLVED', $1, 'genesis', 'hash1')`,
+        [JSON.stringify({ userId: userId1 })]
       );
 
       const score = await service.calculateCorporateIntegrityScore(enterpriseId);
