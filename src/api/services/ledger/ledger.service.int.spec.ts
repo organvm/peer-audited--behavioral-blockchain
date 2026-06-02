@@ -47,27 +47,30 @@ describe("LedgerService (Integration)", () => {
       const debitId = uuidv4();
       const creditId = uuidv4();
 
-      // Create accounts
+      // Create accounts with actual schema (name, type)
       await pool.query(
-        `INSERT INTO accounts (id, balance, currency, status) VALUES ($1, $2, $3, $4), ($5, $6, $7, $8)`,
-        [debitId, 1000, "USD", "ACTIVE", creditId, 0, "USD", "ACTIVE"]
+        `INSERT INTO accounts (id, name, type) VALUES ($1, $2, $3), ($4, $5, $6)`,
+        [debitId, "Debit Account", "LIABILITY", creditId, "Credit Account", "LIABILITY"]
       );
 
       const entryId = await service.recordTransaction(debitId, creditId, 500);
       expect(entryId).toBeDefined();
 
       // Check entry
-      const entryRes = await pool.query(`SELECT * FROM ledger_entries WHERE id = $1`, [entryId]);
+      const entryRes = await pool.query(`SELECT * FROM entries WHERE id = $1`, [entryId]);
       expect(entryRes.rows[0].debit_account_id).toBe(debitId);
       expect(entryRes.rows[0].credit_account_id).toBe(creditId);
       expect(Number(entryRes.rows[0].amount)).toBe(500);
 
-      // Check balances
-      const debitRes = await pool.query(`SELECT balance FROM accounts WHERE id = $1`, [debitId]);
-      const creditRes = await pool.query(`SELECT balance FROM accounts WHERE id = $1`, [creditId]);
+      // Check balances using the service method
+      const debitBalance = await service.getAccountBalance(debitId);
+      const creditBalance = await service.getAccountBalance(creditId);
       
-      expect(Number(debitRes.rows[0].balance)).toBe(500);
-      expect(Number(creditRes.rows[0].balance)).toBe(500);
+      // In Styx convention: Credits - Debits
+      // Debit account: 0 - 500 = -500
+      // Credit account: 500 - 0 = 500
+      expect(debitBalance).toBe(-500);
+      expect(creditBalance).toBe(500);
     });
 
     it("enforces idempotency using partial unique index from migration 030", async () => {
@@ -76,8 +79,8 @@ describe("LedgerService (Integration)", () => {
       const ikey = "idempotency-test-123";
 
       await pool.query(
-        `INSERT INTO accounts (id, balance, currency, status) VALUES ($1, $2, $3, $4), ($5, $6, $7, $8)`,
-        [debitId, 1000, "USD", "ACTIVE", creditId, 0, "USD", "ACTIVE"]
+        `INSERT INTO accounts (id, name, type) VALUES ($1, $2, $3), ($4, $5, $6)`,
+        [debitId, "Debit Account 2", "LIABILITY", creditId, "Credit Account 2", "LIABILITY"]
       );
 
       const entryId1 = await service.recordTransaction(debitId, creditId, 100, undefined, {}, undefined, ikey);
@@ -86,8 +89,8 @@ describe("LedgerService (Integration)", () => {
       expect(entryId1).toBe(entryId2);
 
       // Balance should only have been deducted ONCE
-      const debitRes = await pool.query(`SELECT balance FROM accounts WHERE id = $1`, [debitId]);
-      expect(Number(debitRes.rows[0].balance)).toBe(900);
+      const debitBalance = await service.getAccountBalance(debitId);
+      expect(debitBalance).toBe(-100);
     });
   });
 });
