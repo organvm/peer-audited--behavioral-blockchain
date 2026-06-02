@@ -34,10 +34,10 @@ describe("ContractsService (Integration)", () => {
     });
 
     // Run migrations using execSync
-    execSync("npx tsx database/migrations/migrate.ts", {
+    execSync("npm run migrate", {
       env: { ...process.env, DATABASE_URL: dbUri },
       stdio: "inherit",
-      cwd: path.resolve(__dirname, "../../../../") // src/api
+      cwd: process.cwd() // Jest runs from src/api
     });
 
     // Provide mocked dependencies
