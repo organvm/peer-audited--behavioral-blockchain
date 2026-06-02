@@ -100,14 +100,40 @@ export class CrmService {
     behavioralVelocity: number;
   }> {
     const stats = await this.pool.query(
-      `SELECT 
-        AVG(integrity_score) as avg_integrity,
-        COUNT(c.id) as active_contracts,
-        (SELECT COUNT(*) FROM event_log WHERE event_type = 'CONTRACT_RESOLVED' AND created_at > NOW() - interval '30 days') as velocity
-       FROM users u
-       LEFT JOIN contracts c ON u.id = c.user_id AND c.status = 'ACTIVE'
-       WHERE u.enterprise_id = $1
-       GROUP BY u.enterprise_id`,
+      `WITH active_enterprise_users AS (
+         SELECT id, integrity_score
+         FROM users
+         WHERE enterprise_id = $1
+           AND status = 'ACTIVE'
+       ),
+       user_stats AS (
+         SELECT AVG(integrity_score) AS avg_integrity
+         FROM active_enterprise_users
+       ),
+       contract_stats AS (
+         SELECT COUNT(c.id) AS active_contracts
+         FROM contracts c
+         INNER JOIN active_enterprise_users u ON u.id = c.user_id
+         WHERE c.status = 'ACTIVE'
+       ),
+       velocity_stats AS (
+         SELECT COUNT(*) AS velocity
+         FROM event_log e
+         WHERE e.event_type = 'CONTRACT_RESOLVED'
+           AND e.created_at > NOW() - interval '30 days'
+           AND (
+             e.payload->>'userId' IN (SELECT id::text FROM active_enterprise_users)
+             OR e.payload->>'contractId' IN (
+               SELECT c.id::text
+               FROM contracts c
+               INNER JOIN active_enterprise_users u ON u.id = c.user_id
+             )
+           )
+       )
+       SELECT user_stats.avg_integrity, contract_stats.active_contracts, velocity_stats.velocity
+       FROM user_stats
+       CROSS JOIN contract_stats
+       CROSS JOIN velocity_stats`,
       [enterpriseId]
     );
 
