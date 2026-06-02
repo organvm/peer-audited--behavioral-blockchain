@@ -74,3 +74,31 @@ Every CLOSED state requires evidence. Every batch requires reconciliation.
 **New components:** DisputeTimeline, AuditTrailViewer, EvidenceComparator, NoContactRecoveryPanel, RoleBasedView, BillingDashboard.
 **Test count change:** API +35, shared +23, desktop +21.
 **State:** 0 INSPECTED, 0 BUILD_STARTED, 48 CLOSED, 64 TRACK, 37 WAITING, 76 FUTURE. All BUILD issues resolved.
+
+## batch-post-build-cleanup — 2026-06-01/02 — PR #654 merge, Codex review, rebase PR #650
+
+**Started:** PR #654 opened with 8 commits for protocol gap fix, lint cleanup, test alignment.
+**Merged:** Squash-merged into main after auto-merge + 14 Codex review thread resolution.
+**Tests:** 1179 passing (no regression).
+
+**Codex review findings resolved (14 total):**
+- P1: Migration 038 FK referenced missing `enterprises` table — created parent table
+- P2 (13): survey race condition, EvidenceComparator rendering, TRACK→TRACKING state,
+  reconcile test gate, waitlist concurrency, behavior swap validation, DTO whitelist,
+  professional copy contractions, empty device stake, legacy NULL metadata,
+  emotional upsert fields, carryOverPct clamping, prior swap count
+
+**PR #650 rebase:** Rebased `feat/p1-closeout-violation-pregnancy-guardrails` onto post-merge
+main. Migration renumbered 034→039 (collision). Test mocks updated for 3 new recovery
+guardrail queries. Force-pushed. Awaiting CI.
+
+**npm audit:** 25→24 (bullmq 4→5). 1 false positive (expo CVE) documented in .nsprc.
+22 expo transitives deferred for expo 56 upgrade.
+
+**Branch hygiene:** 17 local + 8 remote stale branches deleted.
+
+**Lesson:** Squash merges create divergence for any branch cut before the squash.
+Always rebase stale PRs onto current main. Codex review threads must be explicitly
+resolved via GraphQL — GitHub's merge queue doesn't auto-resolve bot comments.
+Hardcoded constants in algorithm functions (streakVariance=0.05) are invisible
+bugs — compute or derive, never guess.
