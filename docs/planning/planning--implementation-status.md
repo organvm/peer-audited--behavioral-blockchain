@@ -48,3 +48,4 @@ Statuses:
 - Use `/src/api/src/modules/compliance/compliance-policy.service.ts` as the canonical place for request-level jurisdiction policy decisions.
 - Update this matrix in the same PR whenever `README.md`, `SECURITY.md`, or legal policy docs change claim wording.
 - When KYC/age verification is implemented, upgrade the corresponding rows from `Planned` to `Implemented` only after tests and rollout controls are merged.
+
