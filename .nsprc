@@ -1,0 +1,7 @@
+{
+  "GHSA-wr5g-q49g-548w": {
+    "active": true,
+    "notes": "CVE-2023-28131 — expo OAuth. Fixed since expo 48.0.0. We are on 54.0.33. False positive via transitive advisory chain. Expires 2026-12-01.",
+    "expiry": "2026-12-01"
+  }
+}
