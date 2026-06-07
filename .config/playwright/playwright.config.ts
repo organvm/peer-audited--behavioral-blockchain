@@ -21,7 +21,11 @@ function requireWebUrl(): string {
       "E2E_BASE_URL, STYX_WEB_PUBLIC_URL, or NEXT_PUBLIC_WEB_URL is required.",
     );
   }
-  return webUrl.replace(/\/+$/, "");
+  // Trim trailing slashes without a regex: /\/+$/ backtracks polynomially
+  // on untrusted input (CodeQL js/polynomial-redos).
+  let end = webUrl.length;
+  while (end > 0 && webUrl[end - 1] === "/") end--;
+  return webUrl.slice(0, end);
 }
 
 function portFromUrl(rawUrl: string): string {
