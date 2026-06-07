@@ -1,52 +1,19 @@
-import * as fs from 'fs';
-import * as path from 'path';
+// existing code...
 
-function looksLikeApiWorkspace(dir: string): boolean {
-  return path.basename(dir) === 'api' && path.basename(path.dirname(dir)) === 'src';
-}
+const dotenv = require('dotenv');
+const fs = require('fs');
+const path = require('path');
 
-export function findRepoRoot(
-  cwd = process.cwd(),
-  exists: (filePath: string) => boolean = (filePath) => fs.existsSync(filePath),
-): string {
-  let current = path.resolve(cwd);
+const envPath = path.join(__dirname, '../../.env');
+const envLocalPath = path.join(__dirname, '../../.env.local');
 
-  while (true) {
-    if (
-      exists(path.join(current, 'package.json')) &&
-      exists(path.join(current, 'src/api/package.json'))
-    ) {
-      return current;
-    }
+const envContent = fs.readFileSync(envPath, 'utf8');
+const envLocalContent = fs.readFileSync(envLocalPath, 'utf8');
 
-    if (looksLikeApiWorkspace(current)) {
-      return path.resolve(current, '../..');
-    }
+const env = dotenv.parse(envContent);
+const envLocal = dotenv.parse(envLocalContent);
 
-    const parent = path.dirname(current);
-    if (parent === current) {
-      return path.resolve(cwd);
-    }
-    current = parent;
-  }
-}
+Object.assign(process.env, env);
+Object.assign(process.env, envLocal);
 
-export function buildEnvFileCandidatePaths(cwd = process.cwd()): string[] {
-  const repoRoot = findRepoRoot(cwd);
-  const apiRoot = path.join(repoRoot, 'src/api');
-
-  return [
-    path.join(repoRoot, '.env.local'),
-    path.join(repoRoot, '.env'),
-    path.join(apiRoot, '.env.local'),
-    path.join(apiRoot, '.env'),
-  ];
-}
-
-export function resolveEnvFilePath(
-  cwd = process.cwd(),
-  exists: (filePath: string) => boolean = (filePath) => fs.existsSync(filePath),
-): string {
-  const candidates = buildEnvFileCandidatePaths(cwd);
-  return candidates.find((candidate) => exists(candidate)) ?? candidates[0];
-}
+// existing code...

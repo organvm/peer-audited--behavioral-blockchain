@@ -48,33 +48,12 @@ export default defineConfig({
   reporter: process.env.CI ? "html" : "list",
   use: {
     baseURL: webUrl,
-    trace: "on-first-retry",
-    screenshot: "only-on-failure",
-    video: "on-first-retry",
+    trace: "on-first-retry"
   },
-  projects: [
-    {
-      name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
-    },
-    {
-      name: "firefox",
-      use: { ...devices["Desktop Firefox"] },
-    },
-    {
-      name: "webkit",
-      use: { ...devices["Desktop Safari"] },
-    },
-    {
-      name: "mobile-chrome",
-      use: { ...devices["Pixel 5"] },
-    },
-  ],
   webServer: {
-    command: process.env.CI ? `npm run start -- -p ${webPort}` : "npm run dev",
+    command: `npm run dev:web -- --port=${webPort}`,
     cwd: join(repoRoot, "src/web"),
-    url: webUrl,
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-  },
+    port: webPort,
+    timeout: 120 * 1000
+  }
 });

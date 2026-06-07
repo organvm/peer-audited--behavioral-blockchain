@@ -1,11 +1,6 @@
-authtoken: ${NGROK_AUTHTOKEN}
-version: "2"
-tunnels:
-  styx-api-tunnel:
-    proto: http
-    addr: ${STYX_NGROK_API_ADDR}
-    host_header: ${STYX_NGROK_API_HOST_HEADER}
-  styx-web-tunnel:
-    proto: http
-    addr: ${STYX_NGROK_WEB_ADDR}
-    host_header: ${STYX_NGROK_WEB_HOST_HEADER}
+# existing config...
+
+- url: $E2E_BASE_URL
++ url: ${E2E_BASE_URL}
+
+# existing config...

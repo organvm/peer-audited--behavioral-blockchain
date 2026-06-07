@@ -1,18 +1,7 @@
-import path from "node:path";
-import { spawn } from "node:child_process";
-import { buildApiEnv, repoRoot } from "./env.mjs";
+// existing code...
 
-const child = spawn(
-  "npm",
-  ["exec", "--", "tsx", "database/migrations/migrate.ts"],
-  {
-    cwd: path.join(repoRoot, "src/api"),
-    env: buildApiEnv(),
-    stdio: "inherit",
-  },
-);
+- if (!process.env.API_URL || !process.env.REDIS_URL) {
+-   throw new Error('API_URL and REDIS_URL are required.');
+- }
 
-child.on("exit", (code, signal) => {
-  if (signal) process.kill(process.pid, signal);
-  process.exit(code ?? 0);
-});
+// existing code...
