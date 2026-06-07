@@ -57,15 +57,32 @@ function portFromUrl(rawUrl, purpose) {
 
 export function buildApiEnv() {
   const env = loadRepoEnv();
-  const apiUrl = requireOne(
-    env,
-    ["STYX_API_PUBLIC_URL", "NEXT_PUBLIC_API_URL"],
-    "API public URL",
-  );
-  const webUrl = env.STYX_WEB_PUBLIC_URL || env.NEXT_PUBLIC_WEB_URL;
+  const isTest = env.NODE_ENV === "test" || process.env.NODE_ENV === "test";
 
-  requireOne(env, ["DATABASE_URL"], "DATABASE_URL");
-  requireOne(env, ["REDIS_URL", "REDIS_HOST"], "Redis connection");
+  let apiUrl;
+  try {
+    apiUrl = requireOne(
+      env,
+      ["STYX_API_PUBLIC_URL", "NEXT_PUBLIC_API_URL"],
+      "API public URL",
+    );
+  } catch (err) {
+    if (isTest) {
+      apiUrl = "http://localhost:3000";
+    } else {
+      throw err;
+    }
+  }
+
+  const webUrl =
+    env.STYX_WEB_PUBLIC_URL ||
+    env.NEXT_PUBLIC_WEB_URL ||
+    (isTest ? "http://localhost:3001" : undefined);
+
+  if (!isTest) {
+    requireOne(env, ["DATABASE_URL"], "DATABASE_URL");
+    requireOne(env, ["REDIS_URL", "REDIS_HOST"], "Redis connection");
+  }
 
   env.STYX_API_PUBLIC_URL ||= apiUrl;
   env.NEXT_PUBLIC_API_URL ||= apiUrl;
@@ -79,16 +96,37 @@ export function buildApiEnv() {
 
 export function buildWebEnv() {
   const env = loadRepoEnv();
-  const apiUrl = requireOne(
-    env,
-    ["NEXT_PUBLIC_API_URL", "STYX_API_PUBLIC_URL"],
-    "API public URL",
-  );
-  const webUrl = requireOne(
-    env,
-    ["STYX_WEB_PUBLIC_URL", "NEXT_PUBLIC_WEB_URL"],
-    "Web public URL",
-  );
+  const isTest = env.NODE_ENV === "test" || process.env.NODE_ENV === "test";
+
+  let apiUrl;
+  try {
+    apiUrl = requireOne(
+      env,
+      ["NEXT_PUBLIC_API_URL", "STYX_API_PUBLIC_URL"],
+      "API public URL",
+    );
+  } catch (err) {
+    if (isTest) {
+      apiUrl = "http://localhost:3000";
+    } else {
+      throw err;
+    }
+  }
+
+  let webUrl;
+  try {
+    webUrl = requireOne(
+      env,
+      ["STYX_WEB_PUBLIC_URL", "NEXT_PUBLIC_WEB_URL"],
+      "Web public URL",
+    );
+  } catch (err) {
+    if (isTest) {
+      webUrl = "http://localhost:3001";
+    } else {
+      throw err;
+    }
+  }
 
   env.NEXT_PUBLIC_API_URL = apiUrl;
   env.STYX_WEB_PUBLIC_URL ||= webUrl;
