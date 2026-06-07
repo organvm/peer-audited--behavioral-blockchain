@@ -81,7 +81,7 @@ organvm session prompts 019ea20f
 
 | Deliverable    | Standard                              | Compliance                                                              | Gaps                                                               |
 | -------------- | ------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| Product branch | Committed and pushed to origin        | `origin/codex/heal-local-dev-config` at `b6211b7e`                      | GitHub checks pending after PR open                                |
+| Product branch | Committed and pushed to origin        | `origin/codex/heal-local-dev-config`; live head tracked by PR #669      | GitHub checks pending after PR open                                |
 | Product PR     | Remote-visible integration path       | PR #669 opened                                                          | Not merged                                                         |
 | Local tests    | Required gates pass                   | `make test`, `npm run lint`, Gate 04, diff-check, Prettier check passed | CI still pending                                                   |
 | IRF update     | Parser-visible row and external issue | `IRF-OPS-093` resolves; GH#429 linked                                   | Systemic export fix remains open                                   |
