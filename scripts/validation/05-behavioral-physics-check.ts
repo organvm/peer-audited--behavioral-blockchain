@@ -20,7 +20,9 @@ function requireApiBase(): string {
       "API_URL, STYX_API_PUBLIC_URL, or NEXT_PUBLIC_API_URL is required.",
     );
   }
-  return apiUrl.replace(/\/+$/, "");
+  let end = apiUrl.length;
+  while (end > 0 && apiUrl[end - 1] === "/") end--;
+  return apiUrl.slice(0, end);
 }
 
 const API_BASE = requireApiBase();

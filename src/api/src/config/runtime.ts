@@ -1,5 +1,9 @@
 export function normalizeBaseUrl(value: string): string {
-  return value.replace(/\/+$/, "");
+  // Trim trailing slashes without a regex: /\/+$/ backtracks polynomially
+  // on untrusted input (CodeQL js/polynomial-redos).
+  let end = value.length;
+  while (end > 0 && value[end - 1] === "/") end--;
+  return value.slice(0, end);
 }
 
 export function readFirstEnv(keys: string[]): string | undefined {
