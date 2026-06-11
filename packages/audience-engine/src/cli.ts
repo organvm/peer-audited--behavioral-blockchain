@@ -92,7 +92,7 @@ async function cmdPlan(args: PlanArgs): Promise<number> {
     const outPath = resolve(args.output);
     await writeFile(outPath, markdown, "utf-8");
     console.error(
-      `✓ Wrote 30-day plan to ${outPath} (${plan.weeks.length} weeks, ${plan.weeks.reduce((n, w) => n + w.days.length, 0)} days)`,
+      `✓ Wrote 30-day plan to ${outPath} (${plan.weeks.length} buckets, ${plan.weeks.reduce((n, w) => n + w.days.length, 0)} placed slots)`,
     );
   } else {
     console.log(markdown);

@@ -50,6 +50,15 @@ function validateConfig(raw: unknown): asserts raw is InstanceConfig {
       throw new Error(`Config.parameters.${key} is required`);
     }
   }
+  // Validate the nested fields of each parameter so a broken config is
+  // caught at validate-time, not mid-generation. Without this, a config
+  // that passes the top-level check would crash inside the planner
+  // (e.g. themes[].slice(0, 60) on undefined wedge.statement).
+  validateP1Host(p.p1Host as Record<string, unknown>);
+  validateP2Wedge(p.p2Wedge as Record<string, unknown>);
+  validateP3Product(p.p3Product as Record<string, unknown>);
+  validateP4OwnedAsset(p.p4OwnedAsset as Record<string, unknown>);
+  validateP5ProofLoop(p.p5ProofLoop as Record<string, unknown>);
   if (typeof obj.channels !== "object" || obj.channels === null) {
     throw new Error("Config.channels is required (host + product)");
   }
@@ -113,5 +122,87 @@ function validateChannel(raw: unknown, role: "host" | "product"): void {
   }
   if (!Array.isArray(ch.doesNot)) {
     throw new Error(`Config.channels.${role}.doesNot must be an array`);
+  }
+}
+
+/** Validate the nested fields of parameters.p1Host. */
+function validateP1Host(raw: unknown): void {
+  if (typeof raw !== "object" || raw === null) {
+    throw new Error("Config.parameters.p1Host must be an object");
+  }
+  const p = raw as Record<string, unknown>;
+  const validArchetypes = [
+    "personal_creator",
+    "branded_expert",
+    "founder_operator",
+  ];
+  if (
+    typeof p.archetype !== "string" ||
+    !validArchetypes.includes(p.archetype)
+  ) {
+    throw new Error(
+      `Config.parameters.p1Host.archetype must be one of ${validArchetypes.join(", ")}`,
+    );
+  }
+  if (typeof p.statement !== "string" || p.statement.length === 0) {
+    throw new Error("Config.parameters.p1Host.statement is required");
+  }
+}
+
+function validateP2Wedge(raw: unknown): void {
+  if (typeof raw !== "object" || raw === null) {
+    throw new Error("Config.parameters.p2Wedge must be an object");
+  }
+  const p = raw as Record<string, unknown>;
+  if (typeof p.statement !== "string" || p.statement.length === 0) {
+    throw new Error("Config.parameters.p2Wedge.statement is required");
+  }
+}
+
+function validateP3Product(raw: unknown): void {
+  if (typeof raw !== "object" || raw === null) {
+    throw new Error("Config.parameters.p3Product must be an object");
+  }
+  const p = raw as Record<string, unknown>;
+  if (typeof p.statement !== "string" || p.statement.length === 0) {
+    throw new Error("Config.parameters.p3Product.statement is required");
+  }
+  if (typeof p.kind !== "string") {
+    throw new Error("Config.parameters.p3Product.kind is required");
+  }
+  if (typeof p.conversionCta !== "string" || p.conversionCta.length === 0) {
+    throw new Error("Config.parameters.p3Product.conversionCta is required");
+  }
+}
+
+function validateP4OwnedAsset(raw: unknown): void {
+  if (typeof raw !== "object" || raw === null) {
+    throw new Error("Config.parameters.p4OwnedAsset must be an object");
+  }
+  const p = raw as Record<string, unknown>;
+  if (typeof p.statement !== "string" || p.statement.length === 0) {
+    throw new Error("Config.parameters.p4OwnedAsset.statement is required");
+  }
+  if (typeof p.kind !== "string") {
+    throw new Error("Config.parameters.p4OwnedAsset.kind is required");
+  }
+}
+
+function validateP5ProofLoop(raw: unknown): void {
+  if (typeof raw !== "object" || raw === null) {
+    throw new Error("Config.parameters.p5ProofLoop must be an object");
+  }
+  const p = raw as Record<string, unknown>;
+  if (typeof p.statement !== "string" || p.statement.length === 0) {
+    throw new Error("Config.parameters.p5ProofLoop.statement is required");
+  }
+  const validCadences = ["daily", "weekly", "monthly", "quarterly"];
+  if (typeof p.cadence !== "string" || !validCadences.includes(p.cadence)) {
+    throw new Error(
+      `Config.parameters.p5ProofLoop.cadence must be one of ${validCadences.join(", ")}`,
+    );
+  }
+  if (typeof p.format !== "string") {
+    throw new Error("Config.parameters.p5ProofLoop.format is required");
   }
 }

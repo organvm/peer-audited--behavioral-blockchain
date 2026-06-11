@@ -154,6 +154,12 @@ function generateWeek(
   for (let i = 0; i < productChannel.cadence.shortForm; i++) {
     slots.push({ channel: "product", format: "short_form" });
   }
+  for (let i = 0; i < productChannel.cadence.longForm; i++) {
+    slots.push({ channel: "product", format: "long_form" });
+  }
+  for (let i = 0; i < productChannel.cadence.story; i++) {
+    slots.push({ channel: "product", format: "story" });
+  }
   for (let i = 0; i < (productChannel.cadence.proofPosts ?? 0); i++) {
     slots.push({ channel: "product", format: "proof" });
   }
@@ -165,22 +171,19 @@ function generateWeek(
   }
 
   // Distribute the slots across the 7 days of the week using a deterministic
-  // round-robin walker. We allocate at most 2 slots per day (so a 14-slot
-  // week uses all 7 days, a 4-slot week uses 4 days). The slot order is the
-  // order built above (host slots first, then product slots), so the
-  // cadence the user requested in the InstanceConfig is exactly what shows
-  // up in the plan.
-  const maxSlotsPerDay = 2;
+  // round-robin walker. The number of slots per day is computed from the
+  // total cadence (so a 21-slot week allocates 3/day, a 14-slot week
+  // allocates 2/day, a 4-slot week allocates 1/day on the first 4 days).
+  // This ensures *every* requested slot is placed — we never drop slots.
+  const totalSlots = slots.length;
+  const slotsPerDay =
+    totalSlots === 0 ? 0 : Math.max(1, Math.ceil(totalSlots / 7));
   let slotIdx = 0;
-  let dayIdx = 0;
-  // Continue until we've placed all slots OR run out of days.
-  // (We always have 7 days, so this terminates as long as slots > 0.)
-  while (slotIdx < slots.length && dayIdx < 7) {
-    const date = addDays(startDate, dayIdx);
+  for (let day = 0; day < 7; day++) {
+    if (slotIdx >= totalSlots) break;
+    const date = addDays(startDate, day);
     const dow = getDayOfWeek(date);
-    // Allocate up to maxSlotsPerDay slots to this day.
-    let daySlots = 0;
-    while (daySlots < maxSlotsPerDay && slotIdx < slots.length) {
+    for (let i = 0; i < slotsPerDay && slotIdx < totalSlots; i++) {
       const s = slots[slotIdx++];
       const pillar = pickPillar(config, s.channel, s.format);
       const cta = s.format === "conversion" ? pickCta(config, s.channel) : null;
@@ -194,9 +197,7 @@ function generateWeek(
         pillar,
         cta,
       });
-      daySlots++;
     }
-    dayIdx++;
   }
 
   return days;
@@ -247,12 +248,21 @@ function pickPillar(
   return channel === "host" ? hostValue : productValue; // short_form defaults to value pillar
 }
 
-/** Count the pillars a channel has, given its ratio. */
+/**
+ * Count the pillars a channel has, given its ratio.
+ *
+ * The host channel does NOT have a proof pillar (per the engine's design —
+ * proof content lives on the product channel). So a `channels.host.ratio.proof`
+ * value is silently ignored at the pillar-count level. Without this fix,
+ * `countPillars` would count a non-existent pillar, shifting `productStart`
+ * and causing product rows to reference pillar numbers not in the table.
+ */
 function countPillars(channel: Channel): number {
+  const isProduct = channel.role === "product";
   return (
     (channel.ratio.value > 0 ? 1 : 0) +
     (channel.ratio.trust > 0 ? 1 : 0) +
-    (channel.ratio.proof > 0 ? 1 : 0) +
+    (isProduct && channel.ratio.proof > 0 ? 1 : 0) +
     (channel.ratio.conversion > 0 ? 1 : 0)
   );
 }
@@ -290,11 +300,16 @@ export function generatePlan(
   ];
 
   const weeks = [];
-  for (let w = 0; w < 4; w++) {
-    const weekStart = addDays(startDate, w * 7);
+  // Build 5 buckets of ~6 days each so the calendar covers a full 30 days
+  // (not 28). Week 5 is short (2 days) so the total is 6+6+6+6+6 = 30.
+  // Alternatively: 4 weeks of 7 + 1 partial week of 2. The bucket layout
+  // is a content choice; we use 5 weekly buckets here so the
+  // "4-week content plan" framing in the playbook still fits.
+  for (let w = 0; w < 5; w++) {
+    const weekStart = addDays(startDate, w * 6);
     weeks.push({
       weekNumber: w + 1,
-      theme: themes[w],
+      theme: themes[Math.min(w, themes.length - 1)] + ` (part ${w + 1})`,
       days: generateWeek(w + 1, weekStart, config, themes),
     });
   }
@@ -302,7 +317,7 @@ export function generatePlan(
   return {
     systemName: config.systemName,
     startDate: formatDate(startDate),
-    endDate: formatDate(addDays(startDate, 27)),
+    endDate: formatDate(addDays(startDate, 29)),
     pillars,
     weeks,
   };

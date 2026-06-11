@@ -99,9 +99,12 @@ const testConfig: InstanceConfig = {
 };
 
 describe("generatePlan", () => {
-  it("generates 4 weeks", () => {
-    const plan = generatePlan(testConfig, new Date("2026-06-15"));
-    expect(plan.weeks).toHaveLength(4);
+  it("generates 5 weekly buckets covering 30 days", () => {
+    const plan = generatePlan(
+      testConfig,
+      parseDateNoTimezoneDrift("2026-06-15"),
+    );
+    expect(plan.weeks).toHaveLength(5);
   });
 
   it("starts on a Monday (when given a Monday)", () => {
@@ -114,10 +117,37 @@ describe("generatePlan", () => {
     expect(plan.startDate).toBe("2026-06-15");
   });
 
-  it("produces 28 days total (4 weeks × 7 days)", () => {
-    const plan = generatePlan(testConfig, new Date("2026-06-15"));
-    const totalDays = plan.weeks.reduce((n, w) => n + w.days.length, 0);
-    expect(totalDays).toBeGreaterThanOrEqual(28);
+  it("produces 30 calendar days (start → start+29)", () => {
+    const plan = generatePlan(
+      testConfig,
+      parseDateNoTimezoneDrift("2026-06-15"),
+    );
+    // The plan covers startDate → endDate inclusive = 30 calendar days.
+    const start = parseDateNoTimezoneDrift(plan.startDate);
+    const end = parseDateNoTimezoneDrift(plan.endDate);
+    const diff = Math.round(
+      (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24),
+    );
+    expect(diff).toBe(29);
+  });
+
+  it("endDate is start + 29 days", () => {
+    const plan = generatePlan(
+      testConfig,
+      parseDateNoTimezoneDrift("2026-06-15"),
+    );
+    expect(plan.endDate).toBe("2026-07-14");
+  });
+
+  it("places every requested cadence slot across all 5 buckets", () => {
+    // Per cadence: 3+1+1+1+1 (host) + 1+1+1+1+1 (product) = 11 slots/bucket.
+    // 5 buckets × 11 = 55 placed slots. None dropped.
+    const plan = generatePlan(
+      testConfig,
+      parseDateNoTimezoneDrift("2026-06-15"),
+    );
+    const totalPlaced = plan.weeks.reduce((n, w) => n + w.days.length, 0);
+    expect(totalPlaced).toBe(11 * 5);
   });
 
   it("derives pillars from channel ratios", () => {
@@ -158,8 +188,11 @@ describe("renderMarkdown", () => {
 
 describe("cadence honored", () => {
   it("emits exactly the cadence counts the user requested", () => {
-    const plan = generatePlan(testConfig, new Date("2026-06-15"));
-    // Sum the format types across all 4 weeks.
+    const plan = generatePlan(
+      testConfig,
+      parseDateNoTimezoneDrift("2026-06-15"),
+    );
+    // Sum the format types across all 5 buckets.
     const counts: Record<string, number> = {};
     for (const week of plan.weeks) {
       for (const day of week.days) {
@@ -168,14 +201,52 @@ describe("cadence honored", () => {
     }
     // Per cadence: host shortForm=3, longForm=1, story=1, conversion=1,
     // conversation_prompts=1, product shortForm=1, proof=1, scope=1,
-    // conversion=1. Multiply by 4 weeks.
-    expect(counts.short_form).toBe((3 + 1) * 4);
-    expect(counts.long_form).toBe(1 * 4);
-    expect(counts.story).toBe(1 * 4);
-    expect(counts.conversion).toBe((1 + 1) * 4);
-    expect(counts.conversation_prompt).toBe(1 * 4);
-    expect(counts.proof).toBe(1 * 4);
-    expect(counts.scope).toBe(1 * 4);
+    // conversion=1. Multiply by 5 buckets.
+    expect(counts.short_form).toBe((3 + 1) * 5);
+    expect(counts.long_form).toBe(1 * 5);
+    expect(counts.story).toBe(1 * 5);
+    expect(counts.conversion).toBe((1 + 1) * 5);
+    expect(counts.conversation_prompt).toBe(1 * 5);
+    expect(counts.proof).toBe(1 * 5);
+    expect(counts.scope).toBe(1 * 5);
+  });
+
+  it("does not drop slots even when cadence > 14/week", () => {
+    // Build a config with 21 slots/week to verify the walker places all of them.
+    const highCadence: InstanceConfig = {
+      ...testConfig,
+      channels: {
+        ...testConfig.channels,
+        host: {
+          ...testConfig.channels.host,
+          cadence: {
+            shortForm: 10,
+            longForm: 5,
+            story: 0,
+            conversion: 2,
+            conversationPrompts: 0,
+          },
+        },
+        product: {
+          ...testConfig.channels.product,
+          cadence: {
+            shortForm: 2,
+            longForm: 0,
+            story: 0,
+            conversion: 2,
+            proofPosts: 0,
+            scopeExplainers: 0,
+          },
+        },
+      },
+    };
+    const plan = generatePlan(
+      highCadence,
+      parseDateNoTimezoneDrift("2026-06-15"),
+    );
+    // 21 slots per bucket × 5 buckets = 105 total slots.
+    const total = plan.weeks.reduce((n, w) => n + w.days.length, 0);
+    expect(total).toBe(21 * 5);
   });
 });
 
