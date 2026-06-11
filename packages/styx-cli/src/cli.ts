@@ -17,12 +17,14 @@
 import { writeFile, mkdir, readFile, appendFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { dirname, resolve } from "node:path";
+import { createRequire } from "node:module";
 import {
   loadConfig,
   generatePlan,
   renderMarkdown,
   parseDateNoTimezoneDrift,
 } from "@styx/audience-engine";
+import { isoWeekString } from "./iso-week.js";
 
 function printUsage(): void {
   console.log(`@styx/styx-cli — Operational wrapper for the Audience Growth Engine
@@ -48,22 +50,16 @@ Options:
 }
 
 function findDefaultConfig(): string {
-  // The default Styx config is in the audience-engine package's templates.
-  // We look for it relative to the current working directory first, then
-  // in the package's node_modules.
-  const candidates = [
-    resolve("packages/audience-engine/templates/styx-instance.yaml"),
-    resolve("node_modules/@styx/audience-engine/templates/styx-instance.yaml"),
-    resolve("../audience-engine/templates/styx-instance.yaml"),
-  ];
-  for (const candidate of candidates) {
-    if (existsSync(candidate)) {
-      return candidate;
-    }
-  }
-  throw new Error(
-    "Could not find templates/styx-instance.yaml. Run from the repo root, or pass --config <path>.",
+  const pkgRequire = createRequire(
+    require.resolve("@styx/audience-engine/package.json"),
   );
+  try {
+    return pkgRequire.resolve("@styx/audience-engine/templates/styx-instance.yaml");
+  } catch {
+    throw new Error(
+      "Could not find templates/styx-instance.yaml in @styx/audience-engine. Pass --config <path>.",
+    );
+  }
 }
 
 interface PlanWeekArgs {
@@ -86,6 +82,10 @@ async function cmdPlanWeek(args: PlanWeekArgs): Promise<number> {
   const startDate = args.start
     ? parseDateNoTimezoneDrift(args.start)
     : undefined;
+  if (startDate && Number.isNaN(startDate.getTime())) {
+    console.error(`✗ Invalid start date: ${args.start}`);
+    return 1;
+  }
   const plan = generatePlan(config, startDate);
   const markdown = renderMarkdown(plan);
   const week = isoWeekString(plan.startDate);
@@ -134,22 +134,6 @@ async function cmdLogWeek(args: LogWeekArgs): Promise<number> {
   return 0;
 }
 
-function isoWeekString(isoDate: string): string {
-  // Convert "YYYY-MM-DD" to "YYYY-WNN" using ISO week numbering.
-  const d = new Date(isoDate);
-  const target = new Date(d.valueOf());
-  const dayNr = (d.getDay() + 6) % 7;
-  target.setDate(target.getDate() - dayNr + 3);
-  const firstThursday = target.valueOf();
-  target.setMonth(0, 1);
-  if (target.getDay() !== 4) {
-    target.setMonth(0, 1 + ((4 - target.getDay() + 7) % 7));
-  }
-  const weekNumber =
-    1 + Math.ceil((firstThursday - target.valueOf()) / 604800000);
-  return `${d.getFullYear()}-W${String(weekNumber).padStart(2, "0")}`;
-}
-
 function parseArgs(argv: string[]): {
   command: string;
   args: Record<string, string>;
@@ -187,12 +171,28 @@ async function main(): Promise<number> {
       printUsage();
       return 2;
     }
+    const followers = Number(args.followers);
+    const email = Number(args.email);
+    const opens = args.opens !== undefined ? Number(args.opens) : undefined;
+    const waitlist = args.waitlist !== undefined ? Number(args.waitlist) : undefined;
+    if (!Number.isFinite(followers) || !Number.isFinite(email)) {
+      console.error(`✗ Invalid metric value: --followers and --email must be numbers`);
+      return 2;
+    }
+    if (opens !== undefined && !Number.isFinite(opens)) {
+      console.error(`✗ Invalid --opens value: must be a number`);
+      return 2;
+    }
+    if (waitlist !== undefined && !Number.isFinite(waitlist)) {
+      console.error(`✗ Invalid --waitlist value: must be a number`);
+      return 2;
+    }
     return cmdLogWeek({
       week: args.week,
-      followers: Number(args.followers),
-      email: Number(args.email),
-      opens: args.opens !== undefined ? Number(args.opens) : undefined,
-      waitlist: args.waitlist !== undefined ? Number(args.waitlist) : undefined,
+      followers,
+      email,
+      opens,
+      waitlist,
       metricsFile: args["metrics-file"],
     });
   }
