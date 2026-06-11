@@ -136,7 +136,18 @@ export function buildWebEnv() {
 
   env.NEXT_PUBLIC_API_URL = apiUrl;
   env.STYX_WEB_PUBLIC_URL ||= webUrl;
-  env.PORT ||= env.STYX_WEB_PORT || portFromUrl(webUrl, "Web public URL");
+  // STYX_WEB_PORT should win over the shared PORT (which is often
+  // set by toolchains like Render/Heroku/Docker) so the Web process
+  // binds to its dedicated dev port.
+  // Override order: STYX_WEB_PORT > PORT > portFromUrl(webUrl).
+  if (!env.PORT) {
+    env.PORT =
+      env.STYX_WEB_PORT || portFromUrl(webUrl, "Web public URL");
+  }
+  if (!env.STYX_WEB_PORT) {
+    env.STYX_WEB_PORT =
+      env.PORT || portFromUrl(webUrl, "Web public URL");
+  }
   env.NODE_ENV ||= "development";
 
   return env;
