@@ -86,7 +86,13 @@ export function buildApiEnv() {
 
   env.STYX_API_PUBLIC_URL ||= apiUrl;
   env.NEXT_PUBLIC_API_URL ||= apiUrl;
-  env.API_PORT ||= env.PORT || portFromUrl(apiUrl, "API public URL");
+  // Default API to a dedicated dev port (3000) so it does not collide
+  // with the Web process (default 3001) or the public-URL's port.
+  // Override order: STYX_API_PORT > PORT > 3000.
+  env.API_PORT ||=
+    env.STYX_API_PORT ||
+    env.PORT ||
+    "3000";
   env.PORT = env.API_PORT;
   env.NODE_ENV ||= "development";
   if (!env.CORS_ORIGINS && webUrl) env.CORS_ORIGINS = webUrl;
