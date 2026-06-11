@@ -152,3 +152,21 @@ export function buildWebEnv() {
 
   return env;
 }
+
+/**
+ * Minimal env for DB migrations. Migrations only need DATABASE_URL
+ * (or PG* vars); they do NOT need API/Redis/Stripe/etc. Use this
+ * from scripts/dev/run-migrate.mjs to avoid confusing "REDIS_URL
+ * required" errors when running `npm run dev:migrate`.
+ */
+export function buildMigrateEnv() {
+  const env = loadRepoEnv();
+  const isTest = env.NODE_ENV === "test" || process.env.NODE_ENV === "test";
+
+  if (!isTest) {
+    requireOne(env, ["DATABASE_URL"], "DATABASE_URL");
+  }
+
+  env.NODE_ENV ||= "development";
+  return env;
+}
