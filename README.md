@@ -117,9 +117,10 @@ flowchart TB
 
 | Surface | URL | Status |
 |---|---|---|
-| Static user-facing surface | https://a-organvm.github.io/peer-audited--behavioral-blockchain/ | `ship-now` (200 OK) |
-| Interactive launch surface | `/launch` | `ship-soon` (404 — tracked in Phase Gamma) |
-| API surface | `/api` | `ship-soon` (404 — deploy tracked in Issue #675) |
+| Pitch deck (canonical Pages artifact, `@styx/pitch` → `docs/`) | https://a-organvm.github.io/peer-audited--behavioral-blockchain/ | `ship-now` (200 OK) |
+| Interactive launch surface (waitlist / sign-up) | `/launch` | `ship-soon` (404 — tracked in Phase Gamma) |
+| Ask Styx LLM Q&A app | `/ask-styx` (deploy-ask-styx workflow) | separate sub-path, not on canonical URL |
+| API health check | `<api-host>/health` (per `render.yaml` and `@styx/api` `HealthController`) | `ship-soon` (deploy tracked in Issue #675) |
 
 Full activation ledger (evidence, blockers, reconciliation with the cross-system `activation-ledger-2026-06-10.csv`): [`docs/activation/activation-ledger--peer-audited--2026-06-11.md`](docs/activation/activation-ledger--peer-audited--2026-06-11.md).
 
