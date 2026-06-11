@@ -140,13 +140,15 @@ export function buildWebEnv() {
   // set by toolchains like Render/Heroku/Docker) so the Web process
   // binds to its dedicated dev port.
   // Override order: STYX_WEB_PORT > PORT > portFromUrl(webUrl).
-  if (!env.PORT) {
-    env.PORT =
-      env.STYX_WEB_PORT || portFromUrl(webUrl, "Web public URL");
+  // STYX_WEB_PORT explicitly OVERRIDES PORT (not just fallback) so
+  // run-web.mjs (next dev -p $PORT) uses the dev port.
+  if (env.STYX_WEB_PORT) {
+    env.PORT = env.STYX_WEB_PORT;
+  } else if (!env.PORT) {
+    env.PORT = portFromUrl(webUrl, "Web public URL");
   }
   if (!env.STYX_WEB_PORT) {
-    env.STYX_WEB_PORT =
-      env.PORT || portFromUrl(webUrl, "Web public URL");
+    env.STYX_WEB_PORT = env.PORT;
   }
   env.NODE_ENV ||= "development";
 

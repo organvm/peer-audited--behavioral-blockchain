@@ -24,10 +24,13 @@ const nextConfig = {
       // route rule. Runtime env (when set) will replace it via
       // the deployment platform's runtime config. This keeps the
       // Docker image functional when built without a public URL.
+      // The destination service name matches the docker-compose
+      // service in .config/docker/docker-compose.yml ("styx-api");
+      // the container port is the canonical API port (3000).
       return [
         {
           source: "/api/:path*",
-          destination: `http://api:3000/:path*`,
+          destination: `http://styx-api:3000/:path*`,
         },
       ];
     }

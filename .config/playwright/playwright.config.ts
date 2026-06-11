@@ -19,7 +19,11 @@ function requireWebUrl(): string {
   if (!webUrl) {
     // Local fallback so a fresh clone can run e2e without exporting
     // any env. CI overrides via E2E_BASE_URL in ci.yml.
-    const localPort = process.env.STYX_WEB_PORT || "3000";
+    // Default port matches the buildWebEnv() test-mode fallback
+    // (scripts/dev/env.mjs:131 — "http://localhost:3001") so a
+    // no-env dev e2e points at the same port the dev web server
+    // binds to. Override with STYX_WEB_PORT or E2E_BASE_URL.
+    const localPort = process.env.STYX_WEB_PORT || "3001";
     return `http://localhost:${localPort}`;
   }
   // Trim trailing slashes without a regex: /\/+$/ backtracks polynomially
