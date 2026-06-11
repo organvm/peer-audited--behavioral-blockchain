@@ -24,6 +24,7 @@ import { AegisProtocolService } from "../../../services/health/aegis.service";
 import { RecoveryProtocolService } from "../../../services/health/recovery-protocol.service";
 import { DynamicPenaltyService } from "../../../services/health/dynamic-penalty.service";
 import { AnomalyService } from "../../../services/anomaly/anomaly.service";
+import { resolveWebPublicUrl } from "../../config/runtime";
 
 import { NotificationsService } from "../notifications/notifications.service";
 import { CompliancePolicyService } from "../compliance/compliance-policy.service";
@@ -44,6 +45,8 @@ import {
   FAILURE_COOL_OFF_DAYS,
   DOWNSCALE_STRIKE_THRESHOLD,
   MAX_NOCONTACT_DURATION_DAYS,
+  checkPregnancyExclusion,
+  validateRecoveryGuardrails,
 } from "../../../../shared/libs/behavioral-logic";
 import {
   getRealmForCategory,
@@ -795,9 +798,7 @@ export class ContractsService {
     };
 
     if (bountyLinkId) {
-      const publicWebUrl =
-        process.env.STYX_WEB_PUBLIC_URL || "http://localhost:3001";
-      response.bountyLink = `${publicWebUrl}/whistleblower/${bountyLinkId}`;
+      response.bountyLink = `${resolveWebPublicUrl()}/whistleblower/${bountyLinkId}`;
     }
 
     if (pricing) {
@@ -1332,9 +1333,7 @@ export class ContractsService {
     );
   }
 
-  async createContract(
-    dto: CreateContractInput,
-  ): Promise<{
+  async createContract(dto: CreateContractInput): Promise<{
     contractId: string;
     paymentIntentId: string;
     bountyLink?: string;
@@ -1456,6 +1455,18 @@ export class ContractsService {
       this.aegis.validateHealthMetrics(dto.healthMetrics, dto.durationDays);
     }
 
+    // 3f. Pregnancy Exclusion Gate (AEGIS-05)
+    if (user.pregnancy_exclusion) {
+      const oathCategory = dto.oathCategory as OathCategory;
+      const pregnancyCheck = checkPregnancyExclusion(true, oathCategory);
+      if (pregnancyCheck.blocked) {
+        throw new ForbiddenException(
+          pregnancyCheck.reason ||
+            "Contract creation blocked due to pregnancy exclusion",
+        );
+      }
+    }
+
     // 3d. KYC tier gating (Phase Beta P0-003)
     if (this.compliancePolicy) {
       const kycResult = await this.compliancePolicy.evaluateKycRequirement(
@@ -1480,6 +1491,48 @@ export class ContractsService {
       // Enforce duration cap for RECOVERY_NOCONTACT
       if (dto.durationDays > MAX_NOCONTACT_DURATION_DAYS) {
         dto = { ...dto, durationDays: MAX_NOCONTACT_DURATION_DAYS };
+      }
+
+      // 4c. Recovery impulse guardrails (AEGIS-06)
+      const activeRecoveryContracts = await this.pool.query(
+        `SELECT COUNT(*) as count FROM contracts
+         WHERE user_id = $1 AND oath_category LIKE 'RECOVERY\\_%' ESCAPE '\\'
+         AND status NOT IN ('COMPLETED', 'FAILED', 'CANCELLED')`,
+        [dto.userId],
+      );
+      const lastRecoveryContract = await this.pool.query(
+        `SELECT created_at FROM contracts
+         WHERE user_id = $1 AND oath_category LIKE 'RECOVERY\\_%' ESCAPE '\\'
+         ORDER BY created_at DESC LIMIT 1`,
+        [dto.userId],
+      );
+      const lastRecoveryFailure = await this.pool.query(
+        `SELECT updated_at FROM contracts
+         WHERE user_id = $1 AND oath_category LIKE 'RECOVERY\\_%' ESCAPE '\\'
+         AND status = 'FAILED'
+         ORDER BY updated_at DESC LIMIT 1`,
+        [dto.userId],
+      );
+      const guardrailResult = validateRecoveryGuardrails({
+        activeRecoveryContractCount: Number(
+          activeRecoveryContracts.rows[0].count,
+        ),
+        hoursSinceLastRecoveryContract:
+          lastRecoveryContract.rows.length > 0
+            ? (Date.now() -
+                new Date(lastRecoveryContract.rows[0].created_at).getTime()) /
+              (1000 * 60 * 60)
+            : undefined,
+        hoursSinceLastFailure:
+          lastRecoveryFailure.rows.length > 0
+            ? (Date.now() -
+                new Date(lastRecoveryFailure.rows[0].updated_at).getTime()) /
+              (1000 * 60 * 60)
+            : undefined,
+        isRecoveryOath: true,
+      });
+      if (!guardrailResult.allowed) {
+        throw new ForbiddenException(guardrailResult.reason);
       }
     }
 
@@ -2644,7 +2697,15 @@ export class ContractsService {
     };
   }
 
-  async submitAttestation(contractId: string, userId: string) {
+  async submitAttestation(
+    contractId: string,
+    userId: string,
+    emotionalTracking?: {
+      urgeLevel?: number;
+      triggers?: string[];
+      copingMechanisms?: string[];
+    },
+  ) {
     const contract = await this.pool.query(
       `SELECT id, user_id, oath_category, status
        FROM contracts WHERE id = $1`,
@@ -2684,9 +2745,15 @@ export class ContractsService {
       }
       // Update the PENDING row to ATTESTED
       await this.pool.query(
-        `UPDATE attestations SET status = 'ATTESTED', attested_at = NOW()
+        `UPDATE attestations SET status = 'ATTESTED', attested_at = NOW(),
+         urge_level = $2, triggers = $3::jsonb, coping_mechanisms = $4::jsonb
          WHERE id = $1`,
-        [row.id],
+        [
+          row.id,
+          emotionalTracking?.urgeLevel ?? null,
+          JSON.stringify(emotionalTracking?.triggers ?? []),
+          JSON.stringify(emotionalTracking?.copingMechanisms ?? []),
+        ],
       );
     } else {
       // Create and immediately attest (scheduler hasn't run yet today).
@@ -2694,11 +2761,18 @@ export class ContractsService {
       // ATTESTED: only overwrite when the existing row is not already a more
       // advanced state (COSIGNED/ATTESTED).
       await this.pool.query(
-        `INSERT INTO attestations (contract_id, user_id, attestation_date, status, attested_at)
-         VALUES ($1, $2, CURRENT_DATE, 'ATTESTED', NOW())
-         ON CONFLICT (contract_id, attestation_date) DO UPDATE SET status = 'ATTESTED', attested_at = NOW()
+        `INSERT INTO attestations (contract_id, user_id, attestation_date, status, attested_at, urge_level, triggers, coping_mechanisms)
+         VALUES ($1, $2, CURRENT_DATE, 'ATTESTED', NOW(), $3, $4::jsonb, $5::jsonb)
+         ON CONFLICT (contract_id, attestation_date) DO UPDATE SET status = 'ATTESTED', attested_at = NOW(),
+         urge_level = EXCLUDED.urge_level, triggers = EXCLUDED.triggers, coping_mechanisms = EXCLUDED.coping_mechanisms
          WHERE attestations.status NOT IN ('ATTESTED', 'COSIGNED')`,
-        [contractId, userId],
+        [
+          contractId,
+          userId,
+          emotionalTracking?.urgeLevel ?? null,
+          JSON.stringify(emotionalTracking?.triggers ?? []),
+          JSON.stringify(emotionalTracking?.copingMechanisms ?? []),
+        ],
       );
     }
 

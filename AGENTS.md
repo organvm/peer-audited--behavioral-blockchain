@@ -1,46 +1,44 @@
 <!-- ORGANVM:AUTO:START -->
-## System Context (auto-generated — do not edit)
+## Agent Context (auto-generated — do not edit)
 
-**Organ:** ORGAN-III (Commerce) | **Tier:** flagship | **Status:** GRADUATED
-**Org:** `organvm-iii-ergon` | **Repo:** `peer-audited--behavioral-blockchain`
+This repo participates in the **ORGAN-III (Commerce)** swarm.
 
-### Edges
-- **Produces** → `unspecified`: product
-- **Produces** → `organvm-vi-koinonia/community-hub`: community_signal
-- **Produces** → `organvm-vii-kerygma/kerygma-pipeline`: distribution_signal
-- **Produces** → `organvm-v-logos/essay-pipeline`: essay_material
-- **Consumes** ← `organvm-i-theoria/styx-behavioral-economics-theory`: theory
-- **Consumes** ← `organvm-ii-poiesis/styx-behavioral-art`: creative-artifact
-- **Consumes** ← `organvm-iv-taxis/orchestration-start-here`: governance-rules
+### Active Subscriptions
+- Event: `theory.updated` → Action: Review theory changes for product implications
+- Event: `governance.updated` → Action: Check compliance with updated governance rules
+- Event: `community.event_created` → Action: Community event registered for this product
+- Event: `distribution.dispatched` → Action: Announcement distributed via POSSE pipeline
 
-### Siblings in Commerce
-`classroom-rpg-aetheria`, `gamified-coach-interface`, `trade-perpetual-future`, `fetch-familiar-friends`, `sovereign-ecosystem--real-estate-luxury`, `public-record-data-scrapper`, `search-local--happy-hour`, `multi-camera--livestream--framework`, `universal-mail--automation`, `mirror-mirror`, `the-invisible-ledger`, `enterprise-plugin`, `virgil-training-overlay`, `tab-bookmark-manager`, `a-i-chat--exporter` ... and 16 more
+### Production Responsibilities
+- **Produce** `product` for unspecified
+- **Produce** `community_signal` for organvm-vi-koinonia/community-hub
+- **Produce** `distribution_signal` for organvm-vii-kerygma/kerygma-pipeline
+- **Produce** `essay_material` for organvm-v-logos/essay-pipeline
 
-### Governance
-- Strictly unidirectional flow: I→II→III. No dependencies on Theory (I).
+### External Dependencies
+- **Consume** `theory` from [`organvm-i-theoria/styx-behavioral-economics-theory`](../../organvm-i-theoria/styx-behavioral-economics-theory/CLAUDE.md)
+- **Consume** `creative-artifact` from [`organvm-ii-poiesis/styx-behavioral-art`](../../organvm-ii-poiesis/styx-behavioral-art/CLAUDE.md)
+- **Consume** `governance-rules` from [`organvm-iv-taxis/orchestration-start-here`](../../organvm-iv-taxis/orchestration-start-here/CLAUDE.md)
 
-*Last synced: 2026-05-16T19:48:11Z*
+### Governance Constraints
+- Adhere to unidirectional flow: I→II→III
+- Never commit secrets or credentials
 
+*Last synced: 2026-06-07T14:00:33Z*
 <!-- ORGANVM:AUTO:END -->
 
-## Active Handoff Protocol
-
-If `.conductor/active-handoff.md` exists, **READ IT FIRST** before doing any work.
-It contains constraints, locked files, conventions, and completed work from the
-originating agent. You MUST honor all constraints listed there.
-
-If the handoff says "CROSS-VERIFICATION REQUIRED", your self-assessment will
-NOT be trusted. A different agent will verify your output against these constraints.
 
 ## Session Review Protocol
 
 At the end of each session that produces or modifies files:
+
 1. Run `organvm session review --latest` to get a session summary
 2. Check for unimplemented plans: `organvm session plans --project .`
 3. Export significant sessions: `organvm session export <id> --slug <slug>`
 4. Run `organvm prompts distill --dry-run` to detect uncovered operational patterns
 
 Transcripts are on-demand (never committed):
+
 - `organvm session transcript <id>` — conversation summary
 - `organvm session transcript <id> --unabridged` — full audit trail
 - `organvm session prompts <id>` — human prompts only
@@ -51,35 +49,36 @@ Transcripts are on-demand (never committed):
 
 Turborepo + npm workspaces. Package scope: `@styx/*`. Root `tsconfig.json` maps `@styx/shared/*` → `src/shared/*`.
 
-| Workspace | Stack | Entry | Notes |
-|-----------|-------|-------|-------|
-| `src/api` | NestJS 11, BullMQ, Stripe, pg | `nest-cli.json` entryFile: `api/src/main` | Double-entry ledger, Fury router, escrow |
-| `src/web` | Next.js 16, React 18, Tailwind | dev on port **3001** | Dashboard, Fury workbench |
-| `src/mobile` | React Native 0.81, Expo 54 | `expo run:ios` / `expo run:android` | Sensor bridge, camera, biometrics |
-| `src/desktop` | Tauri 2, Vite, React | `src-tauri/tauri.conf.json` | "The Judge" admin dashboard |
-| `src/shared` | TypeScript | `dist/index.js` | Constants, types, algorithms — **must build before others** |
-| `src/pitch` | Vite, React, p5.js | interactive pitch deck | build outputs to `docs/` |
-| `src/ask-styx` | Cloudflare Worker (wrangler) | `worker/index.ts` | LLM proxy for Ask Styx UI |
-| `src/test-harness` | Vitest, Commander CLI | `bin/ergon-test` | Validation & simulation suite |
+| Workspace          | Stack                          | Entry                                     | Notes                                                       |
+| ------------------ | ------------------------------ | ----------------------------------------- | ----------------------------------------------------------- |
+| `src/api`          | NestJS 11, BullMQ, Stripe, pg  | `nest-cli.json` entryFile: `api/src/main` | Double-entry ledger, Fury router, escrow                    |
+| `src/web`          | Next.js 16, React 18, Tailwind | `STYX_WEB_PUBLIC_URL` / `STYX_WEB_PORT`   | Dashboard, Fury workbench                                   |
+| `src/mobile`       | React Native 0.81, Expo 54     | `expo run:ios` / `expo run:android`       | Sensor bridge, camera, biometrics                           |
+| `src/desktop`      | Tauri 2, Vite, React           | `src-tauri/tauri.conf.json`               | "The Judge" admin dashboard                                 |
+| `src/shared`       | TypeScript                     | `dist/index.js`                           | Constants, types, algorithms — **must build before others** |
+| `src/pitch`        | Vite, React, p5.js             | interactive pitch deck                    | build outputs to `docs/`                                    |
+| `src/ask-styx`     | Cloudflare Worker (wrangler)   | `worker/index.ts`                         | LLM proxy for Ask Styx UI                                   |
+| `src/test-harness` | Vitest, Commander CLI          | `bin/ergon-test`                          | Validation & simulation suite                               |
 
 ### Setup & Dev Commands
 
 ```bash
 # Prerequisites: Node.js >= 20, Docker, npm 10+
-docker-compose up -d                    # PostgreSQL (5432) + Redis (6379)
+cp .env.example .env                    # fill runtime URLs, ports, DB, Redis, secrets
+make docker-up                          # Docker Compose uses .env / STYX_DOCKER_* values
 make install                            # npm install (all workspaces)
-cd src/api && npm run migrate && cd ../..  # DB migrations (required before API works)
-make dev                                # npx turbo run dev (API + Web + Mobile)
+npm run dev:migrate                     # DB migrations (required before API works)
+make dev                                # env-backed API + Web app stack
 ```
 
 ### Verification Commands
 
 ```bash
 make test                               # All unit/integration tests via turbo
-cd src/api && npx jest                  # API tests only (640)
-cd src/web && npx jest                  # Web tests only (166)
-cd src/mobile && npx jest               # Mobile tests only (273)
-cd src/desktop && npx jest              # Desktop tests only (128)
+cd src/api && npx jest                  # API tests only
+cd src/web && npx jest                  # Web tests only
+cd src/mobile && npx jest               # Mobile tests only
+cd src/desktop && npx jest              # Desktop tests only
 cd src/test-harness && npx vitest       # Test-harness uses Vitest, not Jest
 npx jest --testNamePattern="pattern"    # Single test by name pattern
 
@@ -120,7 +119,7 @@ npm run format                          # Prettier: **/*.{ts,tsx,md}
 - **`turbo.json`**: `test` dependsOn `build` — you cannot run tests without building first via turbo.
 - **Linguistic Cloaker**: production builds swap gambling terms (stake→commitment, bet→vault). Gate 04 validates this. Run `bash scripts/validation/04-redacted-build-check.sh` locally to check.
 - **`@styx/shared`** must be built before any workspace that imports from it can build or test.
-- **Playwright** auto-starts the web server (`cd src/web && npm run dev`) unless `CI=true`, then uses `npm run start`. Base URL: `http://localhost:3001`.
+- **Playwright** auto-starts the web server unless `CI=true`, then uses `npm run start`. Base URL comes from the Playwright config/env.
 - **EditorConfig**: 2-space indent for TS/TSX, LF line endings, final newline required.
 - **Mobile `build` and `lint` are both `tsc --noEmit`** — no actual bundle build. Native builds use `expo run:*`.
 - **Pitch build outputs to `docs/`** (see `turbo.json` `@styx/pitch#build` outputs) — not `dist/`.
@@ -142,4 +141,40 @@ node scripts/validation/07-claim-drift-check.js            # Claim drift
 ```bash
 BETA_API_URL=https://api-beta.example.com npm run beta:readiness
 ```
+
 Writes `artifacts/beta-readiness-summary.json`. Full policy: `docs/planning/beta-readiness-contract.md`.
+
+---
+
+## Issue Processing Protocol (MANDATORY)
+
+Every issue in this repo is tracked in `docs/triage.json`. Before closing ANY issue:
+
+1. **Declare batch:** `scripts/triage/batch-init.sh <batch-id> <phase> <issues...>`
+2. **For each issue:** verify code exists on disk OR build it. Record state via `scripts/triage/state-transition.sh <num> <to-state> [--evidence <file:line>] [--pr <url>]`
+3. **Reconcile:** `scripts/triage/reconcile.sh <batch-id>` — DO NOT PROCEED IF IT FAILS
+4. **Test:** `make test` (or workspace-specific test) — DO NOT PROCEED IF IT FAILS
+5. **Complete batch:** mark `test_passed: true` in triage.json, append to `docs/triage/pattern-log.md`
+6. **Commit:** triage.json + code changes together in one atomic commit
+7. **Report:** `scripts/triage/report.sh` — verify dashboard is clean, 0 orphans
+
+**NEVER:**
+
+- Close an issue without recording evidence in triage.json
+- Batch-close >20 issues without reconciliation
+- Skip `reconcile.sh` — it is the mechanical gate that rejects CLOSED without evidence
+- Leave an issue in UNREAD state after its batch is marked complete
+- Close non-code issues (TRACKING/WAITING/FUTURE) — they represent real work, not dead backlog
+
+**State machine:**
+
+```
+UNREAD → INSPECTED → CLOSED (evidence required)
+                   → BUILD_STARTED → BUILD_DONE → TESTED → PR_CREATED → PR_MERGED → CLOSED
+                   → TRACKING (non-code, stays open)
+                   → WAITING (blocked, stays open)
+                   → FUTURE (post-beta, stays open)
+                   → BUG (defect, stays open until fixed)
+```
+
+See `docs/triage/pattern-log.md` for per-batch learnings. See `scripts/triage/` for tooling.
