@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { generatePlan } from "./plan.js";
+import { generatePlan, parseDateNoTimezoneDrift } from "./plan.js";
 import { renderMarkdown } from "./markdown.js";
 import type { InstanceConfig } from "../types/index.js";
 
@@ -104,10 +104,14 @@ describe("generatePlan", () => {
     expect(plan.weeks).toHaveLength(4);
   });
 
-  it("starts on a Monday", () => {
-    const plan = generatePlan(testConfig, new Date("2026-06-15"));
+  it("starts on a Monday (when given a Monday)", () => {
+    // 2026-06-15 is a Monday — pass as a date-only string to avoid
+    // UTC parsing drift.
+    const plan = generatePlan(
+      testConfig,
+      parseDateNoTimezoneDrift("2026-06-15"),
+    );
     expect(plan.startDate).toBe("2026-06-15");
-    // 2026-06-15 is a Monday
   });
 
   it("produces 28 days total (4 weeks × 7 days)", () => {
@@ -149,5 +153,58 @@ describe("renderMarkdown", () => {
     const md = renderMarkdown(plan);
     expect(md).toContain("## Production notes");
     expect(md).toContain("engine-generated");
+  });
+});
+
+describe("cadence honored", () => {
+  it("emits exactly the cadence counts the user requested", () => {
+    const plan = generatePlan(testConfig, new Date("2026-06-15"));
+    // Sum the format types across all 4 weeks.
+    const counts: Record<string, number> = {};
+    for (const week of plan.weeks) {
+      for (const day of week.days) {
+        counts[day.format] = (counts[day.format] ?? 0) + 1;
+      }
+    }
+    // Per cadence: host shortForm=3, longForm=1, story=1, conversion=1,
+    // conversation_prompts=1, product shortForm=1, proof=1, scope=1,
+    // conversion=1. Multiply by 4 weeks.
+    expect(counts.short_form).toBe((3 + 1) * 4);
+    expect(counts.long_form).toBe(1 * 4);
+    expect(counts.story).toBe(1 * 4);
+    expect(counts.conversion).toBe((1 + 1) * 4);
+    expect(counts.conversation_prompt).toBe(1 * 4);
+    expect(counts.proof).toBe(1 * 4);
+    expect(counts.scope).toBe(1 * 4);
+  });
+});
+
+describe("pillar numbers are globally unique", () => {
+  it("host and product pillars do not share indices", () => {
+    const plan = generatePlan(testConfig, new Date("2026-06-15"));
+    const hostPillars = plan.pillars.filter((p) => p.channel === "host");
+    const productPillars = plan.pillars.filter((p) => p.channel === "product");
+    const hostIndices = new Set(hostPillars.map((p) => p.index));
+    const productIndices = new Set(productPillars.map((p) => p.index));
+    // No overlap.
+    for (const idx of productIndices) {
+      expect(hostIndices.has(idx)).toBe(false);
+    }
+    // Product pillars come after host pillars.
+    if (hostPillars.length > 0 && productPillars.length > 0) {
+      const maxHostIdx = Math.max(...hostPillars.map((p) => p.index));
+      const minProductIdx = Math.min(...productPillars.map((p) => p.index));
+      expect(minProductIdx).toBeGreaterThan(maxHostIdx);
+    }
+  });
+});
+
+describe("date parsing", () => {
+  it("parses date-only strings in local time, not UTC", () => {
+    // 2026-06-15 is a Monday. If parsed as UTC midnight, west-of-UTC
+    // users get a Sun. With local-time parsing, it should always be Mon.
+    const d = parseDateNoTimezoneDrift("2026-06-15");
+    // getDay(): 0=Sun, 1=Mon
+    expect(d.getDay()).toBe(1);
   });
 });

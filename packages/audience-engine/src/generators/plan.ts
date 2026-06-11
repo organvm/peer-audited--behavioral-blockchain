@@ -24,20 +24,46 @@ function addDays(date: Date, days: number): Date {
 }
 
 function formatDate(date: Date): string {
-  return date.toISOString().slice(0, 10);
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
 }
 
 function getDayOfWeek(date: Date): string {
   return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][date.getDay()];
 }
 
-/** Derive the pillar list from a channel's ratio. */
+/**
+ * Parse an ISO date string (date-only or date-time) without timezone drift.
+ * A date-only string like "2026-06-15" must be interpreted in *local* time,
+ * not UTC. Otherwise users west of UTC get a calendar where the first day
+ * of a week is labeled Sun instead of Mon.
+ */
+function parseDateNoTimezoneDrift(input: string): Date {
+  // Date-only: "YYYY-MM-DD" — parse as local midnight.
+  const dateOnly = /^(\d{4})-(\d{2})-(\d{2})$/;
+  const m = dateOnly.exec(input);
+  if (m) {
+    const [, y, mo, d] = m;
+    return new Date(Number(y), Number(mo) - 1, Number(d));
+  }
+  // Date-time: use as-is.
+  return new Date(input);
+}
+
+/** Derive the pillar list from a channel's ratio. Pillars use a *shared* global
+ *  counter so host pillars are 1..N and product pillars are N+1..M. This
+ *  matches the existing planning docs (which use a single global pillar
+ *  namespace) and avoids the bug where a host trust pillar and a product
+ *  scope pillar both render as "pillar 2". */
 function derivePillars(
   channel: Channel,
-  role: "host" | "product"
-): ContentPlan["pillars"] {
+  role: "host" | "product",
+  startIndex: number,
+): { pillars: ContentPlan["pillars"]; nextIndex: number } {
   const pillars: ContentPlan["pillars"] = [];
-  let idx = 1;
+  let idx = startIndex;
 
   if (channel.ratio.value > 0) {
     pillars.push({
@@ -48,10 +74,7 @@ function derivePillars(
           : "Product clarity (what it is / isn't)",
       channel: role,
       ratio: channel.ratio.value,
-      goal:
-        role === "host"
-          ? "discovery + trust"
-          : "credible destination",
+      goal: role === "host" ? "discovery + trust" : "credible destination",
     });
   }
   if (channel.ratio.trust > 0) {
@@ -84,7 +107,7 @@ function derivePillars(
       goal: "funnel into Product",
     });
   }
-  return pillars;
+  return { pillars, nextIndex: idx };
 }
 
 /** Generate the pillar-slot week. Each week honors the channel's ratio. */
@@ -92,7 +115,7 @@ function generateWeek(
   weekNumber: number,
   startDate: Date,
   config: InstanceConfig,
-  themeByWeek: string[]
+  themeByWeek: string[],
 ): PlannedDay[] {
   const days: PlannedDay[] = [];
   const hostChannel = config.channels.host;
@@ -141,99 +164,101 @@ function generateWeek(
     slots.push({ channel: "product", format: "conversion" });
   }
 
-  // Allocate slots across the 7 days. We use a deterministic
-  // pattern: Mon=host_short, Tue=host_long, Wed=host_short,
-  // Thu=host_prompt+product_scope, Fri=host_conversion+product_proof+owned,
-  // Sat=product_conversion, Sun=host_story.
-  const dayPattern: Array<{
-    channel: "host" | "product" | "owned";
-    format: string;
-  }> = [
-    { channel: "host", format: "short_form" },
-    { channel: "host", format: "long_form" },
-    { channel: "host", format: "short_form" },
-    { channel: "host", format: "conversation_prompt" },
-    { channel: "product", format: "scope" },
-    { channel: "host", format: "conversion" },
-    { channel: "product", format: "proof" },
-    { channel: "host", format: "story" },
-  ];
-
-  // Truncate dayPattern to the actual number of slots we generated
-  // (this is the deterministic walker; we walk the dayPattern in order
-  // and pick the first slots that match each day).
-  const slotIndex: Record<string, number> = {};
+  // Distribute the slots across the 7 days of the week using a deterministic
+  // round-robin walker. We allocate at most 2 slots per day (so a 14-slot
+  // week uses all 7 days, a 4-slot week uses 4 days). The slot order is the
+  // order built above (host slots first, then product slots), so the
+  // cadence the user requested in the InstanceConfig is exactly what shows
+  // up in the plan.
+  const maxSlotsPerDay = 2;
+  let slotIdx = 0;
   let dayIdx = 0;
-  for (let day = 0; day < 7; day++) {
-    const date = addDays(startDate, day);
+  // Continue until we've placed all slots OR run out of days.
+  // (We always have 7 days, so this terminates as long as slots > 0.)
+  while (slotIdx < slots.length && dayIdx < 7) {
+    const date = addDays(startDate, dayIdx);
     const dow = getDayOfWeek(date);
-    // We may have 0, 1, or 2 slots per day.
-    // Find the next day-pattern slot that matches the channel budget.
-    // For simplicity: at most 2 slots per day.
+    // Allocate up to maxSlotsPerDay slots to this day.
     let daySlots = 0;
-    while (daySlots < 2 && dayIdx < dayPattern.length) {
-      const dp = dayPattern[dayIdx++];
-      // Pick a pillar based on the channel/format combination.
-      // dp.channel can be "host" | "product" | "owned"; map "owned" to "host".
-      const chForPillar: "host" | "product" =
-        dp.channel === "owned" ? "host" : dp.channel;
-      const pillar = pickPillar(config, chForPillar, dp.format);
-      const cta =
-        dp.format === "conversion" ? pickCta(config, chForPillar) : null;
-      const hook = `${theme} — ${dp.format} on ${dow}`;
+    while (daySlots < maxSlotsPerDay && slotIdx < slots.length) {
+      const s = slots[slotIdx++];
+      const pillar = pickPillar(config, s.channel, s.format);
+      const cta = s.format === "conversion" ? pickCta(config, s.channel) : null;
+      const hook = `${theme} — ${s.format} on ${dow}`;
       days.push({
         date: formatDate(date),
         dayOfWeek: dow,
-        channel: dp.channel === "owned" ? "host" : dp.channel,
-        format: dp.format,
+        channel: s.channel,
+        format: s.format,
         hook,
         pillar,
         cta,
       });
       daySlots++;
     }
+    dayIdx++;
   }
 
   return days;
 }
 
-/** Pick a pillar index for a (channel, format) combination. */
+/** Pick a pillar index for a (channel, format) combination.
+ *  Pillars use the *global* namespace (host 1..N, product N+1..M) so
+ *  the output matches the existing planning docs. The conversion pillar
+ *  for a channel is the *last* pillar in that channel. */
 function pickPillar(
   config: InstanceConfig,
-  channel: "host" | "product" | "owned",
-  format: string
+  channel: "host" | "product",
+  format: string,
 ): number {
+  // Compute the global pillar index range for the channel.
+  const hostPillars = countPillars(config.channels.host);
+  const productPillars = countPillars(config.channels.product);
+  const hostStart = 1;
+  const productStart = hostStart + hostPillars;
+  // The "last pillar in the channel" is the conversion pillar.
+  const hostConversion = hostStart + hostPillars - 1;
+  const productConversion = productStart + productPillars - 1;
+  const hostTrust = hostStart + (config.channels.host.ratio.value > 0 ? 1 : 0);
+  const productTrust =
+    productStart + (config.channels.product.ratio.value > 0 ? 1 : 0);
+  const hostValue = hostStart; // pillar 1 (always 1, since host pillars start at 1)
+  const productValue = productStart;
+  const productProof =
+    productStart +
+    (config.channels.product.ratio.value > 0 ? 1 : 0) +
+    (config.channels.product.ratio.trust > 0 ? 1 : 0);
+
   if (format === "conversion") {
-    // The conversion pillar is always the last in the channel.
-    const ch = channel === "host" ? config.channels.host : config.channels.product;
-    const pillarCount =
-      (ch.ratio.value > 0 ? 1 : 0) +
-      (ch.ratio.trust > 0 ? 1 : 0) +
-      (ch.ratio.proof > 0 && channel === "product" ? 1 : 0) +
-      (ch.ratio.conversion > 0 ? 1 : 0);
-    return pillarCount;
+    return channel === "host" ? hostConversion : productConversion;
   }
   if (format === "long_form" || format === "story") {
-    // Trust / lived insight pillar.
-    return channel === "host" ? 2 : 2;
+    return channel === "host" ? hostTrust : productTrust;
   }
   if (format === "proof") {
-    return 3;
+    return productProof;
   }
   if (format === "scope") {
-    return channel === "product" ? 2 : 1;
+    return channel === "product" ? productTrust : hostValue;
   }
   if (format === "conversation_prompt") {
-    return 1;
+    return hostValue;
   }
-  return 1; // short_form defaults to pillar 1
+  return channel === "host" ? hostValue : productValue; // short_form defaults to value pillar
+}
+
+/** Count the pillars a channel has, given its ratio. */
+function countPillars(channel: Channel): number {
+  return (
+    (channel.ratio.value > 0 ? 1 : 0) +
+    (channel.ratio.trust > 0 ? 1 : 0) +
+    (channel.ratio.proof > 0 ? 1 : 0) +
+    (channel.ratio.conversion > 0 ? 1 : 0)
+  );
 }
 
 /** Pick a CTA from the channel's fixed CTA set. */
-function pickCta(
-  config: InstanceConfig,
-  channel: "host" | "product"
-): string {
+function pickCta(config: InstanceConfig, channel: "host" | "product"): string {
   // CTAs are stored in the channel cadence as a free string in the
   // conversion slot. For now we use the product's conversion CTA.
   return config.parameters.p3Product.conversionCta;
@@ -242,7 +267,7 @@ function pickCta(
 /** Generate the full 30-day content plan from an InstanceConfig. */
 export function generatePlan(
   config: InstanceConfig,
-  startDate: Date = findNextMonday(new Date())
+  startDate: Date = findNextMonday(new Date()),
 ): ContentPlan {
   // Default themes per week, derived from the engine's three phases:
   // Ignition, First Room, Compounding. Week 4 is the Authority phase.
@@ -253,9 +278,16 @@ export function generatePlan(
     `Week 4 — Authority: cornerstone essay + compounding proof`,
   ];
 
-  const hostPillars = derivePillars(config.channels.host, "host");
-  const productPillars = derivePillars(config.channels.product, "product");
-  const pillars = [...hostPillars, ...productPillars];
+  const hostPillarsResult = derivePillars(config.channels.host, "host", 1);
+  const productPillarsResult = derivePillars(
+    config.channels.product,
+    "product",
+    hostPillarsResult.nextIndex,
+  );
+  const pillars = [
+    ...hostPillarsResult.pillars,
+    ...productPillarsResult.pillars,
+  ];
 
   const weeks = [];
   for (let w = 0; w < 4; w++) {
@@ -275,6 +307,9 @@ export function generatePlan(
     weeks,
   };
 }
+
+/** Export the date parser so the CLI can use it for --start. */
+export { parseDateNoTimezoneDrift };
 
 /** Find the next Monday from a given date. */
 function findNextMonday(date: Date): Date {

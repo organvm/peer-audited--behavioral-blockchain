@@ -14,7 +14,7 @@
 import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { loadConfig } from "./loaders/config.js";
-import { generatePlan } from "./generators/plan.js";
+import { generatePlan, parseDateNoTimezoneDrift } from "./generators/plan.js";
 import { renderMarkdown } from "./generators/markdown.js";
 
 function printUsage(): void {
@@ -70,8 +70,18 @@ function parseArgs(argv: string[]): {
 
 async function cmdPlan(args: PlanArgs): Promise<number> {
   const configPath = resolve(args.config);
-  const config = await loadConfig(configPath);
-  const startDate = args.start ? new Date(args.start) : undefined;
+  let config;
+  try {
+    config = await loadConfig(configPath);
+  } catch (err) {
+    console.error(
+      `✗ Config invalid: ${err instanceof Error ? err.message : String(err)}`,
+    );
+    return 1;
+  }
+  const startDate = args.start
+    ? parseDateNoTimezoneDrift(args.start)
+    : undefined;
   if (args.start && Number.isNaN(startDate!.getTime())) {
     console.error(`Invalid --start date: ${args.start}`);
     return 2;
@@ -82,7 +92,7 @@ async function cmdPlan(args: PlanArgs): Promise<number> {
     const outPath = resolve(args.output);
     await writeFile(outPath, markdown, "utf-8");
     console.error(
-      `✓ Wrote 30-day plan to ${outPath} (${plan.weeks.length} weeks, ${plan.weeks.reduce((n, w) => n + w.days.length, 0)} days)`
+      `✓ Wrote 30-day plan to ${outPath} (${plan.weeks.length} weeks, ${plan.weeks.reduce((n, w) => n + w.days.length, 0)} days)`,
     );
   } else {
     console.log(markdown);
@@ -92,11 +102,18 @@ async function cmdPlan(args: PlanArgs): Promise<number> {
 
 async function cmdValidate(args: ValidateArgs): Promise<number> {
   const configPath = resolve(args.config);
-  const config = await loadConfig(configPath);
-  console.log(
-    `✓ Config valid: ${config.systemName} (Host: ${config.parameters.p1Host.archetype}, Wedge: ${config.parameters.p2Wedge.statement.slice(0, 50)}...)`
-  );
-  return 0;
+  try {
+    const config = await loadConfig(configPath);
+    console.log(
+      `✓ Config valid: ${config.systemName} (Host: ${config.parameters.p1Host.archetype}, Wedge: ${config.parameters.p2Wedge.statement.slice(0, 50)}...)`,
+    );
+    return 0;
+  } catch (err) {
+    console.error(
+      `✗ Config invalid: ${err instanceof Error ? err.message : String(err)}`,
+    );
+    return 1;
+  }
 }
 
 async function main(): Promise<number> {

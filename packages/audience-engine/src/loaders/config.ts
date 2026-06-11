@@ -20,7 +20,12 @@ export async function loadConfig(configPath: string): Promise<InstanceConfig> {
   return raw as InstanceConfig;
 }
 
-/** Validation: ensure all 5 parameters are present. */
+/**
+ * Validation: ensure all 5 parameters are present.
+ * Walks the nested channel structure so `audience-engine validate`
+ * catches a missing `cadence` or `ratio` *before* the planner dereferences
+ * it and crashes mid-generation.
+ */
 function validateConfig(raw: unknown): asserts raw is InstanceConfig {
   if (typeof raw !== "object" || raw === null) {
     throw new Error("Config root must be an object");
@@ -34,7 +39,13 @@ function validateConfig(raw: unknown): asserts raw is InstanceConfig {
     throw new Error("Config.parameters is required (the 5 engine parameters)");
   }
   const p = obj.parameters as Record<string, unknown>;
-  for (const key of ["p1Host", "p2Wedge", "p3Product", "p4OwnedAsset", "p5ProofLoop"]) {
+  for (const key of [
+    "p1Host",
+    "p2Wedge",
+    "p3Product",
+    "p4OwnedAsset",
+    "p5ProofLoop",
+  ]) {
     if (typeof p[key] !== "object" || p[key] === null) {
       throw new Error(`Config.parameters.${key} is required`);
     }
@@ -46,9 +57,11 @@ function validateConfig(raw: unknown): asserts raw is InstanceConfig {
   if (typeof c.host !== "object" || c.host === null) {
     throw new Error("Config.channels.host is required");
   }
+  validateChannel(c.host, "host");
   if (typeof c.product !== "object" || c.product === null) {
     throw new Error("Config.channels.product is required");
   }
+  validateChannel(c.product, "product");
   if (typeof obj.ladder !== "object" || obj.ladder === null) {
     throw new Error("Config.ladder is required");
   }
@@ -60,5 +73,45 @@ function validateConfig(raw: unknown): asserts raw is InstanceConfig {
   }
   if (!Array.isArray(obj.kpis)) {
     throw new Error("Config.kpis must be an array");
+  }
+}
+
+/** Validate a single channel config. */
+function validateChannel(raw: unknown, role: "host" | "product"): void {
+  if (typeof raw !== "object" || raw === null) {
+    throw new Error(`Config.channels.${role} must be an object`);
+  }
+  const ch = raw as Record<string, unknown>;
+  if (typeof ch.name !== "string") {
+    throw new Error(`Config.channels.${role}.name is required`);
+  }
+  if (typeof ch.voice !== "string") {
+    throw new Error(`Config.channels.${role}.voice is required`);
+  }
+  if (typeof ch.ratio !== "object" || ch.ratio === null) {
+    throw new Error(`Config.channels.${role}.ratio is required`);
+  }
+  const ratio = ch.ratio as Record<string, unknown>;
+  for (const key of ["value", "trust", "proof", "conversion"]) {
+    if (typeof ratio[key] !== "number") {
+      throw new Error(`Config.channels.${role}.ratio.${key} must be a number`);
+    }
+  }
+  if (typeof ch.cadence !== "object" || ch.cadence === null) {
+    throw new Error(`Config.channels.${role}.cadence is required`);
+  }
+  const cadence = ch.cadence as Record<string, unknown>;
+  for (const key of ["shortForm", "longForm", "story", "conversion"]) {
+    if (typeof cadence[key] !== "number") {
+      throw new Error(
+        `Config.channels.${role}.cadence.${key} must be a number`,
+      );
+    }
+  }
+  if (!Array.isArray(ch.does)) {
+    throw new Error(`Config.channels.${role}.does must be an array`);
+  }
+  if (!Array.isArray(ch.doesNot)) {
+    throw new Error(`Config.channels.${role}.doesNot must be an array`);
   }
 }
