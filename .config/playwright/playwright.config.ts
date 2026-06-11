@@ -17,9 +17,10 @@ function requireWebUrl(): string {
     process.env.STYX_WEB_PUBLIC_URL ||
     process.env.NEXT_PUBLIC_WEB_URL;
   if (!webUrl) {
-    throw new Error(
-      "E2E_BASE_URL, STYX_WEB_PUBLIC_URL, or NEXT_PUBLIC_WEB_URL is required.",
-    );
+    // Local fallback so a fresh clone can run e2e without exporting
+    // any env. CI overrides via E2E_BASE_URL in ci.yml.
+    const localPort = process.env.STYX_WEB_PORT || "3000";
+    return `http://localhost:${localPort}`;
   }
   // Trim trailing slashes without a regex: /\/+$/ backtracks polynomially
   // on untrusted input (CodeQL js/polynomial-redos).
