@@ -10554,7 +10554,7 @@
       "title": "Activation audit: production route and service health",
       "labels": [],
       "action": "UNCLASSIFIED",
-      "state": "PR_CREATED",
+      "state": "CLOSED",
       "batch": "triage-activation-676",
       "history": [
         {
@@ -10581,11 +10581,21 @@
           "from": "TESTED",
           "to": "PR_CREATED",
           "at": "2026-06-11T16:22:23Z"
+        },
+        {
+          "from": "PR_CREATED",
+          "to": "PR_MERGED",
+          "at": "2026-06-11T16:26:50Z"
+        },
+        {
+          "from": "PR_MERGED",
+          "to": "CLOSED",
+          "at": "2026-06-11T16:26:57Z"
         }
       ],
       "evidence": "docs/activation/activation-ledger--peer-audited--2026-06-11.md",
       "pr": "https://github.com/a-organvm/peer-audited--behavioral-blockchain/pull/677",
-      "state_updated": "2026-06-11T16:22:23Z",
+      "state_updated": "2026-06-11T16:26:57Z",
       "closed_at": null
     }
   }
