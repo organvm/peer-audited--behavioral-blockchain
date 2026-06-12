@@ -242,7 +242,7 @@
         282
       ],
       "started": "2026-06-12T11:46:15Z",
-      "completed": "2026-06-12T12:21:13Z",
+      "completed": "2026-06-12T12:52:15Z",
       "reconciled": true,
       "test_passed": true
     },
@@ -11054,7 +11054,7 @@
         "stale"
       ],
       "action": "BUILD",
-      "state": "TRACKING",
+      "state": "TESTED",
       "batch": "audit-not-planned-closures",
       "history": [
         {
@@ -11066,11 +11066,26 @@
           "from": "INSPECTED",
           "to": "TRACKING",
           "at": "2026-06-12T11:47:17Z"
+        },
+        {
+          "from": "TRACKING",
+          "to": "BUILD_STARTED",
+          "at": "2026-06-12T12:48:23Z"
+        },
+        {
+          "from": "BUILD_STARTED",
+          "to": "BUILD_DONE",
+          "at": "2026-06-12T12:51:19Z"
+        },
+        {
+          "from": "BUILD_DONE",
+          "to": "TESTED",
+          "at": "2026-06-12T12:51:19Z"
         }
       ],
-      "evidence": "https://github.com/a-organvm/peer-audited--behavioral-blockchain/issues/560",
+      "evidence": "src/web/app/do-not-text-your-ex-tonight/page.test.tsx:1",
       "pr": null,
-      "state_updated": "2026-06-12T11:47:17Z",
+      "state_updated": "2026-06-12T12:51:19Z",
       "closed_at": null
     },
     "314": {

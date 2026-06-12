@@ -251,3 +251,24 @@ pending.
 **Lesson:** `COMPLETED` is only a GitHub state label until it is backed by local
 triage evidence, merged implementation, a durable plan, or a valid supersession
 artifact. Missing evidence means recovery work, not quiet closure.
+
+## batch-build-emergency-asset-560 — 2026-06-12 — Build no-contact urge tool
+
+**Issue:** #560 — `Do Not Text Your Ex Tonight` emergency acquisition asset.
+
+**Status:** implemented and tested. The new public route
+`/do-not-text-your-ex-tonight` provides a focused ten-minute no-contact reset
+tool with feeling selection, urge-level input, step progression, replacement
+message copy, and one attributed CTA into the private beta registration path.
+
+**Evidence:** `src/web/app/do-not-text-your-ex-tonight/page.tsx`,
+`src/web/app/do-not-text-your-ex-tonight/page.test.tsx`, and
+`src/web/proxy.ts`.
+
+**Channel linkage:** Jessica and Styx planning docs now point to the route with
+source/intent query params so channel traffic can preserve the emergency-asset
+source.
+
+**Lesson:** Emergency acquisition assets should be usable before they sell. The
+first viewport must own the live urge moment, while the CTA remains singular and
+source-tagged.
