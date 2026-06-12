@@ -226,3 +226,28 @@ in `src/web/app/contracts/new/page.test.tsx`, merged via
 **Lesson:** Tracked live work must be able to move into implementation. The
 triage transition script now permits `TRACKING`, `FUTURE`, and `WAITING` issues
 to enter `BUILD_STARTED` when a deferred obligation is actually picked up.
+
+## batch-audit-closed-without-ledger — 2026-06-12 — Reopen GitHub closures without triage proof
+
+**Issues:** 100 GitHub-closed issues missing from `docs/triage.json`, recorded
+in batch `audit-closed-without-ledger`.
+
+**Status:** all 100 were reopened on GitHub with a closure-governance comment
+and added back to the triage ledger as live work. They are not treated as
+complete merely because GitHub previously showed `COMPLETED`; each must now be
+implemented, planned, or validly superseded with durable proof before closure.
+Recovered states: 95 live tracking items (`BUILD` or `TRACK` action), 4 bugs,
+and 1 future item.
+
+**Verified counts after reopen:** GitHub open issues increased from 404 to 504;
+closed issues dropped from 168 to 68; closed issues with non-`COMPLETED` state
+reason remained 0.
+
+**Observed bad closure patterns:** missing triage record entirely, closure with
+no evidence comment, closure as "business ops" despite scoped API/funnel work,
+and closure of legal/counsel sign-off issues while external sign-off was still
+pending.
+
+**Lesson:** `COMPLETED` is only a GitHub state label until it is backed by local
+triage evidence, merged implementation, a durable plan, or a valid supersession
+artifact. Missing evidence means recovery work, not quiet closure.
