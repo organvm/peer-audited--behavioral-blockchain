@@ -7,7 +7,6 @@ import Link from 'next/link';
 import { api } from '../../../services/api-client';
 import { useAuth } from '../../../contexts/AuthContext';
 import { getAllowedTiers, getDisplayTier, getTierMaxStake } from '../../../../shared/libs/integrity';
-import { isKycRequired } from '../../../../shared/config/stake-tiers';
 import { getRealmBySlug } from '../../../../shared/libs/realm-registry';
 
 const OATH_CATEGORIES = [
@@ -64,6 +63,9 @@ const DEFAULT_STAKE_USD = 30;
 const PLATFORM_FEE_USD = 9;
 const AEGIS_MAX_STAKE_USD = 500;
 const LOW_INTEGRITY_AEGIS_MAX_USD = 100;
+const FAILURE_AEGIS_MAX_USD = 50;
+const FAILURE_DOWNSCALE_STRIKE_THRESHOLD = 3;
+const KYC_EXEMPT_MAX_USD = 20;
 const MIN_STAKE_USD = 1;
 
 function clampStakeAmount(value: number, maxStakeUsd: number): number {
@@ -73,6 +75,32 @@ function clampStakeAmount(value: number, maxStakeUsd: number): number {
 
 function formatMoney(value: number): string {
   return `$${value.toFixed(2)}`;
+}
+
+function getProfileFailureCount(
+  user: { failed_contracts?: number; failedContracts?: number } | null | undefined,
+): number | null {
+  const rawCount = user?.failed_contracts ?? user?.failedContracts;
+  return typeof rawCount === 'number' && Number.isFinite(rawCount)
+    ? Math.max(0, rawCount)
+    : null;
+}
+
+function getFailureAdjustedTierMaxStakeUsd(tierMaxStakeUsd: number, failureCount: number | null): number {
+  if (failureCount == null || failureCount < FAILURE_DOWNSCALE_STRIKE_THRESHOLD) {
+    return tierMaxStakeUsd;
+  }
+
+  const downscaleFactor = Math.pow(
+    0.5,
+    Math.floor(failureCount / FAILURE_DOWNSCALE_STRIKE_THRESHOLD),
+  );
+
+  return Math.min(tierMaxStakeUsd * downscaleFactor, FAILURE_AEGIS_MAX_USD);
+}
+
+function requiresCreateContractKyc(stakeUsd: number): boolean {
+  return stakeUsd > KYC_EXEMPT_MAX_USD;
 }
 
 function NewContractPageContent() {
@@ -87,6 +115,7 @@ function NewContractPageContent() {
   const [durationDays, setDurationDays] = useState(30);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [failureCount, setFailureCount] = useState<number | null>(null);
 
   // Recovery stream fields
   const [apEmail, setApEmail] = useState('');
@@ -99,6 +128,8 @@ function NewContractPageContent() {
   const isRecovery = oathCategory.startsWith('RECOVERY_');
   const isNoContact = oathCategory === 'RECOVERY_NOCONTACT';
   const integrityScore = user?.integrity_score ?? 50;
+  const profileFailureCount = getProfileFailureCount(user);
+  const effectiveFailureCount = failureCount ?? profileFailureCount;
   const allowedTiers = useMemo(() => getAllowedTiers(integrityScore), [integrityScore]);
   const tierMaxStakeCents = useMemo(() => getTierMaxStake(allowedTiers), [allowedTiers]);
   const tierMaxStakeUsd = Number.isFinite(tierMaxStakeCents)
@@ -107,13 +138,45 @@ function NewContractPageContent() {
   const aegisMaxStakeUsd = integrityScore < 40
     ? Math.min(AEGIS_MAX_STAKE_USD, LOW_INTEGRITY_AEGIS_MAX_USD)
     : AEGIS_MAX_STAKE_USD;
-  const maxStakeUsd = Math.floor(Math.max(0, Math.min(tierMaxStakeUsd, aegisMaxStakeUsd)));
+  const failureAdjustedTierMaxStakeUsd = getFailureAdjustedTierMaxStakeUsd(tierMaxStakeUsd, effectiveFailureCount);
+  const maxStakeUsd = Math.floor(Math.max(0, Math.min(failureAdjustedTierMaxStakeUsd, aegisMaxStakeUsd)));
   const selectedStakeUsd = clampStakeAmount(Number.parseFloat(stakeAmount) || 0, maxStakeUsd);
-  const platformFeeUsd = selectedStakeUsd > 0 ? PLATFORM_FEE_USD : 0;
+  const usesMvpPlan = selectedStakeUsd === DEFAULT_STAKE_USD;
+  const platformFeeUsd = usesMvpPlan ? PLATFORM_FEE_USD : 0;
   const totalEntryUsd = selectedStakeUsd + platformFeeUsd;
-  const requiresKyc = selectedStakeUsd > 0 && isKycRequired(Math.round(selectedStakeUsd * 100));
+  const requiresKyc = selectedStakeUsd > 0 && requiresCreateContractKyc(selectedStakeUsd);
   const canStake = maxStakeUsd >= MIN_STAKE_USD;
   const displayTier = getDisplayTier(integrityScore).replace(/_/g, ' ');
+  const failureLimitCopy = effectiveFailureCount == null
+    ? 'Server checks failure history again at submit.'
+    : effectiveFailureCount >= FAILURE_DOWNSCALE_STRIKE_THRESHOLD
+      ? `Failure-history cap: ${formatMoney(maxStakeUsd)} after ${effectiveFailureCount} failed contracts.`
+      : 'No failure-history cap applied.';
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const profileFailureCount = getProfileFailureCount(user);
+    setFailureCount(profileFailureCount);
+
+    if (!user) return undefined;
+
+    api.getUserContracts()
+      .then((contracts) => {
+        if (cancelled) return;
+        const failedContracts = contracts.filter((contract) => contract.status === 'FAILED').length;
+        setFailureCount(failedContracts);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setFailureCount(profileFailureCount);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   useEffect(() => {
     const nextStake = clampStakeAmount(Number.parseFloat(stakeAmount) || DEFAULT_STAKE_USD, maxStakeUsd);
@@ -270,6 +333,8 @@ function NewContractPageContent() {
                 <p className="mt-1 text-4xl font-black text-red-500">{formatMoney(selectedStakeUsd)}</p>
                 <p className="mt-2 text-sm text-neutral-500">
                   {displayTier} tier cap: {formatMoney(maxStakeUsd)}. Aegis safety ceiling: {formatMoney(aegisMaxStakeUsd)}.
+                  {' '}
+                  {failureLimitCopy}
                 </p>
               </div>
               <div className="rounded-lg border border-neutral-800 bg-black px-4 py-3 text-right">
@@ -298,6 +363,9 @@ function NewContractPageContent() {
               <div className="rounded-lg border border-neutral-800 bg-black p-3">
                 <p className="text-xs font-bold uppercase tracking-widest text-neutral-500">Platform fee</p>
                 <p className="mt-1 text-lg font-black text-white">{formatMoney(platformFeeUsd)}</p>
+                <p className="mt-1 text-xs text-neutral-600">
+                  {usesMvpPlan ? 'MVP plan fee' : 'Only applies to the $30 MVP plan'}
+                </p>
               </div>
               <label className="rounded-lg border border-neutral-800 bg-black p-3">
                 <span className="text-xs font-bold uppercase tracking-widest text-neutral-500">Amount</span>
