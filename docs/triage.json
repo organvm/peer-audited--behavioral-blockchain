@@ -352,7 +352,7 @@
         663
       ],
       "started": "2026-06-12T12:35:18Z",
-      "completed": "2026-06-12T12:43:39Z",
+      "completed": "2026-06-12T14:03:10Z",
       "reconciled": true,
       "test_passed": true
     }
@@ -11970,7 +11970,7 @@
         "full-breath-audit"
       ],
       "action": "BUILD",
-      "state": "TRACKING",
+      "state": "CLOSED",
       "batch": "audit-closed-without-ledger",
       "history": [
         {
@@ -11982,11 +11982,31 @@
           "from": "INSPECTED",
           "to": "TRACKING",
           "at": "2026-06-12T12:43:16Z"
+        },
+        {
+          "from": "TRACKING",
+          "to": "BUILD_STARTED",
+          "at": "2026-06-12T14:02:53Z"
+        },
+        {
+          "from": "BUILD_STARTED",
+          "to": "BUILD_DONE",
+          "at": "2026-06-12T14:02:53Z"
+        },
+        {
+          "from": "BUILD_DONE",
+          "to": "TESTED",
+          "at": "2026-06-12T14:02:53Z"
+        },
+        {
+          "from": "TESTED",
+          "to": "CLOSED",
+          "at": "2026-06-12T14:02:54Z"
         }
       ],
-      "evidence": null,
+      "evidence": "src/api/guards/auth.guard.ts:56-61 CSRF guard; src/api/guards/auth.guard.spec.ts:148-180 reject/allow coverage; src/web/services/api-client.ts:100-115 x-csrf-token header",
       "pr": null,
-      "state_updated": "2026-06-12T12:43:16Z",
+      "state_updated": "2026-06-12T14:02:54Z",
       "closed_at": null
     },
     "163": {
@@ -12447,8 +12467,8 @@
         "P1-beta-enhancer",
         "blocked"
       ],
-      "action": "BUILD",
-      "state": "TRACKING",
+      "action": "WAITING",
+      "state": "WAITING",
       "batch": "audit-closed-without-ledger",
       "history": [
         {
@@ -12460,11 +12480,16 @@
           "from": "INSPECTED",
           "to": "TRACKING",
           "at": "2026-06-12T12:43:17Z"
+        },
+        {
+          "from": "TRACKING",
+          "to": "WAITING",
+          "at": "2026-06-12T14:02:53Z"
         }
       ],
       "evidence": null,
       "pr": null,
-      "state_updated": "2026-06-12T12:43:17Z",
+      "state_updated": "2026-06-12T14:02:53Z",
       "closed_at": null
     },
     "284": {
@@ -13880,7 +13905,7 @@
       "title": "e2e: 7 specs fail under `next start` — auth fixture sets localStorage, app gates on styx_auth_token cookie",
       "labels": [],
       "action": "BUILD",
-      "state": "TRACKING",
+      "state": "CLOSED",
       "batch": "audit-closed-without-ledger",
       "history": [
         {
@@ -13892,11 +13917,31 @@
           "from": "INSPECTED",
           "to": "TRACKING",
           "at": "2026-06-12T12:43:17Z"
+        },
+        {
+          "from": "TRACKING",
+          "to": "BUILD_STARTED",
+          "at": "2026-06-12T14:02:54Z"
+        },
+        {
+          "from": "BUILD_STARTED",
+          "to": "BUILD_DONE",
+          "at": "2026-06-12T14:02:54Z"
+        },
+        {
+          "from": "BUILD_DONE",
+          "to": "TESTED",
+          "at": "2026-06-12T14:02:54Z"
+        },
+        {
+          "from": "TESTED",
+          "to": "CLOSED",
+          "at": "2026-06-12T14:02:54Z"
         }
       ],
-      "evidence": null,
-      "pr": null,
-      "state_updated": "2026-06-12T12:43:17Z",
+      "evidence": "e2e/fixtures/auth.ts:38-43 cookie auth fixture; e2e/auth.spec.ts:16-21,117-144 register drift fixes; PR #618 CI e2e chromium/firefox green",
+      "pr": "https://github.com/a-organvm/peer-audited--behavioral-blockchain/pull/618",
+      "state_updated": "2026-06-12T14:02:54Z",
       "closed_at": null
     },
     "663": {

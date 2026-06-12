@@ -251,3 +251,26 @@ pending.
 **Lesson:** `COMPLETED` is only a GitHub state label until it is backed by local
 triage evidence, merged implementation, a durable plan, or a valid supersession
 artifact. Missing evidence means recovery work, not quiet closure.
+
+## batch-audit-closed-without-ledger-review-fixes -- 2026-06-12 -- Resolve recovery PR review findings
+
+**Issues:** #161, #281, #617.
+
+**Status:** review findings on PR #696 were accepted and resolved in the ledger.
+#161 now closes with CSRF guard, web-client CSRF header, and focused Jest
+coverage evidence. #617 now closes against merged PR #618, including the
+auth-cookie fixture, register-spec drift fixes, and PR #618's green e2e
+chromium/firefox CI. #281 moved from TRACKING to WAITING because it carries the
+blocked label and the issue body says native health bridge UI is blocked on a
+mobile native engineer.
+
+**Local verification:** `cd src/api && npx jest guards/auth.guard.spec.ts
+--runInBand` passed; `cd src/web && npx jest services/api-client.test.ts
+--runInBand` passed. A local targeted Playwright run for #617 did not execute
+specs because the bundled Chromium binary is absent locally, so the closure
+evidence relies on merged PR #618 and its historical green e2e CI rather than
+the blocked local browser environment.
+
+**Tooling fix:** the classifier now treats the `blocked` label as WAITING, and
+`state-transition.sh` permits correcting a misclassified `TRACKING` item to
+`WAITING` while keeping the action aligned.
