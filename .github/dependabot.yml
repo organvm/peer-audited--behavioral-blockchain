@@ -12,6 +12,7 @@ updates:
       - "/src/mobile"
       - "/src/pitch"
       - "/src/shared"
+      - "/src/web"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 3
@@ -46,4 +47,12 @@ updates:
     open-pull-requests-limit: 3
     groups:
       cargo-deps:
+        patterns: ["*"]
+  - package-ecosystem: "terraform"
+    directory: "/infra/terraform"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 3
+    groups:
+      terraform-providers:
         patterns: ["*"]
