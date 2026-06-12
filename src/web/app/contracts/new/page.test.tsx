@@ -24,6 +24,22 @@ jest.mock('../../../services/api-client', () => ({
   },
 }));
 
+jest.mock('../../../contexts/AuthContext', () => ({
+  useAuth: () => ({
+    user: {
+      id: '1',
+      email: 'test@styx.io',
+      integrity_score: 125,
+      role: 'USER',
+    },
+    token: 'mock-token',
+    login: jest.fn(),
+    register: jest.fn(),
+    logout: jest.fn(),
+    isLoading: false,
+  }),
+}));
+
 import NewContractPage from './page';
 
 describe('New Contract Page', () => {
@@ -66,6 +82,27 @@ describe('New Contract Page', () => {
 
     expect(html).toContain('Stake Amount (USD)');
     expect(html).toContain('FBO hold');
+  });
+
+  it('renders bounded stake controls with live fee breakdown', () => {
+    const html = renderToStaticMarkup(<NewContractPage />);
+
+    expect(html).toContain('Bounded stake amount');
+    expect(html).toContain('You could lose');
+    expect(html).toContain('Refundable stake');
+    expect(html).toContain('Platform fee');
+    expect(html).toContain('$9.00');
+    expect(html).toContain('Entry total');
+    expect(html).toContain('$39.00');
+  });
+
+  it('renders tier and Aegis safety copy for the selected amount', () => {
+    const html = renderToStaticMarkup(<NewContractPage />);
+
+    expect(html).toContain('HIGH ROLLER tier cap');
+    expect(html).toContain('Aegis safety ceiling');
+    expect(html).toContain('KYC required at this amount');
+    expect(html).toContain('choose only an amount you can afford to lose');
   });
 
   it('renders duration buttons', () => {
