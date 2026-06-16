@@ -32,6 +32,7 @@ type PenaltyEngineCtor = new (config?: { baseCoefficient?: number }) => PenaltyE
 
 interface HeatEngine {
   calculateBehavioralHeat(userVolatility: number, date?: Date): number;
+  getTemporalMultiplier(date?: Date): number;
 }
 type HeatEngineCtor = new () => HeatEngine;
 
@@ -59,12 +60,33 @@ type EngineLoad =
   | { kind: 'absent' }
   | { kind: 'broken'; reason: string };
 
-/** Engine modules, relative to a repo root, that the behavioral suite exercises. */
+/**
+ * Candidate module locations (relative to a repo root, no extension) for each
+ * engine the behavioral suite exercises, keyed by its expected export name. The
+ * first existing candidate wins, so the suite finds the engines across known
+ * layouts: the Styx monorepo `src/shared/...`, the extracted `@styx/audit-engine`
+ * package under `packages/audit-engine/src/...`, and a standalone package whose
+ * engines sit directly under `src/...`.
+ */
 const ENGINE_FILES = {
-  lossAversion: ['src', 'shared', 'behavioral-physics', 'loss-aversion.engine'],
-  volatility: ['src', 'shared', 'behavioral-physics', 'volatility.engine'],
-  consensus: ['src', 'shared', 'fury-logic', 'consensus.resolver'],
+  LossAversionEngine: [
+    ['src', 'shared', 'behavioral-physics', 'loss-aversion.engine'],
+    ['packages', 'audit-engine', 'src', 'loss-aversion'],
+    ['src', 'loss-aversion'],
+  ],
+  VolatilityEngine: [
+    ['src', 'shared', 'behavioral-physics', 'volatility.engine'],
+    ['packages', 'audit-engine', 'src', 'volatility'],
+    ['src', 'volatility'],
+  ],
+  ConsensusResolver: [
+    ['src', 'shared', 'fury-logic', 'consensus.resolver'],
+    ['packages', 'audit-engine', 'src', 'consensus'],
+    ['src', 'consensus'],
+  ],
 } as const;
+
+type EngineName = keyof typeof ENGINE_FILES;
 
 /**
  * Deterministic PRNG (mulberry32). A quality gate must be reproducible, so the
@@ -81,11 +103,16 @@ function createRng(seed: number): () => number {
   };
 }
 
-/** Resolve a module path (no extension) to the first existing source file. */
-function resolveEngineFile(repoPath: string, segments: readonly string[]): string | null {
-  const base = path.join(repoPath, ...segments);
-  for (const ext of ['.ts', '.js', '.mjs']) {
-    if (fs.existsSync(base + ext)) return base + ext;
+/** Resolve the first existing source file among an engine's candidate layouts. */
+function resolveEngineFile(
+  repoPath: string,
+  candidates: readonly (readonly string[])[],
+): string | null {
+  for (const segments of candidates) {
+    const base = path.join(repoPath, ...segments);
+    for (const ext of ['.ts', '.js', '.mjs']) {
+      if (fs.existsSync(base + ext)) return base + ext;
+    }
   }
   return null;
 }
@@ -164,12 +191,10 @@ export class BehavioralAnalyzer {
    * surfaces as a CI failure rather than a false pass.
    */
   private async loadTargetEngines(): Promise<EngineLoad> {
-    const files = {
-      LossAversionEngine: resolveEngineFile(this.repoPath, ENGINE_FILES.lossAversion),
-      VolatilityEngine: resolveEngineFile(this.repoPath, ENGINE_FILES.volatility),
-      ConsensusResolver: resolveEngineFile(this.repoPath, ENGINE_FILES.consensus),
-    };
-    const names = Object.keys(files) as (keyof typeof files)[];
+    const names = Object.keys(ENGINE_FILES) as EngineName[];
+    const files = Object.fromEntries(
+      names.map((n) => [n, resolveEngineFile(this.repoPath, ENGINE_FILES[n])]),
+    ) as Record<EngineName, string | null>;
     const present = names.filter((n) => files[n]);
 
     // No engine files whatsoever → the repo simply doesn't implement these.
@@ -223,6 +248,11 @@ export class BehavioralAnalyzer {
    * windows. A quarter of the samples are amplified stress inputs that push the
    * raw multiplier well past the upper clamp, so the bounds invariant is only
    * satisfied if the engine actually clamps. Asserts:
+   *   - the temporal multiplier matches the canonical risk windows at fixed
+   *     timestamps, and each sampled heat equals volatility × temporal and is
+   *     finite/non-negative — so a VolatilityEngine regression (constant, sign,
+   *     or non-finite heat) is caught *before* the loss-aversion clamp can mask
+   *     it inside [min, max];
    *   - every sampled multiplier is finite and inside [SPEC_PENALTY_MIN, MAX];
    *   - the zero-volatility anchor equals the canonical λ (spec constant);
    *   - both clamps fire when directly probed (upper via a huge input, lower via
@@ -232,11 +262,24 @@ export class BehavioralAnalyzer {
     const lae = new engines.LossAversionEngine();
     const ve = new engines.VolatilityEngine();
 
+    // Independent spec anchor for the temporal multiplier: fixed timestamps whose
+    // canonical risk window is known, validated directly against the engine so a
+    // regression in getTemporalMultiplier cannot hide behind self-consistency.
+    const temporalSpec: Array<[Date, number]> = [
+      [new Date('2026-03-11T12:00:00Z'), 1.0], // Wed midday — STANDARD
+      [new Date('2026-03-13T20:00:00Z'), 1.25], // Fri night — WEEKEND_VIGIL
+      [new Date('2026-03-11T02:00:00Z'), 1.5], // Wed late night — PEAK_VULNERABILITY
+    ];
+    const temporalSpecOk = temporalSpec.every(
+      ([date, expected]) => ve.getTemporalMultiplier(date) === expected,
+    );
+
     let min = Infinity;
     let max = -Infinity;
     let sum = 0;
     let outOfBounds = 0;
     let nonFinite = 0;
+    let heatAnomalies = 0;
 
     for (let i = 0; i < LOSS_AVERSION_ITERATIONS; i++) {
       // 25% stress samples drive the raw multiplier far past the upper clamp.
@@ -245,9 +288,21 @@ export class BehavioralAnalyzer {
       const sampledDate = new Date(
         Date.UTC(2026, 0, 1 + Math.floor(rng() * 7), Math.floor(rng() * 24)),
       );
-      const heat = ve.calculateBehavioralHeat(volatility, sampledDate);
-      const multiplier = lae.calculatePenaltyMultiplier(heat);
 
+      // Validate heat independently of the penalty clamp: it must be finite,
+      // non-negative, and exactly volatility × the temporal multiplier.
+      const temporal = ve.getTemporalMultiplier(sampledDate);
+      const heat = ve.calculateBehavioralHeat(volatility, sampledDate);
+      const expectedHeat = volatility * temporal;
+      if (
+        !Number.isFinite(heat) ||
+        heat < 0 ||
+        Math.abs(heat - expectedHeat) > 1e-9 * Math.max(1, Math.abs(expectedHeat))
+      ) {
+        heatAnomalies++;
+      }
+
+      const multiplier = lae.calculatePenaltyMultiplier(heat);
       if (!Number.isFinite(multiplier)) {
         nonFinite++;
         continue;
@@ -273,7 +328,13 @@ export class BehavioralAnalyzer {
       SPEC_PENALTY_MIN;
 
     const pass =
-      anchorOk && outOfBounds === 0 && nonFinite === 0 && upperClampFires && lowerClampFires;
+      anchorOk &&
+      outOfBounds === 0 &&
+      nonFinite === 0 &&
+      heatAnomalies === 0 &&
+      temporalSpecOk &&
+      upperClampFires &&
+      lowerClampFires;
 
     return {
       check: 'loss-aversion-stability',
@@ -282,7 +343,9 @@ export class BehavioralAnalyzer {
         `Monte Carlo (${LOSS_AVERSION_ITERATIONS} runs incl. stress): ` +
         `anchor=${anchor.toFixed(3)} (target ${CANONICAL_LAMBDA}), mean=${mean.toFixed(3)}, ` +
         `range=[${min.toFixed(3)}, ${max.toFixed(3)}], out-of-bounds=${outOfBounds}, ` +
-        `non-finite=${nonFinite}, clamps=${upperClampFires && lowerClampFires ? 'enforced' : 'BROKEN'}.`,
+        `non-finite=${nonFinite}, heat-anomalies=${heatAnomalies}, ` +
+        `temporal-spec=${temporalSpecOk ? 'ok' : 'BROKEN'}, ` +
+        `clamps=${upperClampFires && lowerClampFires ? 'enforced' : 'BROKEN'}.`,
     };
   }
 
