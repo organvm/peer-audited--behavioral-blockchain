@@ -53,10 +53,16 @@ type EngineName = keyof EngineBundle;
  * A known on-disk arrangement of the economic engines, keyed by the export name
  * each module must provide. Module paths are relative to a repo root and carry
  * no extension (resolved against .ts/.js/.mjs).
+ *
+ * `requireAll` marks a layout whose paths use generic, collision-prone names
+ * (e.g. a bare `src/consensus`): it is only considered present when ALL three
+ * files exist, so an unrelated repo that merely happens to have one such file
+ * is treated as "no engine layout" (SKIP) rather than a broken one (FAIL).
  */
 interface EngineLayout {
   name: string;
   files: Record<EngineName, readonly string[]>;
+  requireAll?: boolean;
 }
 
 /**
@@ -89,6 +95,7 @@ const ENGINE_LAYOUTS: readonly EngineLayout[] = [
       VolatilityEngine: ['src', 'volatility'],
       ConsensusResolver: ['src', 'consensus'],
     },
+    requireAll: true,
   },
 ];
 
@@ -225,6 +232,9 @@ export class BehavioralAnalyzer {
     const present = ENGINE_NAMES.filter((n) => files[n]);
 
     if (present.length === 0) return { kind: 'absent' };
+    // Generic, collision-prone layouts only count when complete, so an unrelated
+    // repo with one same-named file isn't mistaken for a broken engine set.
+    if (layout.requireAll && present.length < ENGINE_NAMES.length) return { kind: 'absent' };
 
     const missingFiles = ENGINE_NAMES.filter((n) => !files[n]);
     if (missingFiles.length > 0) {
@@ -427,6 +437,14 @@ export class BehavioralAnalyzer {
           integrityScore,
           decision: isColluder ? adversarial : groundTruth,
         });
+      }
+
+      // Deterministic Fisher-Yates shuffle so colluders aren't always the first
+      // entries — an order-biased resolver that privileges a fixed position
+      // cannot pass by accident; only true integrity weighting survives.
+      for (let k = decisions.length - 1; k > 0; k--) {
+        const m = Math.floor(rng() * (k + 1));
+        [decisions[k], decisions[m]] = [decisions[m], decisions[k]];
       }
 
       const verdict = resolver.resolve(decisions);
