@@ -340,14 +340,20 @@ export class BehavioralAnalyzer {
    * Asserts:
    *   - the temporal multiplier matches the canonical risk windows across the
    *     full Friday 18:00–Monday 06:00 vigil (plus a weekend late-night
-   *     precedence case) at fixed timestamps — an independent spec anchor, so a
-   *     VolatilityEngine regression is caught *before* the loss-aversion clamp
-   *     can mask it, and even when the Monte Carlo heat stays self-consistent;
-   *   - each sampled heat equals volatility × temporal and is finite/non-negative;
+   *     precedence case) at fixed timestamps, including the exact 18:00 start
+   *     and 06:00 end boundaries — so an off-by-one window (`> 18` / `<= 6`) is
+   *     caught — an independent spec anchor, so a VolatilityEngine regression is
+   *     caught *before* the loss-aversion clamp can mask it, and even when the
+   *     Monte Carlo heat stays self-consistent;
+   *   - each sampled heat equals volatility × temporal and is finite/non-negative,
+   *     and the temporal multiplier itself is finite (a NaN/Infinity regression
+   *     cannot slip past the tolerance comparison);
    *   - every sampled multiplier is finite and inside [SPEC_PENALTY_MIN, MAX];
    *   - the zero-volatility anchor equals the canonical λ (spec constant);
    *   - both clamps fire when directly probed (upper via a huge input, lower via
-   *     an engine whose base coefficient sits below the floor).
+   *     an engine whose base coefficient sits below the floor);
+   *   - a negative input is guarded back to the λ anchor (losing the
+   *     negative-volatility guard, e.g. ln(1 + −2) → NaN, is caught directly).
    */
   private simulateLossAversionStability(
     engines: EngineBundle,
@@ -364,10 +370,12 @@ export class BehavioralAnalyzer {
     const temporalSpec: Array<[Date, number]> = [
       [new Date('2026-03-11T12:00:00Z'), 1.0], // Wed midday — STANDARD
       [new Date('2026-03-13T12:00:00Z'), 1.0], // Fri midday (before 18:00) — STANDARD
+      [new Date('2026-03-13T18:00:00Z'), 1.25], // Fri 18:00 exactly — vigil START boundary
       [new Date('2026-03-13T20:00:00Z'), 1.25], // Fri night — WEEKEND_VIGIL
       [new Date('2026-03-14T12:00:00Z'), 1.25], // Sat midday — WEEKEND_VIGIL
       [new Date('2026-03-15T12:00:00Z'), 1.25], // Sun midday — WEEKEND_VIGIL
       [new Date('2026-03-16T05:00:00Z'), 1.25], // Mon 05:00 (before 06:00) — WEEKEND_VIGIL
+      [new Date('2026-03-16T06:00:00Z'), 1.0], // Mon 06:00 exactly — vigil END boundary (exclusive)
       [new Date('2026-03-16T08:00:00Z'), 1.0], // Mon 08:00 (after vigil) — STANDARD
       [new Date('2026-03-11T02:00:00Z'), 1.5], // Wed late night — PEAK_VULNERABILITY
       [new Date('2026-03-14T02:00:00Z'), 1.5], // Sat late night — PEAK over WEEKEND
@@ -406,12 +414,17 @@ export class BehavioralAnalyzer {
         Date.UTC(2026, 0, 1 + Math.floor(rng() * 7), Math.floor(rng() * 24)),
       );
 
-      // Validate heat independently of the penalty clamp: it must be finite,
-      // non-negative, and exactly volatility × the temporal multiplier.
+      // Validate heat independently of the penalty clamp: the temporal
+      // multiplier and the expected heat must be finite (a NaN/Infinity
+      // temporal regression would otherwise slip through, since NaN/Infinity
+      // comparisons below are false), and heat must be finite, non-negative,
+      // and exactly volatility × the temporal multiplier.
       const temporal = ve.getTemporalMultiplier(sampledDate);
       const heat = ve.calculateBehavioralHeat(volatility, sampledDate);
       const expectedHeat = volatility * temporal;
       if (
+        !Number.isFinite(temporal) ||
+        !Number.isFinite(expectedHeat) ||
         !Number.isFinite(heat) ||
         heat < 0 ||
         Math.abs(heat - expectedHeat) > 1e-9 * Math.max(1, Math.abs(expectedHeat))
@@ -439,6 +452,14 @@ export class BehavioralAnalyzer {
       new engines.LossAversionEngine({ baseCoefficient: 0 }).calculatePenaltyMultiplier(0) ===
       SPEC_PENALTY_MIN;
 
+    // Directly probe a negative input: the documented guard treats negative
+    // volatility as zero, so it must return the same finite anchor (λ). The
+    // simulation never feeds negatives, so without this probe a regressed guard
+    // (e.g. ln(1 + −2) → NaN) would go unnoticed.
+    const negativeProbe = lae.calculatePenaltyMultiplier(-2);
+    const negativeInputGuarded =
+      Number.isFinite(negativeProbe) && Math.abs(negativeProbe - anchor) < 1e-9;
+
     const pass =
       anchorOk &&
       outOfBounds === 0 &&
@@ -446,7 +467,8 @@ export class BehavioralAnalyzer {
       heatAnomalies === 0 &&
       temporalSpecOk &&
       upperClampFires &&
-      lowerClampFires;
+      lowerClampFires &&
+      negativeInputGuarded;
 
     return {
       check: `loss-aversion-stability${tag}`,
@@ -457,7 +479,8 @@ export class BehavioralAnalyzer {
         `range=[${min.toFixed(3)}, ${max.toFixed(3)}], out-of-bounds=${outOfBounds}, ` +
         `non-finite=${nonFinite}, heat-anomalies=${heatAnomalies}, ` +
         `temporal-spec=${temporalSpecOk ? 'ok' : 'BROKEN'}, ` +
-        `clamps=${upperClampFires && lowerClampFires ? 'enforced' : 'BROKEN'}.`,
+        `clamps=${upperClampFires && lowerClampFires ? 'enforced' : 'BROKEN'}, ` +
+        `negative-guard=${negativeInputGuarded ? 'ok' : 'BROKEN'}.`,
     };
   }
 
@@ -474,6 +497,15 @@ export class BehavioralAnalyzer {
    * weight dominates decisively, so the pass condition is the strongest
    * possible: every panel must resolve to its ground truth (no fraudulent
    * breaches, no missed breaches, and no escalations to UNCERTAIN).
+   *
+   * SCOPE: this gate exercises the shared `ConsensusResolver` reference
+   * implementation (the integrity-weighted-majority invariant). It does NOT
+   * cover the DB-backed production `ConsensusEngine`
+   * (src/api/src/modules/fury/consensus.engine.ts), which derives reviewer
+   * weights from persisted Fury history and is async/injected — out of reach of
+   * this static, dependency-free harness. A regression confined to the
+   * production weight/quorum logic would not be caught here; that path is the
+   * responsibility of the API module's own tests.
    */
   private simulateCollusionResilience(
     engines: EngineBundle,
@@ -531,7 +563,8 @@ export class BehavioralAnalyzer {
         `Shatter-point simulation (${COLLUSION_PANELS} panels, integrity-weighted consensus, ` +
         `${colluderMajorityPanels} with a colluder majority): ${correctVerdicts} correct verdicts, ` +
         `${fraudulentBreaches} fraudulent breaches, ${missedBreaches} missed breaches, ` +
-        `${uncertainVerdicts} escalated to UNCERTAIN.`,
+        `${uncertainVerdicts} escalated to UNCERTAIN. ` +
+        `Scope: shared ConsensusResolver reference; not the DB-backed production ConsensusEngine.`,
     };
   }
 }
