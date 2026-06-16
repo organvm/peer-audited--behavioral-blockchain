@@ -177,6 +177,22 @@ export class BehavioralAnalyzer {
     const auditable = probed.filter((p) => p.load.kind !== 'absent');
 
     if (auditable.length === 0) {
+      // A package whose metadata claims it is an audit engine must ship a
+      // loadable engine layout: if none is present anywhere (all three engine
+      // files deleted/renamed), that is a failure, not a skip. Unrelated repos
+      // with no audit-engine identity legitimately have nothing to audit.
+      if (isAuditEnginePkg) {
+        const message =
+          'Package identifies as an audit engine but ships no loadable engine layout ' +
+          '(expected src/{loss-aversion,volatility,consensus}); the economic core under audit is missing.';
+        return {
+          analyzer: 'behavioral',
+          results: [
+            { check: 'loss-aversion-stability', status: 'FAIL', message },
+            { check: 'collusion-resilience', status: 'FAIL', message },
+          ],
+        };
+      }
       return {
         analyzer: 'behavioral',
         results: [
