@@ -167,8 +167,12 @@ export class BehavioralAnalyzer {
   }
 
   public async analyze(): Promise<SuiteResult> {
+    const isAuditEnginePkg = this.repoIdentifiesAsAuditEngine();
     const probed = await Promise.all(
-      ENGINE_LAYOUTS.map(async (layout) => ({ layout, load: await this.loadLayout(layout) })),
+      ENGINE_LAYOUTS.map(async (layout) => ({
+        layout,
+        load: await this.loadLayout(layout, isAuditEnginePkg),
+      })),
     );
     const auditable = probed.filter((p) => p.load.kind !== 'absent');
 
@@ -217,6 +221,32 @@ export class BehavioralAnalyzer {
   }
 
   /**
+   * Read the audited repo's package.json to decide whether it identifies as an
+   * audit-engine package (by name or keywords). Used to tell a genuine extracted
+   * audit-engine repo — where a missing standalone engine file is a real defect —
+   * from an unrelated repo that merely shares a common filename.
+   */
+  private repoIdentifiesAsAuditEngine(): boolean {
+    try {
+      const pkgPath = path.join(this.repoPath, 'package.json');
+      if (!fs.existsSync(pkgPath)) return false;
+      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8')) as {
+        name?: unknown;
+        keywords?: unknown;
+      };
+      const name = typeof pkg.name === 'string' ? pkg.name : '';
+      const keywords = Array.isArray(pkg.keywords) ? pkg.keywords : [];
+      return (
+        name.includes('audit-engine') ||
+        keywords.includes('behavioral-verification') ||
+        keywords.includes('peer-audit')
+      );
+    } catch {
+      return false;
+    }
+  }
+
+  /**
    * Probe and dynamically import one engine layout from the audited repository.
    *
    * Distinguishes three outcomes (see {@link LayoutLoad}): a layout with no
@@ -224,21 +254,31 @@ export class BehavioralAnalyzer {
    * provide a usable, constructable export for all three is `broken` (a failure,
    * not a skip) — so a renamed/removed export or a load-time error surfaces as a
    * CI failure rather than a false pass.
+   *
+   * For `requireAll` (generic, collision-prone) layouts an incomplete set is
+   * only a defect when the repo actually identifies as an audit-engine package;
+   * for an unrelated repo that merely shares a filename it is simply `absent`.
    */
-  private async loadLayout(layout: EngineLayout): Promise<LayoutLoad> {
+  private async loadLayout(layout: EngineLayout, isAuditEnginePkg: boolean): Promise<LayoutLoad> {
     const files = Object.fromEntries(
       ENGINE_NAMES.map((n) => [n, resolveEngineFile(this.repoPath, layout.files[n])]),
     ) as Record<EngineName, string | null>;
     const present = ENGINE_NAMES.filter((n) => files[n]);
-
-    if (present.length === 0) return { kind: 'absent' };
-    // Generic, collision-prone layouts only count when complete, so an unrelated
-    // repo with one same-named file isn't mistaken for a broken engine set.
-    if (layout.requireAll && present.length < ENGINE_NAMES.length) return { kind: 'absent' };
-
     const missingFiles = ENGINE_NAMES.filter((n) => !files[n]);
+
     if (missingFiles.length > 0) {
-      return { kind: 'broken', reason: `missing engine file(s): ${missingFiles.join(', ')}` };
+      if (layout.requireAll) {
+        // Generic filenames: hold a real audit-engine repo (per metadata) with at
+        // least one engine file to completeness; otherwise the names are
+        // coincidental and the layout is simply not present.
+        return present.length > 0 && isAuditEnginePkg
+          ? { kind: 'broken', reason: `missing engine file(s): ${missingFiles.join(', ')}` }
+          : { kind: 'absent' };
+      }
+      // Specific layout: no files = not present; some files = a broken set.
+      return present.length === 0
+        ? { kind: 'absent' }
+        : { kind: 'broken', reason: `missing engine file(s): ${missingFiles.join(', ')}` };
     }
 
     let modules: Record<EngineName, Record<string, unknown>>;
@@ -276,10 +316,12 @@ export class BehavioralAnalyzer {
    * Check 1: Loss Aversion Coefficient Validation (Monte Carlo).
    *
    * Drives the target's LossAversionEngine with randomized behavioral "heat"
-   * derived from random volatility coupled to the VolatilityEngine temporal
-   * windows. A quarter of the samples are amplified stress inputs that push the
-   * raw multiplier well past the upper clamp, so the bounds invariant is only
-   * satisfied if the engine actually clamps. Asserts:
+   * derived from in-domain volatility ([0, 1)) coupled to the VolatilityEngine
+   * temporal windows, plus a quarter of iterations that feed a large value
+   * *directly* into the penalty function (not through heat) to push the raw
+   * multiplier past the upper clamp — so the bounds invariant exercises clamping
+   * without sending out-of-domain volatility through the VolatilityEngine.
+   * Asserts:
    *   - the temporal multiplier matches the canonical risk windows across the
    *     full Friday 18:00–Monday 06:00 vigil (plus a weekend late-night
    *     precedence case) at fixed timestamps — an independent spec anchor, so a
@@ -321,14 +363,29 @@ export class BehavioralAnalyzer {
     let min = Infinity;
     let max = -Infinity;
     let sum = 0;
+    let samples = 0;
     let outOfBounds = 0;
     let nonFinite = 0;
     let heatAnomalies = 0;
 
+    const record = (multiplier: number) => {
+      if (!Number.isFinite(multiplier)) {
+        nonFinite++;
+        return;
+      }
+      min = Math.min(min, multiplier);
+      max = Math.max(max, multiplier);
+      sum += multiplier;
+      samples++;
+      if (multiplier < SPEC_PENALTY_MIN - 1e-9 || multiplier > SPEC_PENALTY_MAX + 1e-9) {
+        outOfBounds++;
+      }
+    };
+
     for (let i = 0; i < LOSS_AVERSION_ITERATIONS; i++) {
-      // 25% stress samples drive the raw multiplier far past the upper clamp.
-      const stress = rng() < 0.25;
-      const volatility = stress ? rng() * 64 : rng();
+      // Keep volatility inside its documented [0, 1) domain so the heat invariant
+      // holds even for an engine that defensively clamps out-of-range input.
+      const volatility = rng();
       const sampledDate = new Date(
         Date.UTC(2026, 0, 1 + Math.floor(rng() * 7), Math.floor(rng() * 24)),
       );
@@ -345,22 +402,17 @@ export class BehavioralAnalyzer {
       ) {
         heatAnomalies++;
       }
+      record(lae.calculatePenaltyMultiplier(heat));
 
-      const multiplier = lae.calculatePenaltyMultiplier(heat);
-      if (!Number.isFinite(multiplier)) {
-        nonFinite++;
-        continue;
-      }
-      min = Math.min(min, multiplier);
-      max = Math.max(max, multiplier);
-      sum += multiplier;
-      if (multiplier < SPEC_PENALTY_MIN - 1e-9 || multiplier > SPEC_PENALTY_MAX + 1e-9) {
-        outOfBounds++;
+      // Drive the upper clamp from the loop with a large *penalty* input directly
+      // (not via heat), so the bounds invariant exercises clamping without
+      // feeding out-of-domain volatility through the VolatilityEngine.
+      if (rng() < 0.25) {
+        record(lae.calculatePenaltyMultiplier(rng() * 64));
       }
     }
 
-    const finiteSamples = LOSS_AVERSION_ITERATIONS - nonFinite;
-    const mean = finiteSamples === 0 ? NaN : sum / finiteSamples;
+    const mean = samples === 0 ? NaN : sum / samples;
     const anchor = lae.calculatePenaltyMultiplier(0);
     const anchorOk = Number.isFinite(anchor) && Math.abs(anchor - CANONICAL_LAMBDA) < 1e-9;
 
