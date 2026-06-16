@@ -47,46 +47,64 @@ interface EngineBundle {
   ConsensusResolver: ResolverCtor;
 }
 
+type EngineName = keyof EngineBundle;
+
 /**
- * Outcome of trying to load the audited repo's engines:
- *  - `ok`: all engines present and usable → run the simulations.
- *  - `absent`: the repo ships none of these engines → not applicable (SKIP).
- *  - `broken`: the repo ships some/all engine files but they cannot be used
- *    (missing/renamed exports, partial set, or a load error) → the economic
- *    core under audit is broken (FAIL), never a silent skip.
+ * A known on-disk arrangement of the economic engines, keyed by the export name
+ * each module must provide. Module paths are relative to a repo root and carry
+ * no extension (resolved against .ts/.js/.mjs).
  */
-type EngineLoad =
+interface EngineLayout {
+  name: string;
+  files: Record<EngineName, readonly string[]>;
+}
+
+/**
+ * Supported engine layouts. A repository can contain more than one (the Styx
+ * monorepo ships both the `src/shared/...` copy and the extracted
+ * `@styx/audit-engine` package), and every complete layout is audited
+ * independently so a regression in one copy cannot hide behind a healthy other.
+ */
+const ENGINE_LAYOUTS: readonly EngineLayout[] = [
+  {
+    name: 'monorepo-shared',
+    files: {
+      LossAversionEngine: ['src', 'shared', 'behavioral-physics', 'loss-aversion.engine'],
+      VolatilityEngine: ['src', 'shared', 'behavioral-physics', 'volatility.engine'],
+      ConsensusResolver: ['src', 'shared', 'fury-logic', 'consensus.resolver'],
+    },
+  },
+  {
+    name: 'audit-engine-package',
+    files: {
+      LossAversionEngine: ['packages', 'audit-engine', 'src', 'loss-aversion'],
+      VolatilityEngine: ['packages', 'audit-engine', 'src', 'volatility'],
+      ConsensusResolver: ['packages', 'audit-engine', 'src', 'consensus'],
+    },
+  },
+  {
+    name: 'standalone',
+    files: {
+      LossAversionEngine: ['src', 'loss-aversion'],
+      VolatilityEngine: ['src', 'volatility'],
+      ConsensusResolver: ['src', 'consensus'],
+    },
+  },
+];
+
+const ENGINE_NAMES = ['LossAversionEngine', 'VolatilityEngine', 'ConsensusResolver'] as const;
+
+/**
+ * Outcome of probing one layout in the audited repo:
+ *  - `ok`: all engines present and usable → run the simulations.
+ *  - `absent`: none of this layout's engine files exist → layout not present.
+ *  - `broken`: some/all files exist but cannot be used (partial set, missing or
+ *    renamed export, or a load error) → the economic core under audit is broken.
+ */
+type LayoutLoad =
   | { kind: 'ok'; engines: EngineBundle }
   | { kind: 'absent' }
   | { kind: 'broken'; reason: string };
-
-/**
- * Candidate module locations (relative to a repo root, no extension) for each
- * engine the behavioral suite exercises, keyed by its expected export name. The
- * first existing candidate wins, so the suite finds the engines across known
- * layouts: the Styx monorepo `src/shared/...`, the extracted `@styx/audit-engine`
- * package under `packages/audit-engine/src/...`, and a standalone package whose
- * engines sit directly under `src/...`.
- */
-const ENGINE_FILES = {
-  LossAversionEngine: [
-    ['src', 'shared', 'behavioral-physics', 'loss-aversion.engine'],
-    ['packages', 'audit-engine', 'src', 'loss-aversion'],
-    ['src', 'loss-aversion'],
-  ],
-  VolatilityEngine: [
-    ['src', 'shared', 'behavioral-physics', 'volatility.engine'],
-    ['packages', 'audit-engine', 'src', 'volatility'],
-    ['src', 'volatility'],
-  ],
-  ConsensusResolver: [
-    ['src', 'shared', 'fury-logic', 'consensus.resolver'],
-    ['packages', 'audit-engine', 'src', 'consensus'],
-    ['src', 'consensus'],
-  ],
-} as const;
-
-type EngineName = keyof typeof ENGINE_FILES;
 
 /**
  * Deterministic PRNG (mulberry32). A quality gate must be reproducible, so the
@@ -103,16 +121,11 @@ function createRng(seed: number): () => number {
   };
 }
 
-/** Resolve the first existing source file among an engine's candidate layouts. */
-function resolveEngineFile(
-  repoPath: string,
-  candidates: readonly (readonly string[])[],
-): string | null {
-  for (const segments of candidates) {
-    const base = path.join(repoPath, ...segments);
-    for (const ext of ['.ts', '.js', '.mjs']) {
-      if (fs.existsSync(base + ext)) return base + ext;
-    }
+/** Resolve a module path (no extension) to the first existing source file. */
+function resolveEngineFile(repoPath: string, segments: readonly string[]): string | null {
+  const base = path.join(repoPath, ...segments);
+  for (const ext of ['.ts', '.js', '.mjs']) {
+    if (fs.existsSync(base + ext)) return base + ext;
   }
   return null;
 }
@@ -123,15 +136,18 @@ function resolveEngineFile(
  * The Economic Simulator of the Ergon Test Harness. It exercises the live
  * behavioral-physics and fury-logic engines **of the audited repository**
  * (resolved from `--repo`, not the harness's own copy) via seeded Monte Carlo
- * simulations to prove the economic invariants the protocol depends on. A repo
- * that ships none of these engines reports SKIP (not applicable); a repo whose
- * engines are present but unusable reports FAIL — never a misleading PASS. Each
- * check is designed to FAIL if the property it guards regresses:
+ * simulations to prove the economic invariants the protocol depends on. Every
+ * complete engine layout found in the repo is audited independently; a repo
+ * with no engine layout at all reports SKIP (not applicable), and a layout
+ * whose engines are present but unusable reports FAIL — never a misleading PASS.
+ * Each check is designed to FAIL if the property it guards regresses:
  *
- *  1. Loss-aversion stability — penalty multipliers stay finite and inside the
- *     spec [min, max] clamps even under extreme stress inputs that cross both
- *     thresholds, the zero-volatility anchor equals the canonical λ, and the
- *     clamps are directly enforced.
+ *  1. Loss-aversion stability — the temporal multiplier matches the canonical
+ *     risk windows at fixed timestamps; sampled heat is finite, non-negative and
+ *     equals volatility × temporal; penalty multipliers stay finite and inside
+ *     the spec [min, max] clamps even under extreme stress inputs that cross
+ *     both thresholds; the zero-volatility anchor equals the canonical λ; and
+ *     both clamps fire when directly probed.
  *  2. Collusion resilience — an integrity-weighted consensus produces the
  *     correct verdict for every panel, including panels where low-integrity
  *     colluders are a numerical majority and can only be defeated by weight.
@@ -144,98 +160,104 @@ export class BehavioralAnalyzer {
   }
 
   public async analyze(): Promise<SuiteResult> {
-    const load = await this.loadTargetEngines();
+    const probed = await Promise.all(
+      ENGINE_LAYOUTS.map(async (layout) => ({ layout, load: await this.loadLayout(layout) })),
+    );
+    const auditable = probed.filter((p) => p.load.kind !== 'absent');
 
-    if (load.kind === 'absent') {
-      return this.uniformSuite(
-        'SKIP',
-        'Target repo ships no behavioral-physics/fury-logic engines; economic simulation not applicable.',
-      );
+    if (auditable.length === 0) {
+      return {
+        analyzer: 'behavioral',
+        results: [
+          {
+            check: 'loss-aversion-stability',
+            status: 'SKIP',
+            message:
+              'Target repo ships no behavioral-physics/fury-logic engine layout; economic simulation not applicable.',
+          },
+          {
+            check: 'collusion-resilience',
+            status: 'SKIP',
+            message:
+              'Target repo ships no behavioral-physics/fury-logic engine layout; economic simulation not applicable.',
+          },
+        ],
+      };
     }
-    if (load.kind === 'broken') {
-      return this.uniformSuite(
-        'FAIL',
-        `Behavioral engines present but unusable (${load.reason}); the economic core under audit is broken.`,
-      );
+
+    // Qualify check ids with the layout name only when more than one layout is
+    // audited, so single-layout repos keep the stable bare check ids.
+    const qualify = auditable.length > 1;
+    const results: AnalyzerResult[] = [];
+
+    for (const { layout, load } of auditable) {
+      const tag = qualify ? ` [${layout.name}]` : '';
+      if (load.kind === 'broken') {
+        const message = `Engines present but unusable (${load.reason}); the economic core under audit is broken.`;
+        results.push({ check: `loss-aversion-stability${tag}`, status: 'FAIL', message });
+        results.push({ check: `collusion-resilience${tag}`, status: 'FAIL', message });
+        continue;
+      }
+      if (load.kind !== 'ok') continue; // 'absent' is already filtered out; this narrows the type.
+      // Fresh, identically-seeded RNG per layout so each layout's audit is
+      // deterministic and independent of how many layouts precede it.
+      const rng = createRng(0x57595800); // "STYX"
+      results.push(this.simulateLossAversionStability(load.engines, rng, tag));
+      results.push(this.simulateCollusionResilience(load.engines, rng, tag));
     }
 
-    const rng = createRng(0x57595800); // "STYX"
-    return {
-      analyzer: 'behavioral',
-      results: [
-        this.simulateLossAversionStability(load.engines, rng),
-        this.simulateCollusionResilience(load.engines, rng),
-      ],
-    };
-  }
-
-  /** Build a behavioral suite where both checks share one status/message. */
-  private uniformSuite(status: 'SKIP' | 'FAIL', message: string): SuiteResult {
-    return {
-      analyzer: 'behavioral',
-      results: [
-        { check: 'loss-aversion-stability', status, message },
-        { check: 'collusion-resilience', status, message },
-      ],
-    };
+    return { analyzer: 'behavioral', results };
   }
 
   /**
-   * Dynamically import the economic engines from the audited repository so the
-   * behavioral suite validates the target's code, not the harness's own copy.
+   * Probe and dynamically import one engine layout from the audited repository.
    *
-   * Distinguishes three outcomes (see {@link EngineLoad}): a repo with no engine
-   * files at all is `absent` (not applicable); a repo that ships any engine file
-   * but cannot provide a usable, constructable export for all three is `broken`
-   * (a failure, not a skip) — so a renamed/removed export or a load-time error
-   * surfaces as a CI failure rather than a false pass.
+   * Distinguishes three outcomes (see {@link LayoutLoad}): a layout with no
+   * engine files is `absent`; a layout that ships any engine file but cannot
+   * provide a usable, constructable export for all three is `broken` (a failure,
+   * not a skip) — so a renamed/removed export or a load-time error surfaces as a
+   * CI failure rather than a false pass.
    */
-  private async loadTargetEngines(): Promise<EngineLoad> {
-    const names = Object.keys(ENGINE_FILES) as EngineName[];
+  private async loadLayout(layout: EngineLayout): Promise<LayoutLoad> {
     const files = Object.fromEntries(
-      names.map((n) => [n, resolveEngineFile(this.repoPath, ENGINE_FILES[n])]),
+      ENGINE_NAMES.map((n) => [n, resolveEngineFile(this.repoPath, layout.files[n])]),
     ) as Record<EngineName, string | null>;
-    const present = names.filter((n) => files[n]);
+    const present = ENGINE_NAMES.filter((n) => files[n]);
 
-    // No engine files whatsoever → the repo simply doesn't implement these.
     if (present.length === 0) return { kind: 'absent' };
 
-    // Some engine files exist, so the repo purports to implement the economic
-    // core; any gap from here on is a broken core, not a non-applicable one.
-    const missingFiles = names.filter((n) => !files[n]);
+    const missingFiles = ENGINE_NAMES.filter((n) => !files[n]);
     if (missingFiles.length > 0) {
       return { kind: 'broken', reason: `missing engine file(s): ${missingFiles.join(', ')}` };
     }
 
-    let modules: Record<keyof typeof files, unknown>;
+    let modules: Record<EngineName, Record<string, unknown>>;
     try {
-      const [laMod, veMod, crMod] = await Promise.all([
-        import(pathToFileURL(files.LossAversionEngine!).href),
-        import(pathToFileURL(files.VolatilityEngine!).href),
-        import(pathToFileURL(files.ConsensusResolver!).href),
-      ]);
-      modules = { LossAversionEngine: laMod, VolatilityEngine: veMod, ConsensusResolver: crMod };
+      const loaded = await Promise.all(
+        ENGINE_NAMES.map((n) => import(pathToFileURL(files[n]!).href)),
+      );
+      modules = Object.fromEntries(ENGINE_NAMES.map((n, i) => [n, loaded[i]])) as Record<
+        EngineName,
+        Record<string, unknown>
+      >;
     } catch (err) {
       return { kind: 'broken', reason: `engine module failed to load: ${(err as Error).message}` };
     }
 
-    // Every engine must expose a constructable class export of the right name.
-    const badExports = names.filter(
-      (n) => typeof (modules[n] as Record<string, unknown>)?.[n] !== 'function',
-    );
+    const badExports = ENGINE_NAMES.filter((n) => typeof modules[n]?.[n] !== 'function');
     if (badExports.length > 0) {
-      return { kind: 'broken', reason: `missing or non-constructable export(s): ${badExports.join(', ')}` };
+      return {
+        kind: 'broken',
+        reason: `missing or non-constructable export(s): ${badExports.join(', ')}`,
+      };
     }
 
     return {
       kind: 'ok',
       engines: {
-        LossAversionEngine: (modules.LossAversionEngine as Record<string, unknown>)
-          .LossAversionEngine as PenaltyEngineCtor,
-        VolatilityEngine: (modules.VolatilityEngine as Record<string, unknown>)
-          .VolatilityEngine as HeatEngineCtor,
-        ConsensusResolver: (modules.ConsensusResolver as Record<string, unknown>)
-          .ConsensusResolver as ResolverCtor,
+        LossAversionEngine: modules.LossAversionEngine.LossAversionEngine as PenaltyEngineCtor,
+        VolatilityEngine: modules.VolatilityEngine.VolatilityEngine as HeatEngineCtor,
+        ConsensusResolver: modules.ConsensusResolver.ConsensusResolver as ResolverCtor,
       },
     };
   }
@@ -248,27 +270,39 @@ export class BehavioralAnalyzer {
    * windows. A quarter of the samples are amplified stress inputs that push the
    * raw multiplier well past the upper clamp, so the bounds invariant is only
    * satisfied if the engine actually clamps. Asserts:
-   *   - the temporal multiplier matches the canonical risk windows at fixed
-   *     timestamps, and each sampled heat equals volatility × temporal and is
-   *     finite/non-negative — so a VolatilityEngine regression (constant, sign,
-   *     or non-finite heat) is caught *before* the loss-aversion clamp can mask
-   *     it inside [min, max];
+   *   - the temporal multiplier matches the canonical risk windows across the
+   *     full Friday 18:00–Monday 06:00 vigil (plus a weekend late-night
+   *     precedence case) at fixed timestamps — an independent spec anchor, so a
+   *     VolatilityEngine regression is caught *before* the loss-aversion clamp
+   *     can mask it, and even when the Monte Carlo heat stays self-consistent;
+   *   - each sampled heat equals volatility × temporal and is finite/non-negative;
    *   - every sampled multiplier is finite and inside [SPEC_PENALTY_MIN, MAX];
    *   - the zero-volatility anchor equals the canonical λ (spec constant);
    *   - both clamps fire when directly probed (upper via a huge input, lower via
    *     an engine whose base coefficient sits below the floor).
    */
-  private simulateLossAversionStability(engines: EngineBundle, rng: () => number): AnalyzerResult {
+  private simulateLossAversionStability(
+    engines: EngineBundle,
+    rng: () => number,
+    tag: string,
+  ): AnalyzerResult {
     const lae = new engines.LossAversionEngine();
     const ve = new engines.VolatilityEngine();
 
-    // Independent spec anchor for the temporal multiplier: fixed timestamps whose
-    // canonical risk window is known, validated directly against the engine so a
-    // regression in getTemporalMultiplier cannot hide behind self-consistency.
+    // Independent spec anchors for the temporal multiplier: fixed timestamps
+    // whose canonical risk window is known, validated directly against the
+    // engine. Covers the full weekend vigil (Fri 18:00 → Mon 06:00), late-night
+    // peak, weekend/late-night precedence, and the standard-window boundaries.
     const temporalSpec: Array<[Date, number]> = [
       [new Date('2026-03-11T12:00:00Z'), 1.0], // Wed midday — STANDARD
+      [new Date('2026-03-13T12:00:00Z'), 1.0], // Fri midday (before 18:00) — STANDARD
       [new Date('2026-03-13T20:00:00Z'), 1.25], // Fri night — WEEKEND_VIGIL
+      [new Date('2026-03-14T12:00:00Z'), 1.25], // Sat midday — WEEKEND_VIGIL
+      [new Date('2026-03-15T12:00:00Z'), 1.25], // Sun midday — WEEKEND_VIGIL
+      [new Date('2026-03-16T05:00:00Z'), 1.25], // Mon 05:00 (before 06:00) — WEEKEND_VIGIL
+      [new Date('2026-03-16T08:00:00Z'), 1.0], // Mon 08:00 (after vigil) — STANDARD
       [new Date('2026-03-11T02:00:00Z'), 1.5], // Wed late night — PEAK_VULNERABILITY
+      [new Date('2026-03-14T02:00:00Z'), 1.5], // Sat late night — PEAK over WEEKEND
     ];
     const temporalSpecOk = temporalSpec.every(
       ([date, expected]) => ve.getTemporalMultiplier(date) === expected,
@@ -337,7 +371,7 @@ export class BehavioralAnalyzer {
       lowerClampFires;
 
     return {
-      check: 'loss-aversion-stability',
+      check: `loss-aversion-stability${tag}`,
       status: pass ? 'PASS' : 'FAIL',
       message:
         `Monte Carlo (${LOSS_AVERSION_ITERATIONS} runs incl. stress): ` +
@@ -363,7 +397,11 @@ export class BehavioralAnalyzer {
    * possible: every panel must resolve to its ground truth (no fraudulent
    * breaches, no missed breaches, and no escalations to UNCERTAIN).
    */
-  private simulateCollusionResilience(engines: EngineBundle, rng: () => number): AnalyzerResult {
+  private simulateCollusionResilience(
+    engines: EngineBundle,
+    rng: () => number,
+    tag: string,
+  ): AnalyzerResult {
     const resolver = new engines.ConsensusResolver();
 
     let fraudulentBreaches = 0;
@@ -401,7 +439,7 @@ export class BehavioralAnalyzer {
     const pass = correctVerdicts === COLLUSION_PANELS;
 
     return {
-      check: 'collusion-resilience',
+      check: `collusion-resilience${tag}`,
       status: pass ? 'PASS' : 'FAIL',
       message:
         `Shatter-point simulation (${COLLUSION_PANELS} panels, integrity-weighted consensus, ` +
