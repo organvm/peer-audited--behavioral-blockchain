@@ -46,6 +46,19 @@ interface EngineBundle {
   ConsensusResolver: ResolverCtor;
 }
 
+/**
+ * Outcome of trying to load the audited repo's engines:
+ *  - `ok`: all engines present and usable → run the simulations.
+ *  - `absent`: the repo ships none of these engines → not applicable (SKIP).
+ *  - `broken`: the repo ships some/all engine files but they cannot be used
+ *    (missing/renamed exports, partial set, or a load error) → the economic
+ *    core under audit is broken (FAIL), never a silent skip.
+ */
+type EngineLoad =
+  | { kind: 'ok'; engines: EngineBundle }
+  | { kind: 'absent' }
+  | { kind: 'broken'; reason: string };
+
 /** Engine modules, relative to a repo root, that the behavioral suite exercises. */
 const ENGINE_FILES = {
   lossAversion: ['src', 'shared', 'behavioral-physics', 'loss-aversion.engine'],
@@ -83,10 +96,10 @@ function resolveEngineFile(repoPath: string, segments: readonly string[]): strin
  * The Economic Simulator of the Ergon Test Harness. It exercises the live
  * behavioral-physics and fury-logic engines **of the audited repository**
  * (resolved from `--repo`, not the harness's own copy) via seeded Monte Carlo
- * simulations to prove the economic invariants the protocol depends on. If the
- * target repo does not ship these engines, the suite reports SKIP rather than a
- * misleading PASS. Each check is designed to FAIL if the property it guards
- * regresses:
+ * simulations to prove the economic invariants the protocol depends on. A repo
+ * that ships none of these engines reports SKIP (not applicable); a repo whose
+ * engines are present but unusable reports FAIL — never a misleading PASS. Each
+ * check is designed to FAIL if the property it guards regresses:
  *
  *  1. Loss-aversion stability — penalty multipliers stay finite and inside the
  *     spec [min, max] clamps even under extreme stress inputs that cross both
@@ -104,27 +117,38 @@ export class BehavioralAnalyzer {
   }
 
   public async analyze(): Promise<SuiteResult> {
-    const engines = await this.loadTargetEngines();
-    if (!engines) {
-      const missing = (Object.keys(ENGINE_FILES) as (keyof typeof ENGINE_FILES)[])
-        .filter((k) => !resolveEngineFile(this.repoPath, ENGINE_FILES[k]))
-        .join(', ');
-      const message = `Target repo has no behavioral-physics/fury-logic engines (missing: ${missing}); economic simulation not applicable.`;
-      return {
-        analyzer: 'behavioral',
-        results: [
-          { check: 'loss-aversion-stability', status: 'SKIP', message },
-          { check: 'collusion-resilience', status: 'SKIP', message },
-        ],
-      };
+    const load = await this.loadTargetEngines();
+
+    if (load.kind === 'absent') {
+      return this.uniformSuite(
+        'SKIP',
+        'Target repo ships no behavioral-physics/fury-logic engines; economic simulation not applicable.',
+      );
+    }
+    if (load.kind === 'broken') {
+      return this.uniformSuite(
+        'FAIL',
+        `Behavioral engines present but unusable (${load.reason}); the economic core under audit is broken.`,
+      );
     }
 
     const rng = createRng(0x57595800); // "STYX"
     return {
       analyzer: 'behavioral',
       results: [
-        this.simulateLossAversionStability(engines, rng),
-        this.simulateCollusionResilience(engines, rng),
+        this.simulateLossAversionStability(load.engines, rng),
+        this.simulateCollusionResilience(load.engines, rng),
+      ],
+    };
+  }
+
+  /** Build a behavioral suite where both checks share one status/message. */
+  private uniformSuite(status: 'SKIP' | 'FAIL', message: string): SuiteResult {
+    return {
+      analyzer: 'behavioral',
+      results: [
+        { check: 'loss-aversion-stability', status, message },
+        { check: 'collusion-resilience', status, message },
       ],
     };
   }
@@ -132,26 +156,63 @@ export class BehavioralAnalyzer {
   /**
    * Dynamically import the economic engines from the audited repository so the
    * behavioral suite validates the target's code, not the harness's own copy.
-   * Returns null when any engine module is absent.
+   *
+   * Distinguishes three outcomes (see {@link EngineLoad}): a repo with no engine
+   * files at all is `absent` (not applicable); a repo that ships any engine file
+   * but cannot provide a usable, constructable export for all three is `broken`
+   * (a failure, not a skip) — so a renamed/removed export or a load-time error
+   * surfaces as a CI failure rather than a false pass.
    */
-  private async loadTargetEngines(): Promise<EngineBundle | null> {
-    const laFile = resolveEngineFile(this.repoPath, ENGINE_FILES.lossAversion);
-    const veFile = resolveEngineFile(this.repoPath, ENGINE_FILES.volatility);
-    const crFile = resolveEngineFile(this.repoPath, ENGINE_FILES.consensus);
-    if (!laFile || !veFile || !crFile) return null;
+  private async loadTargetEngines(): Promise<EngineLoad> {
+    const files = {
+      LossAversionEngine: resolveEngineFile(this.repoPath, ENGINE_FILES.lossAversion),
+      VolatilityEngine: resolveEngineFile(this.repoPath, ENGINE_FILES.volatility),
+      ConsensusResolver: resolveEngineFile(this.repoPath, ENGINE_FILES.consensus),
+    };
+    const names = Object.keys(files) as (keyof typeof files)[];
+    const present = names.filter((n) => files[n]);
 
-    const [laMod, veMod, crMod] = await Promise.all([
-      import(pathToFileURL(laFile).href),
-      import(pathToFileURL(veFile).href),
-      import(pathToFileURL(crFile).href),
-    ]);
+    // No engine files whatsoever → the repo simply doesn't implement these.
+    if (present.length === 0) return { kind: 'absent' };
 
-    const LossAversionEngine = laMod.LossAversionEngine as PenaltyEngineCtor | undefined;
-    const VolatilityEngine = veMod.VolatilityEngine as HeatEngineCtor | undefined;
-    const ConsensusResolver = crMod.ConsensusResolver as ResolverCtor | undefined;
-    if (!LossAversionEngine || !VolatilityEngine || !ConsensusResolver) return null;
+    // Some engine files exist, so the repo purports to implement the economic
+    // core; any gap from here on is a broken core, not a non-applicable one.
+    const missingFiles = names.filter((n) => !files[n]);
+    if (missingFiles.length > 0) {
+      return { kind: 'broken', reason: `missing engine file(s): ${missingFiles.join(', ')}` };
+    }
 
-    return { LossAversionEngine, VolatilityEngine, ConsensusResolver };
+    let modules: Record<keyof typeof files, unknown>;
+    try {
+      const [laMod, veMod, crMod] = await Promise.all([
+        import(pathToFileURL(files.LossAversionEngine!).href),
+        import(pathToFileURL(files.VolatilityEngine!).href),
+        import(pathToFileURL(files.ConsensusResolver!).href),
+      ]);
+      modules = { LossAversionEngine: laMod, VolatilityEngine: veMod, ConsensusResolver: crMod };
+    } catch (err) {
+      return { kind: 'broken', reason: `engine module failed to load: ${(err as Error).message}` };
+    }
+
+    // Every engine must expose a constructable class export of the right name.
+    const badExports = names.filter(
+      (n) => typeof (modules[n] as Record<string, unknown>)?.[n] !== 'function',
+    );
+    if (badExports.length > 0) {
+      return { kind: 'broken', reason: `missing or non-constructable export(s): ${badExports.join(', ')}` };
+    }
+
+    return {
+      kind: 'ok',
+      engines: {
+        LossAversionEngine: (modules.LossAversionEngine as Record<string, unknown>)
+          .LossAversionEngine as PenaltyEngineCtor,
+        VolatilityEngine: (modules.VolatilityEngine as Record<string, unknown>)
+          .VolatilityEngine as HeatEngineCtor,
+        ConsensusResolver: (modules.ConsensusResolver as Record<string, unknown>)
+          .ConsensusResolver as ResolverCtor,
+      },
+    };
   }
 
   /**
