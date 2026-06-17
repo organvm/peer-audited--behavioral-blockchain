@@ -1,7 +1,8 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render } from '@testing-library/react-native';
 import { SupportTraceErrorBanner } from '../components/SupportTraceErrorBanner';
 import { parseSupportTraceMessage } from '../utils/support-trace';
+import { flattenScreenText } from '../utils/test-render';
 
 function collectText(node: any): string {
   if (node == null || typeof node === 'boolean') return '';
@@ -105,24 +106,20 @@ jest.mock('@react-navigation/native', () => ({
 describe('ProfileScreen – render', () => {
   const { ProfileScreen } = require('../screens/ProfileScreen');
 
-  function renderProfileScreen() {
+  async function renderProfileScreen() {
     const el = (React.createElement as any)(ProfileScreen, { onLogout: jest.fn() });
     return render(el);
   }
 
-  function allText(container: HTMLElement): string {
-    return container.textContent || '';
-  }
-
-  it('renders loading state on initial render', () => {
-    const { container } = renderProfileScreen();
-    const text = allText(container);
+  it('renders loading state on initial render', async () => {
+    await renderProfileScreen();
+    const text = flattenScreenText();
     expect(text).toContain('Loading profile...');
   });
 
-  it('does not render profile content while loading', () => {
-    const { container } = renderProfileScreen();
-    const text = allText(container);
+  it('does not render profile content while loading', async () => {
+    await renderProfileScreen();
+    const text = flattenScreenText();
     expect(text).not.toContain('INTEGRITY');
     expect(text).not.toContain('Log Out');
     expect(text).not.toContain('Settings');

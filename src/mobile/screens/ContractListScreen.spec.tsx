@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react-native';
 import { SupportTraceErrorBanner } from '../components/SupportTraceErrorBanner';
 import { parseSupportTraceMessage } from '../utils/support-trace';
 
@@ -107,13 +107,13 @@ describe('ContractListScreen – render tests', () => {
     (ApiClient.getContracts as jest.Mock).mockReturnValue(new Promise(() => {}));
   });
 
-  it('shows "Loading oaths..." when loading', () => {
-    const { container } = render(
+  it('shows "Loading oaths..." when loading', async () => {
+    await render(
       React.createElement(ContractListScreen, {
         navigation: mockNavigation,
         route: mockRoute,
       }),
     );
-    expect(container.textContent).toContain('Loading oaths...');
+    expect(screen.getByText('Loading oaths...')).toBeTruthy();
   });
 });

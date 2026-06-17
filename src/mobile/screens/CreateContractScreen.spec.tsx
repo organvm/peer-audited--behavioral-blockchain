@@ -1,6 +1,7 @@
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { SupportTraceErrorBanner } from '../components/SupportTraceErrorBanner';
+import { flattenScreenText } from '../utils/test-render';
 
 function collectText(node: any): string {
   if (node == null || typeof node === 'boolean') return '';
@@ -117,41 +118,37 @@ describe('CreateContractScreen – render', () => {
     (ApiClient.createContract as jest.Mock).mockResolvedValue({ contractId: 'contract-123' });
   });
 
-  function renderScreen() {
+  async function renderScreen() {
     return render(
       React.createElement(CreateContractScreen, { route: mockRoute, navigation: mockNav }),
     );
   }
 
-  function allText(container: HTMLElement): string {
-    return container.textContent || '';
-  }
-
-  it('renders the beta notice text', () => {
-    const { container } = renderScreen();
-    const text = allText(container);
+  it('renders the beta notice text', async () => {
+    await renderScreen();
+    const text = flattenScreenText();
     expect(text).toContain('Private beta');
     expect(text).toContain('test-money pilot');
   });
 
-  it('renders the oath stream label', () => {
-    const { container } = renderScreen();
-    const text = allText(container);
+  it('renders the oath stream label', async () => {
+    await renderScreen();
+    const text = flattenScreenText();
     expect(text).toContain('OATH STREAM');
   });
 
-  it('renders verification method options', () => {
-    const { container } = renderScreen();
-    const text = allText(container);
+  it('renders verification method options', async () => {
+    await renderScreen();
+    const text = flattenScreenText();
     expect(text).toContain('VERIFICATION METHOD');
     expect(text).toContain('Screen Time API');
     expect(text).toContain('Fury Peer Review');
     expect(text).toContain('GPS Geofence');
   });
 
-  it('renders stake amount input section', () => {
-    const { container } = renderScreen();
-    const text = allText(container);
+  it('renders stake amount input section', async () => {
+    await renderScreen();
+    const text = flattenScreenText();
     expect(text).toContain('STAKE AMOUNT (USD)');
     expect(text).toContain('$');
     expect(text).toContain('$20 Light');
@@ -159,9 +156,9 @@ describe('CreateContractScreen – render', () => {
     expect(text).toContain('$100 Serious');
   });
 
-  it('renders duration options', () => {
-    const { container } = renderScreen();
-    const text = allText(container);
+  it('renders duration options', async () => {
+    await renderScreen();
+    const text = flattenScreenText();
     expect(text).toContain('DURATION');
     expect(text).toContain('7d');
     expect(text).toContain('14d');
@@ -170,21 +167,21 @@ describe('CreateContractScreen – render', () => {
     expect(text).toContain('90d');
   });
 
-  it('renders submit button', () => {
-    const { container } = renderScreen();
-    const text = allText(container);
+  it('renders submit button', async () => {
+    await renderScreen();
+    const text = flattenScreenText();
     expect(text).toContain('STAKE AND COMMIT');
   });
 
-  it('renders test-money disclaimer in beta mode', () => {
-    const { container } = renderScreen();
-    const text = allText(container);
+  it('renders test-money disclaimer in beta mode', async () => {
+    await renderScreen();
+    const text = flattenScreenText();
     expect(text).toContain('stake amounts are simulated');
   });
 
-  it('only shows Recovery stream when phase1NoContactOnly is true', () => {
-    const { container } = renderScreen();
-    const text = allText(container);
+  it('only shows Recovery stream when phase1NoContactOnly is true', async () => {
+    await renderScreen();
+    const text = flattenScreenText();
     expect(text).toContain('Recovery');
     expect(text).not.toContain('Biological');
     expect(text).not.toContain('Cognitive');
@@ -192,84 +189,62 @@ describe('CreateContractScreen – render', () => {
     expect(text).not.toContain('Creative');
   });
 
-  it('renders without crashing', () => {
-    expect(() => { renderScreen(); }).not.toThrow();
+  it('renders without crashing', async () => {
+    await expect(renderScreen()).resolves.toBeDefined();
   });
 
-  it('applies preset stake selection to the amount input', () => {
-    const { getByText, getByPlaceholderText } = renderScreen();
+  it('applies preset stake selection to the amount input', async () => {
+    const { getByText, getByPlaceholderText } = await renderScreen();
 
-    fireEvent.click(getByText('$50 Default').closest('button') as HTMLElement);
+    await fireEvent.press(getByText('$50 Default'));
 
-    const amountInput = getByPlaceholderText('0.00') as HTMLInputElement;
-    expect(amountInput.value).toBe('50.00');
+    const amountInput = getByPlaceholderText('0.00');
+    expect(amountInput.props.value).toBe('50.00');
   });
 
   it('blocks submit when stake is below minimum bound', async () => {
-    const { getByText, getByPlaceholderText, container } = renderScreen();
+    const { getByText, getByPlaceholderText } = await renderScreen();
 
-    fireEvent.click(getByText('Recovery').closest('button') as HTMLElement);
-    fireEvent.click(getByText('No Contact Boundary').closest('button') as HTMLElement);
-    fireEvent.click(getByText('Screen Time API').closest('button') as HTMLElement);
-    fireEvent.change(getByPlaceholderText('Describe your behavioral commitment...'), {
-      target: { value: 'No contact for 30 days.' },
-    });
-    fireEvent.change(getByPlaceholderText('partner@example.com'), {
-      target: { value: 'ally@styx.io' },
-    });
-    fireEvent.change(getByPlaceholderText('Target #1'), {
-      target: { value: 'Former Partner' },
-    });
-    fireEvent.click(
-      getByText('I am entering this contract voluntarily.').closest('button') as HTMLElement,
+    await fireEvent.press(getByText('Recovery'));
+    await fireEvent.press(getByText('No Contact Boundary'));
+    await fireEvent.press(getByText('Screen Time API'));
+    await fireEvent.changeText(
+      getByPlaceholderText('Describe your behavioral commitment...'),
+      'No contact for 30 days.',
     );
-    fireEvent.click(
-      getByText('No minors are involved in this contract.').closest('button') as HTMLElement,
-    );
-    fireEvent.click(
-      getByText('No dependents are affected by this commitment.').closest('button') as HTMLElement,
-    );
-    fireEvent.click(
-      getByText('This does not violate any legal obligations.').closest('button') as HTMLElement,
-    );
-    fireEvent.change(getByPlaceholderText('0.00'), { target: { value: '5' } });
-    fireEvent.click(getByText('STAKE AND COMMIT').closest('button') as HTMLElement);
+    await fireEvent.changeText(getByPlaceholderText('partner@example.com'), 'ally@styx.io');
+    await fireEvent.changeText(getByPlaceholderText('Target #1'), 'Former Partner');
+    await fireEvent.press(getByText('I am entering this contract voluntarily.'));
+    await fireEvent.press(getByText('No minors are involved in this contract.'));
+    await fireEvent.press(getByText('No dependents are affected by this commitment.'));
+    await fireEvent.press(getByText('This does not violate any legal obligations.'));
+    await fireEvent.changeText(getByPlaceholderText('0.00'), '5');
+    await fireEvent.press(getByText('STAKE AND COMMIT'));
 
     await waitFor(() => {
-      expect(container.textContent).toContain('Stake amount must be between $10 and $200.');
+      expect(flattenScreenText()).toContain('Stake amount must be between $10 and $200.');
       expect(ApiClient.createContract).not.toHaveBeenCalled();
     });
   });
 
   it('submits valid bounded stake and navigates to contract detail', async () => {
-    const { getByText, getByPlaceholderText, container } = renderScreen();
+    const { getByText, getByPlaceholderText } = await renderScreen();
 
-    fireEvent.click(getByText('Recovery').closest('button') as HTMLElement);
-    fireEvent.click(getByText('No Contact Boundary').closest('button') as HTMLElement);
-    fireEvent.click(getByText('Fury Peer Review').closest('button') as HTMLElement);
-    fireEvent.change(getByPlaceholderText('Describe your behavioral commitment...'), {
-      target: { value: 'No social stalking for 30 days.' },
-    });
-    fireEvent.change(getByPlaceholderText('partner@example.com'), {
-      target: { value: 'ally@styx.io' },
-    });
-    fireEvent.change(getByPlaceholderText('Target #1'), {
-      target: { value: 'Former Partner' },
-    });
-    fireEvent.click(
-      getByText('I am entering this contract voluntarily.').closest('button') as HTMLElement,
+    await fireEvent.press(getByText('Recovery'));
+    await fireEvent.press(getByText('No Contact Boundary'));
+    await fireEvent.press(getByText('Fury Peer Review'));
+    await fireEvent.changeText(
+      getByPlaceholderText('Describe your behavioral commitment...'),
+      'No social stalking for 30 days.',
     );
-    fireEvent.click(
-      getByText('No minors are involved in this contract.').closest('button') as HTMLElement,
-    );
-    fireEvent.click(
-      getByText('No dependents are affected by this commitment.').closest('button') as HTMLElement,
-    );
-    fireEvent.click(
-      getByText('This does not violate any legal obligations.').closest('button') as HTMLElement,
-    );
-    fireEvent.click(getByText('$50 Default').closest('button') as HTMLElement);
-    fireEvent.click(getByText('STAKE AND COMMIT').closest('button') as HTMLElement);
+    await fireEvent.changeText(getByPlaceholderText('partner@example.com'), 'ally@styx.io');
+    await fireEvent.changeText(getByPlaceholderText('Target #1'), 'Former Partner');
+    await fireEvent.press(getByText('I am entering this contract voluntarily.'));
+    await fireEvent.press(getByText('No minors are involved in this contract.'));
+    await fireEvent.press(getByText('No dependents are affected by this commitment.'));
+    await fireEvent.press(getByText('This does not violate any legal obligations.'));
+    await fireEvent.press(getByText('$50 Default'));
+    await fireEvent.press(getByText('STAKE AND COMMIT'));
 
     await waitFor(() => {
       expect(ApiClient.createContract).toHaveBeenCalledWith({
@@ -292,8 +267,9 @@ describe('CreateContractScreen – render', () => {
       expect(mockNav.navigate).toHaveBeenCalledWith('ContractDetail', {
         contractId: 'contract-123',
       });
-      expect(container.textContent).toContain('Loss Math Preview');
-      expect(container.textContent).toContain('Weekly loss cap policy');
+      const text = flattenScreenText();
+      expect(text).toContain('Loss Math Preview');
+      expect(text).toContain('Weekly loss cap policy');
     });
   });
 });

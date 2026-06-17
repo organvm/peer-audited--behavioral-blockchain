@@ -126,6 +126,8 @@ export const CameraModule = ({ contractId }: { contractId?: string }) => {
           <>
             {!videoUri ? (
               <TouchableOpacity
+                testID="record-button"
+                accessibilityRole="button"
                 style={[styles.recordButton, isRecording && styles.recordingButton]}
                 onPress={toggleRecording}
               >

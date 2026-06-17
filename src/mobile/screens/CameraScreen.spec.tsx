@@ -1,9 +1,11 @@
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react-native';
+import { Text } from 'react-native';
 import { CameraScreen } from './CameraScreen';
+import { flattenScreenText } from '../utils/test-render';
 
 const mockCameraModule = jest.fn(({ contractId }: { contractId?: string }) => (
-  <div>{`camera-module:${contractId ?? 'none'}`}</div>
+  <Text>{`camera-module:${contractId ?? 'none'}`}</Text>
 ));
 
 jest.mock('../components/CameraModule', () => ({
@@ -15,8 +17,8 @@ describe('CameraScreen', () => {
     mockCameraModule.mockClear();
   });
 
-  it('prefills contract ID from route params', () => {
-    const { getByDisplayValue, getByText } = render(
+  it('prefills contract ID from route params', async () => {
+    const { getByDisplayValue, getByText } = await render(
       <CameraScreen route={{ params: { contractId: 'contract-42' } }} />,
     );
 
@@ -24,23 +26,24 @@ describe('CameraScreen', () => {
     expect(getByText('camera-module:contract-42')).toBeTruthy();
   });
 
-  it('passes trimmed contract ID into CameraModule', () => {
-    const { getByPlaceholderText, getByText } = render(<CameraScreen />);
+  it('passes trimmed contract ID into CameraModule', async () => {
+    const { getByPlaceholderText, getByText } = await render(<CameraScreen />);
 
     const contractInput = getByPlaceholderText('Contract ID');
-    fireEvent.change(contractInput, { target: { value: '   contract-99   ' } });
+    await fireEvent.changeText(contractInput, '   contract-99   ');
 
     expect(getByText('camera-module:contract-99')).toBeTruthy();
   });
 
-  it('passes undefined contract ID when the field is empty', () => {
-    const { getByText } = render(<CameraScreen />);
+  it('passes undefined contract ID when the field is empty', async () => {
+    const { getByText } = await render(<CameraScreen />);
     expect(getByText('camera-module:none')).toBeTruthy();
   });
 
-  it('renders live-capture guidance text', () => {
-    const { container } = render(<CameraScreen />);
-    expect(container.textContent).toContain('Live Proof Capture');
-    expect(container.textContent).toContain('Gallery uploads are disabled');
+  it('renders live-capture guidance text', async () => {
+    await render(<CameraScreen />);
+    const text = flattenScreenText();
+    expect(text).toContain('Live Proof Capture');
+    expect(text).toContain('Gallery uploads are disabled');
   });
 });

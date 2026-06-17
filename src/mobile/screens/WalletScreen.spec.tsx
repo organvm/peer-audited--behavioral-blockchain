@@ -1,7 +1,8 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render } from '@testing-library/react-native';
 import { SupportTraceErrorBanner } from '../components/SupportTraceErrorBanner';
 import { parseSupportTraceMessage } from '../utils/support-trace';
+import { flattenScreenText } from '../utils/test-render';
 
 function collectText(node: any): string {
   if (node == null || typeof node === 'boolean') return '';
@@ -112,23 +113,19 @@ jest.mock('@react-navigation/native', () => ({
 describe('WalletScreen – render', () => {
   const { WalletScreen } = require('../screens/WalletScreen');
 
-  function renderWalletScreen() {
+  async function renderWalletScreen() {
     return render(React.createElement(WalletScreen));
   }
 
-  function allText(container: HTMLElement): string {
-    return container.textContent || '';
-  }
-
-  it('renders loading state on initial render', () => {
-    const { container } = renderWalletScreen();
-    const text = allText(container);
+  it('renders loading state on initial render', async () => {
+    await renderWalletScreen();
+    const text = flattenScreenText();
     expect(text).toContain('Loading wallet...');
   });
 
-  it('does not show balance card while loading', () => {
-    const { container } = renderWalletScreen();
-    const text = allText(container);
+  it('does not show balance card while loading', async () => {
+    await renderWalletScreen();
+    const text = flattenScreenText();
     expect(text).not.toContain('LEDGER BALANCE');
     expect(text).not.toContain('INTEGRITY');
     expect(text).not.toContain('Transaction History');

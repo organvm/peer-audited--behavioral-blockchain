@@ -1,7 +1,8 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render } from '@testing-library/react-native';
 import { SupportTraceErrorBanner } from '../components/SupportTraceErrorBanner';
 import { parseSupportTraceMessage } from '../utils/support-trace';
+import { flattenScreenText } from '../utils/test-render';
 
 jest.mock('../services/ApiClient', () => ({
   ApiClient: {
@@ -120,37 +121,33 @@ describe('FuryScreen – render tests', () => {
     (ApiClient.getFuryStats as jest.Mock).mockReturnValue(new Promise(() => {}));
   });
 
-  function renderFury() {
+  async function renderFury() {
     return render(React.createElement(FuryScreen));
   }
 
-  function allText(container: HTMLElement): string {
-    return container.textContent || '';
-  }
-
-  it('shows loading indicator initially', () => {
+  it('shows loading indicator initially', async () => {
     // On initial render, loading=true, so the component returns the
     // ActivityIndicator loading view. It should not contain queue-specific text.
-    const { container } = renderFury();
-    const text = allText(container);
+    await renderFury();
+    const text = flattenScreenText();
 
     expect(text).not.toContain('Queue Empty');
     expect(text).not.toContain('VERIFY');
     expect(text).not.toContain('BURN');
   });
 
-  it('does not render verdict buttons while loading', () => {
-    const { container } = renderFury();
-    const text = allText(container);
+  it('does not render verdict buttons while loading', async () => {
+    await renderFury();
+    const text = flattenScreenText();
 
     expect(text).not.toContain('VERIFY');
     expect(text).not.toContain('BURN');
     expect(text).not.toContain('Video Proof');
   });
 
-  it('does not render stats bar while loading', () => {
-    const { container } = renderFury();
-    const text = allText(container);
+  it('does not render stats bar while loading', async () => {
+    await renderFury();
+    const text = flattenScreenText();
 
     expect(text).not.toContain('Audits');
     expect(text).not.toContain('Accuracy');

@@ -1,7 +1,8 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render } from '@testing-library/react-native';
 import { SupportTraceErrorBanner } from '../components/SupportTraceErrorBanner';
 import { parseSupportTraceMessage } from '../utils/support-trace';
+import { collectPlaceholders, flattenScreenText } from '../utils/test-render';
 
 function collectText(node: any): string {
   if (node == null || typeof node === 'boolean') return '';
@@ -109,64 +110,55 @@ jest.mock('../services/ApiClient', () => ({
 describe('SettingsScreen – render', () => {
   const { SettingsScreen } = require('../screens/SettingsScreen');
 
-  function renderSettings() {
+  async function renderSettings() {
     return render(React.createElement(SettingsScreen));
   }
 
-  function allText(container: HTMLElement): string {
-    return container.textContent || '';
-  }
-
-  function allPlaceholders(container: HTMLElement): string[] {
-    const inputs = container.querySelectorAll('input');
-    return Array.from(inputs).map(n => n.getAttribute('placeholder')).filter(Boolean) as string[];
-  }
-
-  it('renders the Change Password section', () => {
-    const { container } = renderSettings();
-    const text = allText(container);
+  it('renders the Change Password section', async () => {
+    await renderSettings();
+    const text = flattenScreenText();
     expect(text).toContain('Change Password');
     expect(text).toContain('Update Password');
   });
 
-  it('renders the Notifications section with toggle labels', () => {
-    const { container } = renderSettings();
-    const text = allText(container);
+  it('renders the Notifications section with toggle labels', async () => {
+    await renderSettings();
+    const text = flattenScreenText();
     expect(text).toContain('Notifications');
     expect(text).toContain('Email Notifications');
     expect(text).toContain('Push Notifications');
     expect(text).toContain('Save Preferences');
   });
 
-  it('renders the Danger Zone section', () => {
-    const { container } = renderSettings();
-    const text = allText(container);
+  it('renders the Danger Zone section', async () => {
+    await renderSettings();
+    const text = flattenScreenText();
     expect(text).toContain('Danger Zone');
     expect(text).toContain('Delete My Account');
     expect(text).toContain('Permanently delete');
   });
 
-  it('renders the version string', () => {
-    const { container } = renderSettings();
-    const text = allText(container);
+  it('renders the version string', async () => {
+    await renderSettings();
+    const text = flattenScreenText();
     expect(text).toContain('Styx Mobile v1.0.0');
   });
 
-  it('renders password input placeholders', () => {
-    const { container } = renderSettings();
-    const placeholders = allPlaceholders(container);
+  it('renders password input placeholders', async () => {
+    await renderSettings();
+    const placeholders = collectPlaceholders();
     expect(placeholders).toContain('Current password');
     expect(placeholders).toContain('New password (min. 8 characters)');
     expect(placeholders).toContain('Confirm new password');
   });
 
-  it('renders without crashing', () => {
-    expect(() => { renderSettings(); }).not.toThrow();
+  it('renders without crashing', async () => {
+    await expect(renderSettings()).resolves.toBeDefined();
   });
 
-  it('does not render error messages initially', () => {
-    const { container } = renderSettings();
-    const text = allText(container);
+  it('does not render error messages initially', async () => {
+    await renderSettings();
+    const text = flattenScreenText();
     expect(text).not.toContain('Password updated successfully');
     expect(text).not.toContain('Current password is required');
   });

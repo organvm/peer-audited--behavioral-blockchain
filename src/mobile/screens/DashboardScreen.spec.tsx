@@ -1,7 +1,8 @@
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { SupportTraceErrorBanner } from '../components/SupportTraceErrorBanner';
 import { parseSupportTraceMessage } from '../utils/support-trace';
+import { flattenScreenText } from '../utils/test-render';
 
 jest.mock('../services/ApiClient', () => ({
   ApiClient: {
@@ -124,9 +125,9 @@ describe('DashboardScreen – render tests', () => {
     jest.clearAllMocks();
   });
 
-  it('shows "Loading..." when loading', () => {
-    const { container } = render(React.createElement(DashboardScreen));
-    expect(container.textContent).toContain('Loading...');
+  it('shows "Loading..." when loading', async () => {
+    await render(React.createElement(DashboardScreen));
+    expect(flattenScreenText()).toContain('Loading...');
   });
 
   it('renders the locked beta quick actions without a Fury route', async () => {
@@ -144,7 +145,7 @@ describe('DashboardScreen – render tests', () => {
     });
     ApiClient.getContracts.mockResolvedValueOnce([]);
 
-    const { getByText, queryByText } = render(
+    const { getByText, queryByText } = await render(
       React.createElement(DashboardScreen, { navigation }),
     );
 
@@ -171,12 +172,12 @@ describe('DashboardScreen – render tests', () => {
     });
     ApiClient.getContracts.mockResolvedValueOnce([]);
 
-    const { getByText } = render(
+    const { getByText } = await render(
       React.createElement(DashboardScreen, { navigation }),
     );
 
     await waitFor(() => expect(getByText('Profile')).toBeTruthy());
-    fireEvent.click(getByText('Profile').closest('button') as HTMLElement);
+    await fireEvent.press(getByText('Profile'));
 
     expect(navigation.navigate).toHaveBeenCalledWith('Profile');
   });
