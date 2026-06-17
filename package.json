@@ -59,6 +59,14 @@
     "ws": "8.20.1",
     "yaml": "2.8.3",
     "cross-spawn": "7.0.5",
-    "postcss": "8.5.15"
+    "postcss": "8.5.15",
+    "@jest/create-cache-key-function": "30.4.1",
+    "@jest/environment": "30.4.1",
+    "@jest/fake-timers": "30.4.1",
+    "@jest/globals": "30.4.1",
+    "babel-jest": "30.4.1",
+    "jest-environment-node": "30.4.1",
+    "jest-mock": "30.4.1",
+    "jest-runtime": "30.4.1"
   }
 }
