@@ -2,9 +2,22 @@ name = "ask-styx-proxy"
 main = "index.ts"
 compatibility_date = "2026-03-04"
 
-kv_namespaces = [
-  { binding = "RATE_LIMIT_KV", id = "rate-limit-kv" }
+# Cross-isolate rate limiter backed by a Durable Object. A Durable Object
+# gives a single, globally-consistent, single-threaded counter per IP that
+# is shared across every edge isolate and POP — so the limit cannot be
+# bypassed by spreading requests across edge locations or by waiting for
+# isolate restarts (the failure mode of the previous in-memory Map / KV
+# limiter, which only ever held per-isolate or eventually-consistent state).
+[durable_objects]
+bindings = [
+  { name = "RATE_LIMITER", class_name = "RateLimiter" }
 ]
+
+# Durable Object classes must be declared in a migration. SQLite-backed
+# classes are required on the Workers Free plan and are the current default.
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["RateLimiter"]
 
 [vars]
 ALLOWED_ORIGIN = "https://organvm-iii-ergon.github.io"
