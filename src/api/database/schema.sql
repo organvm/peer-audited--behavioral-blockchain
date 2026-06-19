@@ -2,6 +2,7 @@
 -- Enforce absolute financial integrity for user stakes and bounties.
 
 CREATE TYPE account_type AS ENUM ('ASSET', 'LIABILITY', 'EQUITY', 'REVENUE', 'EXPENSE');
+CREATE TYPE access_tier AS ENUM ('free', 'early_access', 'pro');
 
 CREATE TABLE accounts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -58,6 +59,7 @@ CREATE TABLE users (
     integrity_score INTEGER DEFAULT 50,
     account_id UUID REFERENCES accounts(id),
     role TEXT DEFAULT 'USER',
+    access_tier access_tier NOT NULL DEFAULT 'free',
     enterprise_id UUID,
     status TEXT DEFAULT 'ACTIVE', last_known_state TEXT, social_guild_id UUID,
     deletion_requested_at TIMESTAMPTZ,
@@ -433,4 +435,3 @@ ALTER TABLE fury_assignments ADD COLUMN IF NOT EXISTS realm_id TEXT REFERENCES r
 CREATE INDEX IF NOT EXISTS idx_fury_assignments_realm_id ON fury_assignments(realm_id);
 
 ALTER TABLE users ADD COLUMN IF NOT EXISTS realm_preferences JSONB DEFAULT '{}';
-
