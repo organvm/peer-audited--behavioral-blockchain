@@ -1,18 +1,24 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { WaitlistService } from "./waitlist.service";
 import { Pool } from "pg";
+import { EmailService } from "../email/email.service";
 
 describe("WaitlistService", () => {
   let service: WaitlistService;
   let pool: Pool;
   const mockQuery = jest.fn();
+  const mockEmail = {
+    sendEarlyAccessOnboarding: jest.fn(),
+  };
 
   beforeEach(async () => {
     mockQuery.mockReset();
+    mockEmail.sendEarlyAccessOnboarding.mockReset();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         WaitlistService,
         { provide: Pool, useValue: { query: mockQuery } },
+        { provide: EmailService, useValue: mockEmail },
       ],
     }).compile();
 
@@ -38,11 +44,46 @@ describe("WaitlistService", () => {
             created_at: new Date(),
           },
         ],
+      })
+      .mockResolvedValueOnce({
+        rows: [{ email: "early@styx.app" }],
       });
 
     const result = await service.joinWaitlist("u1", "c1");
     expect(result.position).toBe(1);
     expect(result.cohortId).toBe("c1");
+    expect(mockEmail.sendEarlyAccessOnboarding).toHaveBeenCalledWith({
+      to: "early@styx.app",
+      userId: "u1",
+      cohortId: "c1",
+      position: 1,
+      trigger: "waitlist_join",
+    });
+  });
+
+  it("does not resend onboarding when updating an existing waitlist entry", async () => {
+    mockQuery
+      .mockResolvedValueOnce({ rows: [{ id: "w1", enrolled: false }] })
+      .mockResolvedValueOnce({ rows: [{ next_position: 2 }] })
+      .mockResolvedValueOnce({
+        rows: [
+          {
+            id: "w1",
+            user_id: "u1",
+            cohort_id: "c1",
+            pod_id: "p2",
+            display_alias: null,
+            position: 1,
+            enrolled: false,
+            enrolled_at: null,
+            created_at: new Date(),
+          },
+        ],
+      });
+
+    await service.joinWaitlist("u1", "c1", "p2");
+
+    expect(mockEmail.sendEarlyAccessOnboarding).not.toHaveBeenCalled();
   });
 
   it("gets waitlist position", async () => {
