@@ -13,6 +13,8 @@ import { AegisProtocolService } from "../../../services/health/aegis.service";
 import { RecoveryProtocolService } from "../../../services/health/recovery-protocol.service";
 import { DynamicPenaltyService } from "../../../services/health/dynamic-penalty.service";
 import { HoneypotService } from "../../../services/intelligence/honeypot.service";
+import { BannedUserGuard } from "../../guards/banned-user.guard";
+import { TierGuard } from "../../guards/tier.guard";
 
 import { SurveyService } from "./survey.service";
 import { WaitlistService } from "./waitlist.service";
@@ -58,6 +60,8 @@ const redisProvider = {
     HoneypotService,
     SurveyService,
     WaitlistService,
+    BannedUserGuard,
+    TierGuard,
 
     AnomalyService,
     redisProvider,
