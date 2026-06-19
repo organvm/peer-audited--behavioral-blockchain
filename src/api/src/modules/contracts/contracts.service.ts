@@ -110,6 +110,10 @@ const MVP_39_TOTAL_USD = 39;
 const MVP_39_PLATFORM_FEE_USD = 9;
 const MVP_39_STAKE_USD = 30;
 
+const EARLY_ACCESS_199_TOTAL_USD = 199;
+const EARLY_ACCESS_199_PLATFORM_FEE_USD = 49;
+const EARLY_ACCESS_199_STAKE_USD = 150;
+
 type PricingMetadata = {
   plan: PricingPlan;
   totalEntryUsd: number;
@@ -824,6 +828,20 @@ export class ContractsService {
           totalEntryUsd: MVP_39_TOTAL_USD,
           platformFeeUsd: MVP_39_PLATFORM_FEE_USD,
           refundableStakeUsd: MVP_39_STAKE_USD,
+        },
+      };
+    }
+    if (plan === PricingPlan.EARLY_ACCESS_199) {
+      return {
+        dto: {
+          ...dto,
+          stakeAmount: EARLY_ACCESS_199_STAKE_USD,
+        },
+        pricingMetadata: {
+          plan: PricingPlan.EARLY_ACCESS_199,
+          totalEntryUsd: EARLY_ACCESS_199_TOTAL_USD,
+          platformFeeUsd: EARLY_ACCESS_199_PLATFORM_FEE_USD,
+          refundableStakeUsd: EARLY_ACCESS_199_STAKE_USD,
         },
       };
     }
