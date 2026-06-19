@@ -1,6 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Queue } from 'bullmq';
 import { FURY_ROUTER_QUEUE_NAME, getDefaultQueueOptions } from '../../config/queue.config';
+import { FURY_CONSENSUS_AUDITORS } from '@styx/shared/libs/integrity';
 
 @Injectable()
 export class FuryRouterService implements OnModuleInit {
@@ -22,7 +23,7 @@ export class FuryRouterService implements OnModuleInit {
   async routeProof(
     proofId: string, 
     submitterUserId: string, 
-    requiredReviewers: number = 3
+    requiredReviewers: number = FURY_CONSENSUS_AUDITORS
   ): Promise<string> {
     
     // In the real worker implementation, this job will query the database 
