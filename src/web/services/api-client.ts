@@ -189,6 +189,17 @@ export interface LeaderboardEntry {
   created_at: string;
 }
 
+export interface EnterpriseLicenseStatus {
+  enterpriseId: string;
+  active: boolean;
+  status: string | null;
+  plan: string | null;
+  stripeCustomerId: string | null;
+  subscriptionId: string | null;
+  currentPeriodStart: string | null;
+  currentPeriodEnd: string | null;
+}
+
 export const api = {
   health: () => request<{ status: string }>("/health"),
   getMobileBootstrap: () =>
@@ -420,10 +431,19 @@ export const api = {
       totalEmployees: number;
     }>(`/b2b/metrics/${enterpriseId}`),
 
+  getEnterpriseLicense: (enterpriseId: string) =>
+    request<EnterpriseLicenseStatus>(`/b2b/license/${enterpriseId}`),
+
   getEnterpriseBilling: (enterpriseId: string) =>
     request<{
       enterpriseId: string;
       plan: string;
+      license: EnterpriseLicenseStatus;
+      usageSummary: {
+        totalUsage: number;
+        currentPeriodStart: string;
+        currentPeriodEnd: string;
+      };
       events: unknown[];
       totalDue: number;
       currency: string;

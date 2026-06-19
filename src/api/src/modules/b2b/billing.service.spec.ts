@@ -53,6 +53,96 @@ describe('BillingService', () => {
     });
   });
 
+  describe('getEnterpriseSubscriptionStatus', () => {
+    it('should return an active license for an active enterprise subscription', async () => {
+      mockSearchSubscriptions.mockResolvedValue({
+        data: [{
+          id: 'sub_ent_001',
+          status: 'active',
+          customer: 'cus_ent_001',
+          metadata: { plan: 'PRACTICE' },
+          items: {
+            data: [{
+              id: 'si_metered',
+              current_period_start: 1780272000,
+              current_period_end: 1782864000,
+              price: { id: 'price_practice', lookup_key: 'practice_monthly' },
+            }],
+          },
+        }],
+      });
+
+      const result = await service.getEnterpriseSubscriptionStatus('ent-001');
+
+      expect(result).toEqual({
+        enterpriseId: 'ent-001',
+        active: true,
+        status: 'active',
+        plan: 'PRACTICE',
+        stripeCustomerId: 'cus_ent_001',
+        subscriptionId: 'sub_ent_001',
+        currentPeriodStart: new Date(1780272000 * 1000),
+        currentPeriodEnd: new Date(1782864000 * 1000),
+      });
+      expect(mockSearchSubscriptions).toHaveBeenCalledWith({
+        query: 'metadata["enterpriseId"]:"ent-001" AND status:"active"',
+        limit: 1,
+      });
+    });
+
+    it('should allow a trialing subscription as licensed access for pilots', async () => {
+      mockSearchSubscriptions
+        .mockResolvedValueOnce({ data: [] })
+        .mockResolvedValueOnce({
+          data: [{
+            id: 'sub_trial_001',
+            status: 'trialing',
+            customer: { id: 'cus_trial_001' },
+            metadata: {},
+            items: {
+              data: [{
+                id: 'si_trial',
+                current_period_start: 1780272000,
+                current_period_end: 1782864000,
+                price: { id: 'price_solo', nickname: 'Solo' },
+              }],
+            },
+          }],
+        });
+
+      const result = await service.getEnterpriseSubscriptionStatus('ent-001');
+
+      expect(result.active).toBe(true);
+      expect(result.status).toBe('trialing');
+      expect(result.plan).toBe('Solo');
+      expect(result.stripeCustomerId).toBe('cus_trial_001');
+    });
+
+    it('should return inactive status when no active or trialing subscription exists', async () => {
+      mockSearchSubscriptions.mockResolvedValue({ data: [] });
+
+      const result = await service.getEnterpriseSubscriptionStatus('ent-missing');
+
+      expect(result).toEqual({
+        enterpriseId: 'ent-missing',
+        active: false,
+        status: null,
+        plan: null,
+        stripeCustomerId: null,
+        subscriptionId: null,
+        currentPeriodStart: null,
+        currentPeriodEnd: null,
+      });
+    });
+
+    it('should reject unsafe enterprise ids before building a Stripe search query', async () => {
+      await expect(
+        service.getEnterpriseSubscriptionStatus('ent-001" OR status:"active'),
+      ).rejects.toThrow('Invalid enterpriseId');
+      expect(mockSearchSubscriptions).not.toHaveBeenCalled();
+    });
+  });
+
   describe('recordUsage', () => {
     it('should record usage with an idempotent increment when a stable event id is supplied (PM21)', async () => {
       mockSearchSubscriptions.mockResolvedValue({

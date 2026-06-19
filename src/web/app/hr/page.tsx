@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Loader2, AlertTriangle, RefreshCw, Search } from 'lucide-react';
-import { api } from '../../services/api-client';
+import { Loader2, AlertTriangle, RefreshCw, Search, LockKeyhole } from 'lucide-react';
+import { api, type EnterpriseLicenseStatus } from '../../services/api-client';
 import { SupportTraceMessage } from '../../components/support/SupportTraceMessage';
 
 interface EnterpriseMetrics {
@@ -31,6 +31,7 @@ export default function HRDashboard() {
   const [metrics, setMetrics] = useState<EnterpriseMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [license, setLicense] = useState<EnterpriseLicenseStatus | null>(null);
   const [enterpriseInput, setEnterpriseInput] = useState(DEFAULT_ENTERPRISE_ID);
   const [activeEnterpriseId, setActiveEnterpriseId] = useState(DEFAULT_ENTERPRISE_ID);
   const [refreshNonce, setRefreshNonce] = useState(0);
@@ -56,6 +57,15 @@ export default function HRDashboard() {
 
     async function load() {
       try {
+        const licenseStatus = await api.getEnterpriseLicense(activeEnterpriseId);
+        if (cancelled) return;
+        setLicense(licenseStatus);
+
+        if (!licenseStatus.active) {
+          setMetrics(null);
+          return;
+        }
+
         const data = await api.getEnterpriseMetrics(activeEnterpriseId);
         if (!cancelled) {
           setMetrics(data);
@@ -64,6 +74,7 @@ export default function HRDashboard() {
         if (!cancelled) {
           setError(err instanceof Error ? err.message : 'Failed to load metrics');
           setMetrics(null);
+          setLicense(null);
         }
       } finally {
         if (!cancelled) {
@@ -129,6 +140,7 @@ export default function HRDashboard() {
         </div>
         <div className="text-right text-sm">
           <div className="text-green-500 font-bold mb-1">Enterprise: {activeEnterpriseId}</div>
+          <div className="text-gray-500">Plan: {license?.plan ?? 'Unlicensed'}</div>
           <div className="text-gray-500">Total Enrolled: {metrics?.totalEmployees ?? 0} Employees</div>
           <div className="text-gray-500">Avg Integrity Score: {metrics?.avgIntegrityScore ?? 0}</div>
         </div>
@@ -174,28 +186,40 @@ export default function HRDashboard() {
         </div>
       ) : null}
 
-      <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-        <div className="bg-black border border-gray-800 p-6 rounded-lg">
-          <h3 className="text-gray-500 text-xs uppercase mb-2">Total Contracts</h3>
-          <p className="text-4xl font-bold text-white">{metrics?.totalContracts ?? 0}</p>
-        </div>
-        <div className="bg-black border border-gray-800 p-6 rounded-lg">
-          <h3 className="text-gray-500 text-xs uppercase mb-2">Completion Rate</h3>
-          <p className="text-4xl font-bold text-blue-500">{metrics?.completionRate ?? 0}%</p>
-        </div>
-        <div className="bg-black border border-gray-800 p-6 rounded-lg">
-          <h3 className="text-gray-500 text-xs uppercase mb-2">Failed Contracts</h3>
-          <p className="text-4xl font-bold text-red-500">{metrics?.failedContracts ?? 0}</p>
-        </div>
-        <div className="bg-black border border-gray-800 p-6 rounded-lg">
-          <h3 className="text-gray-500 text-xs uppercase mb-2">Active Contracts</h3>
-          <p className="text-4xl font-bold text-yellow-500">{metrics?.activeContracts ?? 0}</p>
-        </div>
-        <div className="bg-black border border-gray-800 p-6 rounded-lg">
-          <h3 className="text-gray-500 text-xs uppercase mb-2">Open Risk Exposure</h3>
-          <p className="text-4xl font-bold text-orange-500">{openRiskExposure}</p>
-        </div>
-      </main>
+      {license && !license.active ? (
+        <section className="border border-amber-800 bg-amber-950/20 p-6 rounded-lg flex flex-col md:flex-row md:items-center gap-4">
+          <LockKeyhole className="text-amber-400 flex-shrink-0" size={28} />
+          <div>
+            <h2 className="text-lg font-bold text-amber-100">Subscription Required</h2>
+            <p className="text-sm text-amber-200/70 mt-1">
+              Attach an active B2B subscription to view enterprise analytics for this account.
+            </p>
+          </div>
+        </section>
+      ) : (
+        <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+          <div className="bg-black border border-gray-800 p-6 rounded-lg">
+            <h3 className="text-gray-500 text-xs uppercase mb-2">Total Contracts</h3>
+            <p className="text-4xl font-bold text-white">{metrics?.totalContracts ?? 0}</p>
+          </div>
+          <div className="bg-black border border-gray-800 p-6 rounded-lg">
+            <h3 className="text-gray-500 text-xs uppercase mb-2">Completion Rate</h3>
+            <p className="text-4xl font-bold text-blue-500">{metrics?.completionRate ?? 0}%</p>
+          </div>
+          <div className="bg-black border border-gray-800 p-6 rounded-lg">
+            <h3 className="text-gray-500 text-xs uppercase mb-2">Failed Contracts</h3>
+            <p className="text-4xl font-bold text-red-500">{metrics?.failedContracts ?? 0}</p>
+          </div>
+          <div className="bg-black border border-gray-800 p-6 rounded-lg">
+            <h3 className="text-gray-500 text-xs uppercase mb-2">Active Contracts</h3>
+            <p className="text-4xl font-bold text-yellow-500">{metrics?.activeContracts ?? 0}</p>
+          </div>
+          <div className="bg-black border border-gray-800 p-6 rounded-lg">
+            <h3 className="text-gray-500 text-xs uppercase mb-2">Open Risk Exposure</h3>
+            <p className="text-4xl font-bold text-orange-500">{openRiskExposure}</p>
+          </div>
+        </main>
+      )}
 
       <div className="mt-12 text-xs text-gray-700 uppercase tracking-widest text-center">
         PII and specific employee performance metrics are structurally redacted by the Aegis protocol.
