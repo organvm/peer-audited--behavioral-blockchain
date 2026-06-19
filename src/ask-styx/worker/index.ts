@@ -6,7 +6,11 @@ interface Env {
   ALLOWED_ORIGIN: string;
   LLM_MODEL: string;
   LLM_BASE_URL: string;
-  RATE_LIMIT_KV: KVNamespace;
+  // Durable Object namespace backing the cross-isolate rate limiter.
+  // A Durable Object gives one single-threaded, strongly-consistent
+  // instance per IP, shared across every edge isolate — so the limit
+  // cannot be bypassed by hitting different POPs or by isolate restarts.
+  RATE_LIMITER: DurableObjectNamespace;
 }
 
 const SYSTEM_PROMPT = `You are the Styx AI assistant — an expert on the Styx peer-audited behavioral market platform. You help stakeholders (investors, partners, developers) understand how Styx works.
@@ -22,26 +26,82 @@ GUIDELINES:
 KNOWLEDGE BASE:
 ${STYX_KNOWLEDGE}`;
 
-const RATE_LIMIT_WINDOW_MS = 60_000;
-const RATE_LIMIT_MAX = 30;
+export const RATE_LIMIT_WINDOW_MS = 60_000;
+export const RATE_LIMIT_MAX = 30;
 
-function kvKey(ip: string): string {
-  return `ratelimit:${ip}`;
-}
+const STORAGE_KEY = 'timestamps';
 
-async function isRateLimited(ip: string, kv: KVNamespace): Promise<boolean> {
-  const now = Date.now();
-  const key = kvKey(ip);
-  const raw = await kv.get(key);
-  const timestamps: number[] = raw ? JSON.parse(raw) : [];
-  const recent = timestamps.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
-  if (recent.length >= RATE_LIMIT_MAX) {
-    await kv.put(key, JSON.stringify(recent), { expirationTtl: Math.ceil(RATE_LIMIT_WINDOW_MS / 1000) });
-    return true;
+/**
+ * Sliding-window rate-limit decision over a list of request timestamps.
+ *
+ * Pure function so it can be unit-tested directly and reused inside the
+ * Durable Object. Returns the next timestamp list to persist and whether
+ * the current request must be rejected.
+ */
+export function evaluateWindow(
+  timestamps: number[],
+  now: number,
+  windowMs: number = RATE_LIMIT_WINDOW_MS,
+  max: number = RATE_LIMIT_MAX,
+): { limited: boolean; next: number[] } {
+  const recent = timestamps.filter((t) => now - t < windowMs);
+  if (recent.length >= max) {
+    return { limited: true, next: recent };
   }
   recent.push(now);
-  await kv.put(key, JSON.stringify(recent), { expirationTtl: Math.ceil(RATE_LIMIT_WINDOW_MS / 1000) });
-  return false;
+  return { limited: false, next: recent };
+}
+
+/**
+ * Durable Object that owns the rate-limit counter for a single IP.
+ *
+ * Cloudflare routes every request for a given object id to the SAME
+ * single-threaded instance, regardless of which edge isolate served the
+ * HTTP request. Reads/writes to its storage are strongly consistent and
+ * serialized, so the read-modify-write sequence below is atomic — there
+ * is no last-write-wins race (the failure mode of a KV-based limiter)
+ * and no per-isolate divergence (the failure mode of an in-memory Map).
+ */
+export class RateLimiter implements DurableObject {
+  private readonly state: DurableObjectState;
+
+  constructor(state: DurableObjectState) {
+    this.state = state;
+  }
+
+  async fetch(_request?: Request): Promise<Response> {
+    // blockConcurrencyWhile serializes the read-modify-write so two
+    // simultaneous requests to the same IP cannot both observe the old
+    // count and both be admitted.
+    const limited = await this.state.blockConcurrencyWhile(async () => {
+      const now = Date.now();
+      const stored = (await this.state.storage.get<number[]>(STORAGE_KEY)) ?? [];
+      const { limited, next } = evaluateWindow(stored, now);
+      await this.state.storage.put(STORAGE_KEY, next);
+      // Let the object evict itself once the window has fully elapsed so
+      // idle IPs don't retain storage forever.
+      await this.state.storage.setAlarm(now + RATE_LIMIT_WINDOW_MS);
+      return limited;
+    });
+
+    return Response.json({ limited });
+  }
+
+  // Fired when the window elapses with no further traffic: drop the
+  // counter so the object's storage is reclaimed.
+  async alarm(): Promise<void> {
+    await this.state.storage.deleteAll();
+  }
+}
+
+async function isRateLimited(ip: string, namespace: DurableObjectNamespace): Promise<boolean> {
+  // idFromName hashes the IP to a stable object id, so all requests from
+  // one IP — across every isolate and POP — reach the same instance.
+  const id = namespace.idFromName(ip);
+  const stub = namespace.get(id);
+  const res = await stub.fetch('https://rate-limiter/check');
+  const { limited } = (await res.json()) as { limited: boolean };
+  return limited;
 }
 
 function corsHeaders(origin: string) {
@@ -66,7 +126,7 @@ export default {
     }
 
     const ip = request.headers.get('cf-connecting-ip') ?? 'unknown';
-    if (await isRateLimited(ip, env.RATE_LIMIT_KV)) {
+    if (await isRateLimited(ip, env.RATE_LIMITER)) {
       return Response.json(
         { error: 'Rate limit exceeded. Try again in a minute.' },
         { status: 429, headers },
