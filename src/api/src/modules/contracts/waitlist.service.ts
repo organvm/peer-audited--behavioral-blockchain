@@ -1,10 +1,6 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  ConflictException,
-} from "@nestjs/common";
+import { Injectable, Logger, ConflictException } from "@nestjs/common";
 import { Pool } from "pg";
+import { EmailService } from "../email/email.service";
 
 export interface WaitlistEntry {
   id: string;
@@ -22,7 +18,10 @@ export interface WaitlistEntry {
 export class WaitlistService {
   private readonly logger = new Logger(WaitlistService.name);
 
-  constructor(private readonly pool: Pool) {}
+  constructor(
+    private readonly pool: Pool,
+    private readonly emailService: EmailService,
+  ) {}
 
   async joinWaitlist(
     userId: string,
@@ -61,7 +60,15 @@ export class WaitlistService {
     this.logger.log(
       `User ${userId} joined waitlist for cohort ${cohortId} at position ${position}`,
     );
-    return this.mapEntry(entry);
+    const mappedEntry = this.mapEntry(entry);
+    if (!existing) {
+      await this.sendEarlyAccessOnboarding(
+        userId,
+        cohortId,
+        mappedEntry.position,
+      );
+    }
+    return mappedEntry;
   }
 
   async getWaitlistPosition(
@@ -131,5 +138,37 @@ export class WaitlistService {
       enrolledAt: r.enrolled_at ?? null,
       createdAt: r.created_at,
     };
+  }
+
+  private async sendEarlyAccessOnboarding(
+    userId: string,
+    cohortId: string,
+    position: number,
+  ): Promise<void> {
+    try {
+      const {
+        rows: [user],
+      } = await this.pool.query("SELECT email FROM users WHERE id = $1", [
+        userId,
+      ]);
+      if (!user?.email) {
+        this.logger.warn(
+          `Skipping waitlist onboarding email for ${userId}: missing email`,
+        );
+        return;
+      }
+
+      await this.emailService.sendEarlyAccessOnboarding({
+        to: user.email,
+        userId,
+        cohortId,
+        position,
+        trigger: "waitlist_join",
+      });
+    } catch (error) {
+      this.logger.warn(
+        `Waitlist onboarding email failed for user ${userId}: ${(error as Error).message}`,
+      );
+    }
   }
 }

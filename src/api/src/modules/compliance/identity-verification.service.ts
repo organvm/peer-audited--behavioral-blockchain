@@ -1,4 +1,10 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  Logger,
+  NotFoundException,
+  Optional,
+} from '@nestjs/common';
 import { Pool } from 'pg';
 import {
   IdentityProviderService,
@@ -6,8 +12,14 @@ import {
   IdentityProviderStatus,
   StartIdentityVerificationResult,
 } from './identity-provider.service';
+import { EmailService } from '../email/email.service';
 
-export type VerificationStatus = 'NOT_STARTED' | 'PENDING' | 'VERIFIED' | 'FAILED' | 'REJECTED';
+export type VerificationStatus =
+  | 'NOT_STARTED'
+  | 'PENDING'
+  | 'VERIFIED'
+  | 'FAILED'
+  | 'REJECTED';
 
 export interface UserComplianceStatus {
   userId: string;
@@ -22,9 +34,12 @@ export interface UserComplianceStatus {
 
 @Injectable()
 export class IdentityVerificationService {
+  private readonly logger = new Logger(IdentityVerificationService.name);
+
   constructor(
     private readonly pool: Pool,
     private readonly identityProvider: IdentityProviderService,
+    @Optional() private readonly emailService?: EmailService,
   ) {}
 
   async getUserComplianceStatus(userId: string): Promise<UserComplianceStatus> {
@@ -50,8 +65,12 @@ export class IdentityVerificationService {
     }
 
     const row = result.rows[0];
-    const kycStatus = String(row.kyc_status || 'NOT_STARTED').toUpperCase() as VerificationStatus;
-    const ageVerificationStatus = String(row.age_verification_status || 'NOT_STARTED').toUpperCase() as VerificationStatus;
+    const kycStatus = String(
+      row.kyc_status || 'NOT_STARTED',
+    ).toUpperCase() as VerificationStatus;
+    const ageVerificationStatus = String(
+      row.age_verification_status || 'NOT_STARTED',
+    ).toUpperCase() as VerificationStatus;
 
     return {
       userId: row.id,
@@ -59,7 +78,9 @@ export class IdentityVerificationService {
       ageVerificationStatus,
       identityProvider: row.identity_provider ?? null,
       identityVerificationId: row.identity_verification_id ?? null,
-      identityVerifiedAt: row.identity_verified_at ? new Date(row.identity_verified_at).toISOString() : null,
+      identityVerifiedAt: row.identity_verified_at
+        ? new Date(row.identity_verified_at).toISOString()
+        : null,
       isKycVerified: kycStatus === 'VERIFIED',
       isAgeVerified: ageVerificationStatus === 'VERIFIED',
     };
@@ -176,7 +197,10 @@ export class IdentityVerificationService {
     // (unsigned) event must never be able to mark a user KYC/age VERIFIED.
     let parsed;
     try {
-      parsed = this.identityProvider.verifyAndParseStripeWebhook(input.rawBody, input.signature);
+      parsed = this.identityProvider.verifyAndParseStripeWebhook(
+        input.rawBody,
+        input.signature,
+      );
     } catch {
       // Signature verification / secret configuration failure — reject.
       return { applied: false, reason: 'invalid_signature' };
@@ -198,37 +222,105 @@ export class IdentityVerificationService {
     userId?: string | null;
     raw?: any;
   }): Promise<void> {
-    const mappedStatus = this.mapProviderStatusToVerificationStatus(input.status);
+    const mappedStatus = this.mapProviderStatusToVerificationStatus(
+      input.status,
+    );
     const verifiedAt = mappedStatus === 'VERIFIED' ? new Date() : null;
+    const upgradesKycTier =
+      mappedStatus === 'VERIFIED' && this.modeIncludesKyc(input.mode);
 
     let targetUserId = input.userId || null;
+    let targetUser: {
+      id: string;
+      email: string | null;
+      kyc_status: string | null;
+    } | null = null;
     if (!targetUserId) {
       const lookup = await this.pool.query(
-        `SELECT id FROM users WHERE identity_verification_id = $1 LIMIT 1`,
+        `SELECT id, email, kyc_status FROM users WHERE identity_verification_id = $1 LIMIT 1`,
         [input.verificationId],
       );
       if (lookup.rows.length === 0) {
-        throw new NotFoundException(`No user found for verification ${input.verificationId}`);
+        throw new NotFoundException(
+          `No user found for verification ${input.verificationId}`,
+        );
       }
-      targetUserId = lookup.rows[0].id;
+      targetUser = lookup.rows[0];
+      targetUserId = targetUser.id;
     }
 
     const resolvedUserId = targetUserId as string;
+    if (upgradesKycTier && this.emailService && !targetUser) {
+      const userResult = await this.pool.query(
+        `SELECT id, email, kyc_status FROM users WHERE id = $1 LIMIT 1`,
+        [resolvedUserId],
+      );
+      targetUser = userResult.rows[0] ?? null;
+    }
 
     await this.recordVerificationStatus({
       userId: resolvedUserId,
-      ...(input.mode === 'KYC_ONLY' || input.mode === 'KYC_AND_AGE' ? { kycStatus: mappedStatus } : {}),
-      ...(input.mode === 'AGE_ONLY' || input.mode === 'KYC_AND_AGE' ? { ageVerificationStatus: mappedStatus } : {}),
+      ...(input.mode === 'KYC_ONLY' || input.mode === 'KYC_AND_AGE'
+        ? { kycStatus: mappedStatus }
+        : {}),
+      ...(input.mode === 'AGE_ONLY' || input.mode === 'KYC_AND_AGE'
+        ? { ageVerificationStatus: mappedStatus }
+        : {}),
       identityProvider: input.provider,
       identityVerificationId: input.verificationId,
       verifiedAt,
     });
+
+    if (
+      upgradesKycTier &&
+      this.emailService &&
+      this.wasNotVerified(targetUser?.kyc_status)
+    ) {
+      await this.sendTierUpgradeOnboarding(
+        resolvedUserId,
+        targetUser?.email ?? null,
+      );
+    }
   }
 
-  private mapProviderStatusToVerificationStatus(status: IdentityProviderStatus): VerificationStatus {
+  private mapProviderStatusToVerificationStatus(
+    status: IdentityProviderStatus,
+  ): VerificationStatus {
     if (status === 'VERIFIED') return 'VERIFIED';
     if (status === 'REJECTED') return 'REJECTED';
     if (status === 'FAILED') return 'FAILED';
     return 'PENDING';
+  }
+
+  private modeIncludesKyc(mode: IdentityVerificationMode): boolean {
+    return mode === 'KYC_ONLY' || mode === 'KYC_AND_AGE';
+  }
+
+  private wasNotVerified(status: string | null | undefined): boolean {
+    return String(status || 'NOT_STARTED').toUpperCase() !== 'VERIFIED';
+  }
+
+  private async sendTierUpgradeOnboarding(
+    userId: string,
+    email: string | null,
+  ): Promise<void> {
+    if (!email) {
+      this.logger.warn(
+        `Skipping tier-upgrade onboarding email for ${userId}: missing email`,
+      );
+      return;
+    }
+
+    try {
+      await this.emailService?.sendEarlyAccessOnboarding({
+        to: email,
+        userId,
+        trigger: 'tier_upgrade',
+      });
+    } catch (error) {
+      this.logger.warn(
+        `Tier-upgrade onboarding email failed for user ${userId}: ${(error as Error).message}`,
+      );
+    }
   }
 }
