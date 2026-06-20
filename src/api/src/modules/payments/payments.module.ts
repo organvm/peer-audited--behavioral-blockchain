@@ -12,6 +12,7 @@ import { ReconciliationService } from './reconciliation.service';
 import { LedgerService } from '../../../services/ledger/ledger.service';
 import { TruthLogService } from '../../../services/ledger/truth-log.service';
 import { StripeFboService } from '../../../services/escrow/stripe.service';
+import { TierGuard } from '../../guards/tier.guard';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { StripeFboService } from '../../../services/escrow/stripe.service';
     ReconciliationService,
     LedgerService,
     TruthLogService,
+    TierGuard,
   ],
   exports: [PaymentRouterService, StripeFBOService, StripeFboService, SettlementService, ReconciliationService],
 })
