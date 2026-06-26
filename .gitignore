@@ -89,3 +89,4 @@ docs/evaluation/
 docs/EXPORT-*.md
 docs/audit/document-audit-*.md
 data/
+.claude/worktrees/
