@@ -1,7 +1,21 @@
 import { Injectable, Logger } from '@nestjs/common';
 import Stripe from 'stripe';
 
-export type MeteredEventType = 'phash_scan' | 'gemini_call' | 'anomaly_detection';
+/**
+ * The canonical set of metered B2B metrics. Adding a new billable metric here is the
+ * single place to wire it end-to-end: the `MeteredEventType` union, the `recordUsage`
+ * guard, and the `getUsageSummary` meter filter all derive from this list, so they can
+ * never drift apart. `proof_accepted` is driven by the REV-styx-metered-billing hook on
+ * POST /contracts/:id/complete via MeteredUsageService.
+ */
+export const METERED_EVENT_TYPES = [
+  'phash_scan',
+  'gemini_call',
+  'anomaly_detection',
+  'proof_accepted',
+] as const;
+
+export type MeteredEventType = (typeof METERED_EVENT_TYPES)[number];
 
 type StripeClient = InstanceType<typeof Stripe>;
 
@@ -52,7 +66,7 @@ export class BillingService {
    */
   async recordUsage(
     enterpriseId: string,
-    metric: 'phash_scan' | 'gemini_call' | 'anomaly_detection',
+    metric: MeteredEventType,
     quantity: number = 1,
     eventId?: string,
   ): Promise<void> {
@@ -158,7 +172,7 @@ export class BillingService {
 
     const meters = await this.stripe.billing.meters.list({ status: 'active', limit: 100 });
     const relevantMeters = meters.data.filter((meter) =>
-      ['phash_scan', 'gemini_call', 'anomaly_detection'].includes(meter.event_name),
+      (METERED_EVENT_TYPES as readonly string[]).includes(meter.event_name),
     );
 
     const summaries = await Promise.all(

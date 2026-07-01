@@ -15,6 +15,9 @@ import { TierGuard } from "../../guards/tier.guard";
 
 const mockSurveyService = {} as unknown as SurveyService;
 const mockWaitlistService = {} as unknown as WaitlistService;
+const mockMeteredUsage = {
+  recordMeteredUsage: jest.fn(),
+} as any;
 
 const mockContractsService = {
   getUserContracts: jest.fn(),
@@ -52,6 +55,7 @@ describe("ContractsController", () => {
       mockTruthLog,
       mockSurveyService,
       mockWaitlistService,
+      mockMeteredUsage,
     );
     jest.clearAllMocks();
   });

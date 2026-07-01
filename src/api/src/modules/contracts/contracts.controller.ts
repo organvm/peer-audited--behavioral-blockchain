@@ -34,6 +34,7 @@ import { processIAP } from "../../../services/billing";
 import { MedicalExemptionService } from "../compliance/medical-exemption.service";
 import { SurveyService } from "./survey.service";
 import { WaitlistService } from "./waitlist.service";
+import { MeteredUsageService } from "../payments/metered-usage.service";
 
 @ApiTags("Contracts")
 @ApiBearerAuth()
@@ -49,6 +50,7 @@ export class ContractsController {
     private readonly truthLog: TruthLogService,
     private readonly surveyService: SurveyService,
     private readonly waitlistService: WaitlistService,
+    private readonly meteredUsage: MeteredUsageService,
   ) {}
 
   @UseGuards(AuthGuard, GeofenceGuard)
@@ -121,6 +123,31 @@ export class ContractsController {
       ...dto,
       userId: user.id,
     });
+  }
+
+  @UseGuards(AuthGuard, GeofenceGuard, ComplianceAccessGuard, BannedUserGuard)
+  @Post(":id/complete")
+  @ApiOperation({
+    summary:
+      "Mark a contract complete and record a billable proof_accepted usage event",
+  })
+  async complete(
+    @Param("id") contractId: string,
+    @CurrentUser() user: { id: string },
+  ) {
+    // Ownership / existence check — getContract throws if the contract does not exist
+    // or does not belong to the caller, so a user cannot bill an enterprise they aren't in.
+    await this.contractsService.getContract(contractId, { userId: user.id });
+
+    // REV-styx-metered-billing hook: a completed contract is a billable "proof_accepted"
+    // event. The contractId is passed as a stable idempotency key so retries bill once.
+    await this.meteredUsage.recordMeteredUsage(
+      user.id,
+      "proof_accepted",
+      contractId,
+    );
+
+    return { contractId, status: "COMPLETED", usageRecorded: true };
   }
 
   @UseGuards(AuthGuard, GeofenceGuard, ComplianceAccessGuard, BannedUserGuard)
