@@ -90,15 +90,13 @@ docs/EXPORT-*.md
 docs/audit/document-audit-*.md
 data/
 
-# removed inadvertently-committed local session artifacts (PII containment).
-# These ignore the artifact CLASSES, not just the current filenames — the repo-wide
-# `!docs/**` unignore above would otherwise let a regenerated transcript/plan (a new
-# date, a new run) become trackable again. Glob the classes so containment is durable.
-docs/planning/session-exports/
-docs/brainstorm/brainstorm--transcript--*.md
+# Removed orphan AI session/prompt scaffolding (zero inbound references, not catalogued
+# in docs/MANIFEST.md). These globs match ONLY the removed process-scaffolding classes —
+# deliberately NOT the MANIFEST-catalogued product provenance kept in this repo: the
+# brainstorm transcripts (DOC-BRN-*), the ai-session-audit doc, the gtm-role-prompts pack,
+# and docs/planning/session-exports/ (which the GEMINI.md Session Review Protocol requires
+# to stay tracked as audit exports). Raw session transcripts are on-demand, never committed.
 docs/planning/premortem-transcript-*.md
-docs/planning/planning--*prompts*.md
-docs/planning/planning--ai-session-audit--*.md
+docs/planning/planning--parallel-*-prompts--*.md
 .codex/plans/**/*-prompts.md
-.codex/plans/*-gtm-role-prompts.md
 .claude/plans/**/*ai-session-audit*.md
