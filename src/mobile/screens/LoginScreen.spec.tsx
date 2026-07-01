@@ -1,6 +1,7 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render } from '@testing-library/react-native';
 import { SupportTraceErrorBanner } from '../components/SupportTraceErrorBanner';
+import { collectPlaceholders, flattenScreenText } from '../utils/test-render';
 
 jest.mock('../services/ApiClient', () => ({
   ApiClient: {
@@ -84,46 +85,37 @@ describe('LoginScreen – render tests', () => {
 
   const mockRoute = { params: undefined, key: 'Login', name: 'Login' as const } as any;
 
-  function renderLogin() {
+  async function renderLogin() {
     const props = { navigation: mockNavigation, route: mockRoute, onLogin: jest.fn() };
     return render(React.createElement(LoginScreen, props));
   }
 
-  function allText(container: HTMLElement): string {
-    return container.textContent || '';
-  }
-
-  function allPlaceholders(container: HTMLElement): string[] {
-    const inputs = container.querySelectorAll('input');
-    return Array.from(inputs).map(n => n.getAttribute('placeholder')).filter(Boolean) as string[];
-  }
-
-  it('renders title "STYX" and subtitle', () => {
-    const { container } = renderLogin();
-    const text = allText(container);
+  it('renders title "STYX" and subtitle', async () => {
+    await renderLogin();
+    const text = flattenScreenText();
 
     expect(text).toContain('STYX');
     expect(text).toContain('The Blockchain of Truth');
   });
 
-  it('renders email and password inputs', () => {
-    const { container } = renderLogin();
-    const placeholders = allPlaceholders(container);
+  it('renders email and password inputs', async () => {
+    await renderLogin();
+    const placeholders = collectPlaceholders();
 
     expect(placeholders).toContain('Email');
     expect(placeholders).toContain('Password');
   });
 
-  it('renders "Enter the River" button text', () => {
-    const { container } = renderLogin();
-    const text = allText(container);
+  it('renders "Enter the River" button text', async () => {
+    await renderLogin();
+    const text = flattenScreenText();
 
     expect(text).toContain('Enter the River');
   });
 
-  it('renders "New here?" link', () => {
-    const { container } = renderLogin();
-    const text = allText(container);
+  it('renders "New here?" link', async () => {
+    await renderLogin();
+    const text = flattenScreenText();
 
     expect(text).toContain('New here?');
   });

@@ -43,6 +43,7 @@
     "node": ">=20.0.0"
   },
   "overrides": {
+    "@types/node": "20.19.41",
     "fast-xml-parser": ">=5.3.8",
     "ajv": ">=8.18.0",
     "minimatch": ">=10.2.1",
@@ -59,6 +60,14 @@
     "ws": "8.20.1",
     "yaml": "2.8.3",
     "cross-spawn": "7.0.5",
-    "postcss": "8.5.15"
+    "postcss": "8.5.15",
+    "@jest/create-cache-key-function": "30.4.1",
+    "@jest/environment": "30.4.1",
+    "@jest/fake-timers": "30.4.1",
+    "@jest/globals": "30.4.1",
+    "babel-jest": "30.4.1",
+    "jest-environment-node": "30.4.1",
+    "jest-mock": "30.4.1",
+    "jest-runtime": "30.4.1"
   }
 }

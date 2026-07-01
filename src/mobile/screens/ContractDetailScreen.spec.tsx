@@ -1,6 +1,7 @@
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { Alert } from 'react-native';
+import { flattenScreenText } from '../utils/test-render';
 import { ContractDetailScreen } from './ContractDetailScreen';
 import { ApiClient } from '../services/ApiClient';
 
@@ -52,18 +53,19 @@ describe('ContractDetailScreen', () => {
     });
   });
 
-  it('shows loading view while contract request is in-flight', () => {
+  it('shows loading view while contract request is in-flight', async () => {
     (ApiClient.getContract as jest.Mock).mockReturnValue(new Promise(() => {}));
-    const { container } = render(
+    await render(
       <ContractDetailScreen navigation={mockNavigation} route={mockRoute} />,
     );
 
-    expect(container.textContent).not.toContain('Daily Check-In');
-    expect(container.textContent).not.toContain('Contract not found');
+    const text = flattenScreenText();
+    expect(text).not.toContain('Daily Check-In');
+    expect(text).not.toContain('Contract not found');
   });
 
   it('renders snake_case contract fields from the mobile API payload', async () => {
-    const { getByText } = render(
+    const { getByText } = await render(
       <ContractDetailScreen navigation={mockNavigation} route={mockRoute} />,
     );
 
@@ -76,23 +78,23 @@ describe('ContractDetailScreen', () => {
   });
 
   it('routes recovery check-in into the Attestation flow', async () => {
-    const { getByText } = render(
+    const { getByText } = await render(
       <ContractDetailScreen navigation={mockNavigation} route={mockRoute} />,
     );
 
     await waitFor(() => expect(getByText('Daily Check-In')).toBeTruthy());
-    fireEvent.click(getByText('Daily Check-In').closest('button') as HTMLElement);
+    await fireEvent.press(getByText('Daily Check-In'));
 
     expect(mockNavigation.navigate).toHaveBeenCalledWith('Attestation', { contractId: 'contract-123' });
   });
 
   it('routes automatic scan into DigitalExhaust with a safe label', async () => {
-    const { getByText } = render(
+    const { getByText } = await render(
       <ContractDetailScreen navigation={mockNavigation} route={mockRoute} />,
     );
 
     await waitFor(() => expect(getByText('Automatic Scan')).toBeTruthy());
-    fireEvent.click(getByText('Automatic Scan').closest('button') as HTMLElement);
+    await fireEvent.press(getByText('Automatic Scan'));
 
     expect(mockNavigation.navigate).toHaveBeenCalledWith('DigitalExhaust', {
       contractId: 'contract-123',
@@ -102,12 +104,12 @@ describe('ContractDetailScreen', () => {
 
   it('uses a grace day and reloads contract', async () => {
     const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(jest.fn());
-    const { getByText } = render(
+    const { getByText } = await render(
       <ContractDetailScreen navigation={mockNavigation} route={mockRoute} />,
     );
 
     await waitFor(() => expect(getByText('Use Grace Day')).toBeTruthy());
-    fireEvent.click(getByText('Use Grace Day').closest('button') as HTMLElement);
+    await fireEvent.press(getByText('Use Grace Day'));
 
     await waitFor(() => {
       expect(ApiClient.useGraceDay).toHaveBeenCalledWith('contract-123');
@@ -121,14 +123,15 @@ describe('ContractDetailScreen', () => {
       new Error('Contract unavailable [request_id: cdetail-500]'),
     );
 
-    const { container } = render(
+    await render(
       <ContractDetailScreen navigation={mockNavigation} route={mockRoute} />,
     );
 
     await waitFor(() => {
-      expect(container.textContent).toContain('Contract unavailable');
-      expect(container.textContent).toContain('Support trace ID: cdetail-500');
-      expect(container.textContent).not.toContain('[request_id:');
+      const text = flattenScreenText();
+      expect(text).toContain('Contract unavailable');
+      expect(text).toContain('Support trace ID: cdetail-500');
+      expect(text).not.toContain('[request_id:');
     });
   });
 });

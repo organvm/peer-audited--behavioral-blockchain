@@ -1,7 +1,8 @@
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import { CameraModule } from './CameraModule';
+import { flattenScreenText } from '../utils/test-render';
 import { UploadService } from '../services/UploadService';
 import { ApiClient } from '../services/ApiClient';
 
@@ -35,24 +36,25 @@ describe('CameraModule', () => {
     });
   });
 
-  it('renders initial camera ready state', () => {
-    const { container } = render(<CameraModule contractId="contract-1" />);
-    expect(container.textContent).toContain('NON-PRODUCTION CAPTURE PREVIEW');
-    expect(container.textContent).toContain('Camera Ready (Gallery Disabled)');
+  it('renders initial camera ready state', async () => {
+    await render(<CameraModule contractId="contract-1" />);
+    const text = flattenScreenText();
+    expect(text).toContain('NON-PRODUCTION CAPTURE PREVIEW');
+    expect(text).toContain('Camera Ready (Gallery Disabled)');
   });
 
   it('records, uploads, and submits proof to contracts endpoint', async () => {
     const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(jest.fn());
-    const { getByRole, getByText, container } = render(<CameraModule contractId="contract-1" />);
+    const { getByTestId, getByText } = await render(<CameraModule contractId="contract-1" />);
 
-    fireEvent.click(getByRole('button')); // start recording
-    expect(container.textContent).toContain('LIVE');
-    expect(container.textContent).toContain('STYX//contract-1::');
+    await fireEvent.press(getByTestId('record-button')); // start recording
+    expect(flattenScreenText()).toContain('LIVE');
+    expect(flattenScreenText()).toContain('STYX//contract-1::');
 
-    fireEvent.click(getByRole('button')); // stop recording
-    expect(container.textContent).toContain('Exhaust Captured. Ready for Upload.');
+    await fireEvent.press(getByTestId('record-button')); // stop recording
+    expect(flattenScreenText()).toContain('Exhaust Captured. Ready for Upload.');
 
-    fireEvent.click(getByText('SUBMIT TO FURY').closest('button') as HTMLElement);
+    await fireEvent.press(getByText('SUBMIT TO FURY'));
 
     await waitFor(() => {
       expect(UploadService.requestPreSignedUrl).toHaveBeenCalledWith(
@@ -80,11 +82,11 @@ describe('CameraModule', () => {
 
   it('blocks submission when contract id is missing', async () => {
     const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(jest.fn());
-    const { getByRole, getByText } = render(<CameraModule />);
+    const { getByTestId, getByText } = await render(<CameraModule />);
 
-    fireEvent.click(getByRole('button')); // start
-    fireEvent.click(getByRole('button')); // stop
-    fireEvent.click(getByText('SUBMIT TO FURY').closest('button') as HTMLElement);
+    await fireEvent.press(getByTestId('record-button')); // start
+    await fireEvent.press(getByTestId('record-button')); // stop
+    await fireEvent.press(getByText('SUBMIT TO FURY'));
 
     await waitFor(() => {
       expect(alertSpy).toHaveBeenCalledWith(

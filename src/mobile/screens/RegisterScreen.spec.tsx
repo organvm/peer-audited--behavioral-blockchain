@@ -1,6 +1,7 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render } from '@testing-library/react-native';
 import { SupportTraceErrorBanner } from '../components/SupportTraceErrorBanner';
+import { collectPlaceholders, flattenScreenText } from '../utils/test-render';
 
 jest.mock('../services/ApiClient', () => ({
   ApiClient: {
@@ -135,7 +136,7 @@ describe('RegisterScreen – render tests', () => {
 
   const mockRoute = { params: undefined, key: 'Register', name: 'Register' as const } as any;
 
-  function renderRegister() {
+  async function renderRegister() {
     return render(
       React.createElement(RegisterScreen, {
         navigation: mockNavigation,
@@ -144,49 +145,40 @@ describe('RegisterScreen – render tests', () => {
     );
   }
 
-  function allText(container: HTMLElement): string {
-    return container.textContent || '';
-  }
-
-  function allPlaceholders(container: HTMLElement): string[] {
-    const inputs = container.querySelectorAll('input');
-    return Array.from(inputs).map(n => n.getAttribute('placeholder')).filter(Boolean) as string[];
-  }
-
-  it('renders "Join Styx" title', () => {
-    const { container } = renderRegister();
-    const text = allText(container);
+  it('renders "Join Styx" title', async () => {
+    await renderRegister();
+    const text = flattenScreenText();
 
     expect(text).toContain('Join Styx');
   });
 
-  it('renders email, password, and confirm password inputs', () => {
-    const { container } = renderRegister();
-    const placeholders = allPlaceholders(container);
+  it('renders email, password, and confirm password inputs', async () => {
+    await renderRegister();
+    const placeholders = collectPlaceholders();
 
     expect(placeholders).toContain('Email');
     expect(placeholders).toContain('Password');
     expect(placeholders).toContain('Confirm Password');
   });
 
-  it('renders age confirmation and terms checkboxes', () => {
-    const { container } = renderRegister();
-    const text = allText(container);
+  it('renders age confirmation and terms checkboxes', async () => {
+    await renderRegister();
+    const text = flattenScreenText();
 
     expect(text).toContain('I confirm I am 18 years of age or older');
     expect(text).toContain('I accept the Terms of Service and Privacy Policy');
   });
 
-  it('renders "Create Account" button', () => {
-    const { container } = renderRegister();
-    const text = allText(container);
+  it('renders "Create Account" button', async () => {
+    await renderRegister();
+    const text = flattenScreenText();
 
     expect(text).toContain('Create Account');
   });
 
-  it('renders "Already have an account?" link', () => {
-    const { container } = renderRegister();
-    const text = allText(container);
+  it('renders "Already have an account?" link', async () => {
+    await renderRegister();
+    const text = flattenScreenText();
 
     expect(text).toContain('Already have an account?');
   });

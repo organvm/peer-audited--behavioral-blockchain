@@ -1,32 +1,44 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render } from '@testing-library/react-native';
 
-const nativeScreenRegistry: Array<{
+const mockNativeScreenRegistry: Array<{
   name: string;
   component?: unknown;
   options?: { title?: string };
 }> = [];
 
-jest.mock('@react-navigation/native', () => ({
-  NavigationContainer: ({ children }: any) => React.createElement(React.Fragment, null, children),
-}));
+jest.mock('@react-navigation/native', () => {
+  const ReactModule = require('react');
+  return {
+    NavigationContainer: ({ children }: any) =>
+      ReactModule.createElement(ReactModule.Fragment, null, children),
+  };
+});
 
-jest.mock('@react-navigation/native-stack', () => ({
-  createNativeStackNavigator: () => ({
-    Navigator: ({ children }: any) => React.createElement(React.Fragment, null, children),
-    Screen: ({ name, component, options }: any) => {
-      nativeScreenRegistry.push({ name, component, options });
-      return null;
-    },
-  }),
-}));
+jest.mock('@react-navigation/native-stack', () => {
+  const ReactModule = require('react');
+  return {
+    createNativeStackNavigator: () => ({
+      Navigator: ({ children }: any) =>
+        ReactModule.createElement(ReactModule.Fragment, null, children),
+      Screen: ({ name, component, options }: any) => {
+        mockNativeScreenRegistry.push({ name, component, options });
+        return null;
+      },
+    }),
+  };
+});
 
-jest.mock('@react-navigation/bottom-tabs', () => ({
-  createBottomTabNavigator: () => ({
-    Navigator: ({ children }: any) => React.createElement(React.Fragment, null, children),
-    Screen: () => null,
-  }),
-}));
+jest.mock('@react-navigation/bottom-tabs', () => {
+  const ReactModule = require('react');
+  return {
+    createBottomTabNavigator: () => ({
+      Navigator: ({ children }: any) =>
+        ReactModule.createElement(ReactModule.Fragment, null, children),
+      Screen: () => null,
+    }),
+  };
+});
 
 jest.mock('./screens/DigitalExhaustScreen', () => ({
   __esModule: true,
@@ -38,16 +50,16 @@ const { CameraScreen } = require('./screens/CameraScreen');
 
 describe('App navigation wiring', () => {
   beforeEach(() => {
-    nativeScreenRegistry.length = 0;
+    mockNativeScreenRegistry.length = 0;
   });
 
-  it('registers SubmitProof route in Contracts navigator with CameraScreen component', () => {
-    render(React.createElement(ContractsNavigator));
+  it('registers SubmitProof route in Contracts navigator with CameraScreen component', async () => {
+    await render(React.createElement(ContractsNavigator));
 
-    const routeNames = nativeScreenRegistry.map((route) => route.name);
+    const routeNames = mockNativeScreenRegistry.map((route) => route.name);
     expect(routeNames).toContain('SubmitProof');
 
-    const submitProofRoute = nativeScreenRegistry.find((route) => route.name === 'SubmitProof');
+    const submitProofRoute = mockNativeScreenRegistry.find((route) => route.name === 'SubmitProof');
     expect(submitProofRoute?.component).toBe(CameraScreen);
     expect(submitProofRoute?.options?.title).toBe('Submit Proof');
   });

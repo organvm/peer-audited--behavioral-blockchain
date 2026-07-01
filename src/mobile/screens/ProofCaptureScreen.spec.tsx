@@ -1,7 +1,8 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render } from '@testing-library/react-native';
 import { SupportTraceErrorBanner } from '../components/SupportTraceErrorBanner';
 import { parseSupportTraceMessage } from '../utils/support-trace';
+import { flattenScreenText } from '../utils/test-render';
 
 function collectText(node: any): string {
   if (node == null || typeof node === 'boolean') return '';
@@ -110,38 +111,34 @@ describe('ProofCaptureScreen – render', () => {
   } as any;
   const mockNav = { navigate: jest.fn(), goBack: jest.fn(), setOptions: jest.fn() } as any;
 
-  function renderScreen() {
+  async function renderScreen() {
     return render(
       React.createElement(ProofCaptureScreen, { route: mockRoute, navigation: mockNav }),
     );
   }
 
-  function allText(container: HTMLElement): string {
-    return container.textContent || '';
-  }
-
-  it('renders the camera unavailable fallback', () => {
-    const { container } = renderScreen();
-    const text = allText(container);
+  it('renders the camera unavailable fallback', async () => {
+    await renderScreen();
+    const text = flattenScreenText();
     expect(text).toContain('Camera Unavailable');
   });
 
-  it('renders the fallback explanation text', () => {
-    const { container } = renderScreen();
-    const text = allText(container);
+  it('renders the fallback explanation text', async () => {
+    await renderScreen();
+    const text = flattenScreenText();
     expect(text).toContain('camera module is not installed');
     expect(text).toContain('react-native-camera');
   });
 
-  it('renders a Go Back button in fallback mode', () => {
-    const { container } = renderScreen();
-    const text = allText(container);
+  it('renders a Go Back button in fallback mode', async () => {
+    await renderScreen();
+    const text = flattenScreenText();
     expect(text).toContain('Go Back');
   });
 
-  it('does not render camera controls in fallback mode', () => {
-    const { container } = renderScreen();
-    const text = allText(container);
+  it('does not render camera controls in fallback mode', async () => {
+    await renderScreen();
+    const text = flattenScreenText();
     expect(text).not.toContain('Uploading...');
     expect(text).not.toContain('REC');
     expect(text).not.toContain('Live capture only');

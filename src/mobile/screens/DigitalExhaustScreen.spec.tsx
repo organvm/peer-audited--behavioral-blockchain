@@ -1,7 +1,8 @@
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import DigitalExhaustScreen from './DigitalExhaustScreen';
+import { flattenScreenText } from '../utils/test-render';
 import { ZKPrivacyEngine } from '../services/ZKPrivacyEngine';
 import { ApiClient } from '../services/ApiClient';
 
@@ -46,22 +47,22 @@ describe('DigitalExhaustScreen', () => {
     });
   });
 
-  it('renders scan header and privacy explanation', () => {
-    const { container } = render(
+  it('renders scan header and privacy explanation', async () => {
+    await render(
       React.createElement(DigitalExhaustScreen, { route: mockRoute, navigation: mockNavigation }),
     );
-    const text = container.textContent || '';
+    const text = flattenScreenText();
     expect(text).toContain('Digital Exhaust Scan');
     expect(text).toContain('Zero-Knowledge Scan');
   });
 
   it('runs local scan and submits zk proof marker', async () => {
     const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(jest.fn());
-    const { getByText, container } = render(
+    const { getByText } = await render(
       React.createElement(DigitalExhaustScreen, { route: mockRoute, navigation: mockNavigation }),
     );
 
-    fireEvent.click(getByText('START SECURE SCAN').closest('button') as HTMLElement);
+    await fireEvent.press(getByText('START SECURE SCAN'));
 
     await waitFor(() => {
       expect(ZKPrivacyEngine.generateLocalProof).toHaveBeenCalledWith(
@@ -70,10 +71,10 @@ describe('DigitalExhaustScreen', () => {
         expect.any(Date),
         expect.any(Date),
       );
-      expect(container.textContent).toContain('No Contact Maintained');
+      expect(flattenScreenText()).toContain('No Contact Maintained');
     });
 
-    fireEvent.click(getByText('TRANSMIT PROOF').closest('button') as HTMLElement);
+    await fireEvent.press(getByText('TRANSMIT PROOF'));
 
     await waitFor(() => {
       expect(ApiClient.submitProof).toHaveBeenCalledWith(

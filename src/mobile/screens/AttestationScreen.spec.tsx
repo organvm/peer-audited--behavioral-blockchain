@@ -1,7 +1,8 @@
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { SupportTraceErrorBanner } from '../components/SupportTraceErrorBanner';
 import { parseSupportTraceMessage } from '../utils/support-trace';
+import { flattenScreenText } from '../utils/test-render';
 
 function collectText(node: any): string {
   if (node == null || typeof node === 'boolean') return '';
@@ -120,35 +121,31 @@ describe('AttestationScreen – render', () => {
   const mockRoute = { params: { contractId: 'test-contract-123' } } as any;
   const mockNav = { navigate: jest.fn(), goBack: jest.fn(), setOptions: jest.fn() } as any;
 
-  function renderScreen() {
+  async function renderScreen() {
     return render(
       React.createElement(AttestationScreen, { route: mockRoute, navigation: mockNav }),
     );
-  }
-
-  function allText(container: HTMLElement): string {
-    return container.textContent || '';
   }
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('does not render attestation content while loading', () => {
-    const { container } = renderScreen();
-    const text = allText(container);
+  it('does not render attestation content while loading', async () => {
+    await renderScreen();
+    const text = flattenScreenText();
     expect(text).not.toContain('Daily Attestation');
     expect(text).not.toContain('I HELD THE LINE');
   });
 
-  it('calls getAttestationStatus with the correct contractId', () => {
-    renderScreen();
+  it('calls getAttestationStatus with the correct contractId', async () => {
+    await renderScreen();
     expect(ApiClient.getAttestationStatus).toHaveBeenCalledWith('test-contract-123');
   });
 
-  it('does not render attestation stats while loading', () => {
-    const { container } = renderScreen();
-    const text = allText(container);
+  it('does not render attestation stats while loading', async () => {
+    await renderScreen();
+    const text = flattenScreenText();
     expect(text).not.toContain('Day Streak');
     expect(text).not.toContain('Days Left');
     expect(text).not.toContain('Grace Days');
@@ -171,7 +168,7 @@ describe('AttestationScreen – render', () => {
       total_strikes: 1,
     });
 
-    const { getByText } = renderScreen();
+    const { getByText } = await renderScreen();
 
     expect(await waitFor(() => getByText('Daily Attestation'))).toBeTruthy();
     expect(getByText('12')).toBeTruthy();
@@ -195,10 +192,10 @@ describe('AttestationScreen – render', () => {
       status: 'ok',
     });
 
-    const { getByText } = renderScreen();
+    const { getByText } = await renderScreen();
 
     await waitFor(() => expect(getByText('I HELD THE LINE')).toBeTruthy());
-    fireEvent.click(getByText('I HELD THE LINE').closest('button') as HTMLElement);
+    await fireEvent.press(getByText('I HELD THE LINE'));
 
     await waitFor(() => {
       expect(ApiClient.submitAttestation).toHaveBeenCalledWith('test-contract-123');

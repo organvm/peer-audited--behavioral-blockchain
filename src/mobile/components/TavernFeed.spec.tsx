@@ -1,6 +1,7 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react-native';
 import TavernFeed from './TavernFeed';
+import { flattenScreenText } from '../utils/test-render';
 
 // Mock EventSource globally
 const mockEventSource = {
@@ -32,10 +33,10 @@ describe('TavernFeed', () => {
     mockEventSource.onerror = null;
   });
 
-  it('renders loading state initially', () => {
+  it('renders loading state initially', async () => {
     mockFetch.mockReturnValue(new Promise(() => {})); // never resolves
-    const { container } = render(<TavernFeed />);
-    const text = container.textContent || '';
+    await render(<TavernFeed />);
+    const text = flattenScreenText();
 
     expect(text).toContain('The Tavern');
   });
@@ -50,10 +51,10 @@ describe('TavernFeed', () => {
       }),
     });
 
-    const { container } = render(<TavernFeed />);
+    await render(<TavernFeed />);
 
     await waitFor(() => {
-      const text = container.textContent || '';
+      const text = flattenScreenText();
       expect(text).toContain('User proved gym visit');
       expect(text).toContain('Contract expired');
     });
@@ -68,10 +69,10 @@ describe('TavernFeed', () => {
       }),
     });
 
-    const { container } = render(<TavernFeed />);
+    await render(<TavernFeed />);
 
     await waitFor(() => {
-      const text = container.textContent || '';
+      const text = flattenScreenText();
       expect(text).toContain('PROOF VERIFIED');
     });
   });
@@ -81,10 +82,10 @@ describe('TavernFeed', () => {
       json: async () => ({ events: [] }),
     });
 
-    const { container } = render(<TavernFeed />);
+    await render(<TavernFeed />);
 
     await waitFor(() => {
-      const text = container.textContent || '';
+      const text = flattenScreenText();
       expect(text).toContain('No events yet');
     });
   });
@@ -94,10 +95,10 @@ describe('TavernFeed', () => {
       json: async () => ({ events: [] }),
     });
 
-    const { container } = render(<TavernFeed />);
+    await render(<TavernFeed />);
 
     await waitFor(() => {
-      const text = container.textContent || '';
+      const text = flattenScreenText();
       expect(text).toContain('Live Activity Feed');
     });
   });
@@ -107,7 +108,7 @@ describe('TavernFeed', () => {
       json: async () => ({ events: [] }),
     });
 
-    render(<TavernFeed />);
+    await render(<TavernFeed />);
 
     expect(EventSource).toHaveBeenCalledWith(
       expect.stringContaining('/feed/stream'),
@@ -117,10 +118,10 @@ describe('TavernFeed', () => {
   it('handles fetch error gracefully', async () => {
     mockFetch.mockRejectedValueOnce(new Error('Network error'));
 
-    const { container } = render(<TavernFeed />);
+    await render(<TavernFeed />);
 
     await waitFor(() => {
-      const text = container.textContent || '';
+      const text = flattenScreenText();
       // Should still render — just with no events
       expect(text).toContain('The Tavern');
     });

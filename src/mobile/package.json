@@ -23,16 +23,17 @@
     "react-native-screens": "4.25.2"
   },
   "devDependencies": {
+    "@react-native/babel-preset": "0.86.0",
+    "@react-native/jest-preset": "0.86.0",
     "@react-native/metro-config": "0.86.0",
-    "@testing-library/react": "^16.0.0",
+    "@testing-library/react-native": "^14.0.0",
     "@types/jest": "^30.0.0",
-    "@types/node": "^25.9.3",
+    "@types/node": "20.19.41",
     "@types/react": "~19.2.14",
+    "babel-jest": "^30.4.1",
     "babel-preset-expo": "~56.0.0",
-    "jest": "^30.4.2",
-    "jest-environment-jsdom": "30.4.1",
-    "react-dom": "19.2.7",
-    "ts-jest": "^29.1.0",
+    "jest": "30.4.1",
+    "test-renderer": "^1.0.0",
     "typescript": "6.0.3"
   }
 }
