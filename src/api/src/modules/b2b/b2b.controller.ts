@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Param, Body, Query, UseGuards, ForbiddenException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Body,
+  Query,
+  UseGuards,
+  ForbiddenException,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { Pool } from 'pg';
 import { AuthGuard } from '../../../guards/auth.guard';
@@ -58,6 +69,24 @@ export class B2BController {
     }
   }
 
+  private async assertActiveEnterpriseLicense(enterpriseId: string): Promise<void> {
+    const license = await this.billing.getEnterpriseSubscriptionStatus(enterpriseId);
+    if (!license.active) {
+      throw new HttpException(
+        {
+          error_code: 'B2B_LICENSE_REQUIRED',
+          message: 'Active B2B subscription required for enterprise analytics access',
+          details: {
+            enterpriseId,
+            status: license.status,
+            requiredPlan: 'SOLO_OR_HIGHER',
+          },
+        },
+        HttpStatus.PAYMENT_REQUIRED,
+      );
+    }
+  }
+
   @Get('metrics/:enterpriseId')
   @ApiOperation({ summary: 'Get enterprise compliance metrics' })
   async getMetrics(
@@ -65,7 +94,18 @@ export class B2BController {
     @Param('enterpriseId') enterpriseId: string,
   ) {
     await this.assertEnterpriseMembership(user.id, enterpriseId);
+    await this.assertActiveEnterpriseLicense(enterpriseId);
     return this.metrics.getEnterpriseMetrics(enterpriseId);
+  }
+
+  @Get('license/:enterpriseId')
+  @ApiOperation({ summary: 'Get enterprise subscription/license status' })
+  async getLicense(
+    @CurrentUser() user: { id: string },
+    @Param('enterpriseId') enterpriseId: string,
+  ) {
+    await this.assertEnterpriseMembership(user.id, enterpriseId);
+    return this.billing.getEnterpriseSubscriptionStatus(enterpriseId);
   }
 
   @Get('billing/:enterpriseId')
@@ -77,9 +117,16 @@ export class B2BController {
     await this.assertEnterpriseMembership(user.id, enterpriseId);
     // NOTE: this is a read-only fetch; it must NOT emit a metered consumption
     // event (that would bill the customer for simply viewing their bill).
+    const [license, usageSummary] = await Promise.all([
+      this.billing.getEnterpriseSubscriptionStatus(enterpriseId),
+      this.billing.getUsageSummary(enterpriseId),
+    ]);
+
     return {
       enterpriseId,
-      plan: 'CONSUMPTION',
+      plan: license.plan ?? 'UNLICENSED',
+      license,
+      usageSummary,
       events: [],
       totalDue: 0,
       currency: 'USD',
@@ -93,6 +140,7 @@ export class B2BController {
     @Body() body: { enterpriseId: string; url: string },
   ) {
     await this.assertEnterpriseMembership(user.id, body.enterpriseId);
+    await this.assertActiveEnterpriseLicense(body.enterpriseId);
     return {
       status: 'registered',
       enterpriseId: body.enterpriseId,
@@ -111,6 +159,7 @@ export class B2BController {
     // SSRF guard bypasses in PRV7) probe internal hosts. Tenant membership is derived
     // from the caller's own record, never trusted from the body.
     await this.assertEnterpriseMembership(user.id, body.enterpriseId);
+    await this.assertActiveEnterpriseLicense(body.enterpriseId);
     const sent = await this.webhook.dispatchEnterpriseMetricEvent(
       body.url,
       { type: 'TEST', timestamp: new Date().toISOString() },
@@ -125,6 +174,7 @@ export class B2BController {
     @Param('enterpriseId') enterpriseId: string,
   ) {
     await this.assertEnterpriseMembership(user.id, enterpriseId);
+    await this.assertActiveEnterpriseLicense(enterpriseId);
     return this.anonymize.anonymizeEmployeeData(enterpriseId, []);
   }
 
@@ -137,6 +187,7 @@ export class B2BController {
     @Query('end') end: string,
   ) {
     await this.assertEnterpriseMembership(user.id, enterpriseId);
+    await this.assertActiveEnterpriseLicense(enterpriseId);
     return this.dataLake.extractSnapshot(enterpriseId, start, end);
   }
 }

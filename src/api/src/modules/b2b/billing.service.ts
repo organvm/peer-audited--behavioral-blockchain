@@ -12,6 +12,17 @@ interface MeteredSubscription {
   currentPeriodEnd: number;
 }
 
+export interface EnterpriseSubscriptionStatus {
+  enterpriseId: string;
+  active: boolean;
+  status: string | null;
+  plan: string | null;
+  stripeCustomerId: string | null;
+  subscriptionId: string | null;
+  currentPeriodStart: Date | null;
+  currentPeriodEnd: Date | null;
+}
+
 @Injectable()
 export class BillingService {
   private readonly logger = new Logger(BillingService.name);
@@ -99,22 +110,74 @@ export class BillingService {
     return value;
   }
 
+  private async findEnterpriseSubscription(
+    enterpriseId: string,
+    statuses: string[] = ['active', 'trialing'],
+  ): Promise<Stripe.Subscription | null> {
+    const safeEnterpriseId = this.assertSafeQueryValue(enterpriseId);
+
+    for (const status of statuses) {
+      const subscriptions = await this.stripe.subscriptions.search({
+        query: `metadata["enterpriseId"]:"${safeEnterpriseId}" AND status:"${status}"`,
+        limit: 1,
+      });
+
+      const subscription = subscriptions.data[0];
+      if (subscription) return subscription;
+    }
+
+    return null;
+  }
+
+  async getEnterpriseSubscriptionStatus(
+    enterpriseId: string,
+  ): Promise<EnterpriseSubscriptionStatus> {
+    const subscription = await this.findEnterpriseSubscription(enterpriseId);
+    if (!subscription) {
+      return {
+        enterpriseId,
+        active: false,
+        status: null,
+        plan: null,
+        stripeCustomerId: null,
+        subscriptionId: null,
+        currentPeriodStart: null,
+        currentPeriodEnd: null,
+      };
+    }
+
+    const firstItem = subscription.items.data[0];
+    const price = firstItem?.price;
+    const customerId = this.resolveStripeCustomerId(subscription.customer);
+    const plan =
+      subscription.metadata?.plan ||
+      price?.lookup_key ||
+      price?.nickname ||
+      price?.id ||
+      null;
+
+    return {
+      enterpriseId,
+      active: ['active', 'trialing'].includes(subscription.status),
+      status: subscription.status,
+      plan,
+      stripeCustomerId: customerId,
+      subscriptionId: subscription.id,
+      currentPeriodStart: firstItem?.current_period_start
+        ? new Date(firstItem.current_period_start * 1000)
+        : null,
+      currentPeriodEnd: firstItem?.current_period_end
+        ? new Date(firstItem.current_period_end * 1000)
+        : null,
+    };
+  }
+
   /**
    * Find the metered subscription item for an enterprise.
    * Looks up the active subscription with the matching enterpriseId metadata.
    */
   private async getMeteredSubscription(enterpriseId: string): Promise<MeteredSubscription | null> {
-    // Guard against Stripe Search Query Language injection. enterpriseId is a UUID
-    // in our schema; anything containing quotes/backslashes/control chars could
-    // break out of the quoted string literal and alter the query, so reject it.
-    const safeEnterpriseId = this.assertSafeQueryValue(enterpriseId);
-
-    const subscriptions = await this.stripe.subscriptions.search({
-      query: `metadata["enterpriseId"]:"${safeEnterpriseId}" AND status:"active"`,
-      limit: 1,
-    });
-
-    const subscription = subscriptions.data[0];
+    const subscription = await this.findEnterpriseSubscription(enterpriseId);
     if (!subscription) return null;
 
     const customerId = this.resolveStripeCustomerId(subscription.customer);

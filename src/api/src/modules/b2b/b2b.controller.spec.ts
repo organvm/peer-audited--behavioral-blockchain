@@ -20,6 +20,8 @@ describe('B2BController', () => {
 
   const mockBilling = {
     recordConsumptionEvent: jest.fn(),
+    getEnterpriseSubscriptionStatus: jest.fn(),
+    getUsageSummary: jest.fn(),
   } as unknown as BillingService;
 
   const mockWebhook = {
@@ -57,6 +59,21 @@ describe('B2BController', () => {
     (mockPool.query as jest.Mock).mockResolvedValue({
       rows: [{ enterprise_id: 'ent-001', role: 'ADMIN' }],
     });
+    (mockBilling.getEnterpriseSubscriptionStatus as jest.Mock).mockResolvedValue({
+      enterpriseId: 'ent-001',
+      active: true,
+      status: 'active',
+      plan: 'SOLO',
+      stripeCustomerId: 'cus_ent_001',
+      subscriptionId: 'sub_ent_001',
+      currentPeriodStart: new Date('2026-06-01T00:00:00Z'),
+      currentPeriodEnd: new Date('2026-07-01T00:00:00Z'),
+    });
+    (mockBilling.getUsageSummary as jest.Mock).mockResolvedValue({
+      totalUsage: 12,
+      currentPeriodStart: new Date('2026-06-01T00:00:00Z'),
+      currentPeriodEnd: new Date('2026-07-01T00:00:00Z'),
+    });
   });
 
   describe('getMetrics', () => {
@@ -76,7 +93,50 @@ describe('B2BController', () => {
       const result = await controller.getMetrics(adminUser, 'ent-001');
 
       expect(result).toEqual(expected);
+      expect(mockBilling.getEnterpriseSubscriptionStatus).toHaveBeenCalledWith('ent-001');
       expect(mockMetrics.getEnterpriseMetrics).toHaveBeenCalledWith('ent-001');
+    });
+
+    it('should reject analytics when the enterprise has no active subscription', async () => {
+      (mockBilling.getEnterpriseSubscriptionStatus as jest.Mock).mockResolvedValueOnce({
+        enterpriseId: 'ent-001',
+        active: false,
+        status: null,
+        plan: null,
+        stripeCustomerId: null,
+        subscriptionId: null,
+        currentPeriodStart: null,
+        currentPeriodEnd: null,
+      });
+
+      let thrown: unknown;
+      try {
+        await controller.getMetrics(adminUser, 'ent-001');
+      } catch (error) {
+        thrown = error;
+      }
+
+      expect(thrown).toBeDefined();
+      expect((thrown as { getStatus: () => number }).getStatus()).toBe(402);
+      expect((thrown as { getResponse: () => unknown }).getResponse()).toEqual(
+        expect.objectContaining({
+          error_code: 'B2B_LICENSE_REQUIRED',
+        }),
+      );
+      expect(mockMetrics.getEnterpriseMetrics).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getLicense', () => {
+    it('should return current enterprise license state', async () => {
+      const result = await controller.getLicense(adminUser, 'ent-001');
+
+      expect(result).toEqual(expect.objectContaining({
+        enterpriseId: 'ent-001',
+        active: true,
+        plan: 'SOLO',
+      }));
+      expect(mockBilling.getEnterpriseSubscriptionStatus).toHaveBeenCalledWith('ent-001');
     });
   });
 
@@ -84,13 +144,15 @@ describe('B2BController', () => {
     it('should return billing summary WITHOUT recording a consumption event', async () => {
       const result = await controller.getBilling(adminUser, 'ent-001');
 
-      expect(result).toEqual({
+      expect(result).toEqual(expect.objectContaining({
         enterpriseId: 'ent-001',
-        plan: 'CONSUMPTION',
+        plan: 'SOLO',
+        license: expect.objectContaining({ active: true, plan: 'SOLO' }),
+        usageSummary: expect.objectContaining({ totalUsage: 12 }),
         events: [],
         totalDue: 0,
         currency: 'USD',
-      });
+      }));
       // Read-only fetch must not bill the customer.
       expect(mockBilling.recordConsumptionEvent).not.toHaveBeenCalled();
     });
@@ -108,6 +170,7 @@ describe('B2BController', () => {
         enterpriseId: 'ent-001',
         url: 'https://example.com/webhook',
       });
+      expect(mockBilling.getEnterpriseSubscriptionStatus).toHaveBeenCalledWith('ent-001');
     });
   });
 
@@ -121,6 +184,7 @@ describe('B2BController', () => {
       });
 
       expect(result).toEqual({ status: 'sent' });
+      expect(mockBilling.getEnterpriseSubscriptionStatus).toHaveBeenCalledWith('ent-001');
       expect(mockWebhook.dispatchEnterpriseMetricEvent).toHaveBeenCalledWith(
         'https://example.com/hook',
         expect.objectContaining({ type: 'TEST' }),
@@ -162,6 +226,7 @@ describe('B2BController', () => {
       const result = await controller.exportHrData(adminUser, 'ent-001');
 
       expect(result.employeeCount).toBe(0);
+      expect(mockBilling.getEnterpriseSubscriptionStatus).toHaveBeenCalledWith('ent-001');
       expect(mockAnonymize.anonymizeEmployeeData).toHaveBeenCalledWith('ent-001', []);
     });
   });
@@ -171,6 +236,7 @@ describe('B2BController', () => {
       const result = await controller.getDataLakeSnapshot(adminUser, 'ent-001', '2026-01-01', '2026-02-01');
 
       expect(result.enterpriseId).toBe('ent-001');
+      expect(mockBilling.getEnterpriseSubscriptionStatus).toHaveBeenCalledWith('ent-001');
       expect(mockDataLake.extractSnapshot).toHaveBeenCalledWith('ent-001', '2026-01-01', '2026-02-01');
     });
   });
