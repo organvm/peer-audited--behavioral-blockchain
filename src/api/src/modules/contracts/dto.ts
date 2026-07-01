@@ -145,6 +145,7 @@ export class CohortEnrollmentDto {
 export enum PricingPlan {
   CUSTOM = "CUSTOM",
   MVP_39 = "MVP_39",
+  EARLY_ACCESS_199 = "EARLY_ACCESS_199",
 }
 
 export class PricingPlanDto {

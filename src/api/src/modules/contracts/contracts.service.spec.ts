@@ -314,6 +314,38 @@ describe("ContractsService", () => {
       });
     });
 
+    it("should enforce EARLY_ACCESS_199 pricing stake at $150 and return pricing metadata", async () => {
+      const earlyAccessDto: CreateContractInput = {
+        ...validDto,
+        stakeAmount: 10,
+        pricing: { plan: "EARLY_ACCESS_199" as any },
+      };
+      
+      const highScoreUser = { ...activeUser, integrity_score: 150 }; // Need score >= 100 for $150 tier (TIER_3_HIGH_ROLLER)
+
+      mockPool.query.mockResolvedValueOnce({ rows: [highScoreUser] });
+      mockPool.query.mockResolvedValueOnce({ rows: [{ count: 0 }] }); // Cool-off
+      mockPool.query.mockResolvedValueOnce({ rows: [{ count: 0 }] }); // Downscaling
+      mockPool.query.mockResolvedValueOnce({ rows: [{ id: "contract-1" }] }); // Insert
+      mockPool.query.mockResolvedValueOnce({ rows: [] }); // Update active
+      mockPool.query.mockResolvedValueOnce({ rows: [{ count: 1 }] }); // Prior contracts
+      mockPool.query.mockResolvedValueOnce({ rows: [{ id: "escrow-acct" }] }); // Escrow
+
+      const result = await service.createContract(earlyAccessDto);
+
+      expect(mockStripe.holdStake).toHaveBeenCalledWith(
+        "cus_test_1",
+        15000,
+        "contract-1",
+      );
+      expect(result.pricing).toEqual({
+        plan: "EARLY_ACCESS_199",
+        totalEntryUsd: 199,
+        platformFeeUsd: 49,
+        refundableStakeUsd: 150,
+      });
+    });
+
     it("should reject POD_BASED cohort enrollment when podId is missing", async () => {
       const podDto: CreateContractInput = {
         ...validDto,
