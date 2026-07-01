@@ -16,15 +16,12 @@ import { HoneypotService } from "../../../services/intelligence/honeypot.service
 
 import { SurveyService } from "./survey.service";
 import { WaitlistService } from "./waitlist.service";
-import { BannedUserGuard } from "../../guards/banned-user.guard";
-import { TierGuard } from "../../guards/tier.guard";
 import {
   AnomalyService,
   ANOMALY_REDIS_CLIENT,
 } from "../../../services/anomaly/anomaly.service";
 import { NotificationsModule } from "../notifications/notifications.module";
 import { PaymentsModule } from "../payments/payments.module";
-import { EmailModule } from "../email/email.module";
 import Redis from "ioredis";
 import { getRedisConnectionConfig } from "../../../config/queue.config";
 
@@ -43,7 +40,6 @@ const redisProvider = {
   imports: [
     ScheduleModule.forRoot(),
     NotificationsModule,
-    EmailModule,
     forwardRef(() => PaymentsModule),
   ],
   controllers: [ContractsController],
@@ -62,8 +58,6 @@ const redisProvider = {
     HoneypotService,
     SurveyService,
     WaitlistService,
-    BannedUserGuard,
-    TierGuard,
 
     AnomalyService,
     redisProvider,
