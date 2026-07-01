@@ -89,3 +89,18 @@ docs/evaluation/
 docs/EXPORT-*.md
 docs/audit/document-audit-*.md
 data/
+
+# removed inadvertently-committed local session artifacts (PII containment)
+docs/planning/session-exports
+docs/brainstorm/brainstorm--transcript--2026-02-20.md
+docs/brainstorm/brainstorm--transcript--2026-02-25.md
+docs/brainstorm/brainstorm--transcript--2026-02-27.md
+docs/planning/premortem-transcript-20260517-144746.md
+docs/planning/planning--ai-session-audit--2026-03-06.md
+docs/planning/planning--gtm-role-prompts--2026-03-10.md
+docs/planning/planning--parallel-remediation-prompts--2026-03-09.md
+docs/planning/planning--parallel-sprint-prompts--2026-03-09.md
+.codex/plans/2026-03-10-gtm-role-prompts.md
+.codex/plans/archive/2026-03/2026-03-09-parallel-remediation-prompts.md
+.codex/plans/archive/2026-03/2026-03-09-parallel-sprint-prompts.md
+.claude/plans/archive/2026-03/2026-03-06-ai-session-audit-plan-debt.md
