@@ -2,7 +2,7 @@ import { IsEmail, IsString, MinLength, Matches, IsBoolean, IsDateString, IsOptio
 import { ApiProperty } from '@nestjs/swagger';
 
 export class RegisterDto {
-  @ApiProperty({ description: 'User email address', example: 'user@example.com' })
+  @ApiProperty({ description: 'User email address', example: '[email redacted]' })
   @IsEmail()
   email!: string;
 
@@ -29,7 +29,7 @@ export class RegisterDto {
 }
 
 export class LoginDto {
-  @ApiProperty({ description: 'User email address', example: 'user@example.com' })
+  @ApiProperty({ description: 'User email address', example: '[email redacted]' })
   @IsEmail()
   email!: string;
 
